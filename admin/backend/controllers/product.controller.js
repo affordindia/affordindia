@@ -1,16 +1,16 @@
 import {
-    createProduct,
-    getAllProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
-    removeProductImage,
-    updateProductStock,
-    updateProductFeature,
-    addProductReview,
-    getProductReviews,
-    deleteProductReview,
-    getProductAnalytics,
+    createProduct as createProductService,
+    getAllProducts as getAllProductsService,
+    getProductById as getProductByIdService,
+    updateProduct as updateProductService,
+    deleteProduct as deleteProductService,
+    removeProductImage as removeProductImageService,
+    updateProductStock as updateProductStockService,
+    updateProductFeature as updateProductFeatureService,
+    addProductReview as addProductReviewService,
+    getProductReviews as getProductReviewsService,
+    deleteProductReview as deleteProductReviewService,
+    getProductAnalytics as getProductAnalyticsService,
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
@@ -31,7 +31,7 @@ export const createProduct = async (req, res) => {
             imageUrls = uploadResults.map((result) => result.secure_url);
         }
         const productData = { ...req.body, images: imageUrls };
-        const product = await createProduct(productData);
+        const product = await createProductService(productData);
         res.status(201).json(product);
     } catch (error) {
         res.status(500).json({
@@ -56,7 +56,7 @@ export const getAllProducts = async (req, res) => {
             limit: req.query.limit ? parseInt(req.query.limit) : DEFAULT_LIMIT,
             sort: req.query.sort ? JSON.parse(req.query.sort) : {},
         };
-        const products = await getAllProducts(filter, options);
+        const products = await getAllProductsService(filter, options);
         res.json(products);
     } catch (error) {
         res.status(500).json({
@@ -68,7 +68,7 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
     try {
-        const product = await getProductById(req.params.id);
+        const product = await getProductByIdService(req.params.id);
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
@@ -98,7 +98,7 @@ export const updateProduct = async (req, res) => {
             imageUrls.length > 0
                 ? { ...req.body, images: imageUrls }
                 : req.body;
-        const product = await updateProduct(req.params.id, updateData);
+        const product = await updateProductService(req.params.id, updateData);
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
@@ -112,7 +112,7 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
-        const product = await deleteProduct(req.params.id);
+        const product = await deleteProductService(req.params.id);
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json({ message: "Product deleted" });
@@ -127,7 +127,10 @@ export const deleteProduct = async (req, res) => {
 export const removeProductImage = async (req, res) => {
     try {
         const { imageUrl } = req.body;
-        const product = await removeProductImage(req.params.id, imageUrl);
+        const product = await removeProductImageService(
+            req.params.id,
+            imageUrl
+        );
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
@@ -142,7 +145,7 @@ export const removeProductImage = async (req, res) => {
 export const updateProductStock = async (req, res) => {
     try {
         const { stock } = req.body;
-        const product = await updateProductStock(req.params.id, stock);
+        const product = await updateProductStockService(req.params.id, stock);
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
@@ -157,7 +160,10 @@ export const updateProductStock = async (req, res) => {
 export const updateProductFeature = async (req, res) => {
     try {
         const { isFeatured } = req.body;
-        const product = await updateProductFeature(req.params.id, isFeatured);
+        const product = await updateProductFeatureService(
+            req.params.id,
+            isFeatured
+        );
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
@@ -171,7 +177,7 @@ export const updateProductFeature = async (req, res) => {
 
 export const addProductReview = async (req, res) => {
     try {
-        const review = await addProductReview(req.params.id, req.body);
+        const review = await addProductReviewService(req.params.id, req.body);
         res.status(201).json(review);
     } catch (error) {
         res.status(500).json({
@@ -183,7 +189,7 @@ export const addProductReview = async (req, res) => {
 
 export const getProductReviews = async (req, res) => {
     try {
-        const reviews = await getProductReviews(req.params.id);
+        const reviews = await getProductReviewsService(req.params.id);
         res.json(reviews);
     } catch (error) {
         res.status(500).json({
@@ -195,7 +201,7 @@ export const getProductReviews = async (req, res) => {
 
 export const deleteProductReview = async (req, res) => {
     try {
-        const product = await deleteProductReview(
+        const product = await deleteProductReviewService(
             req.params.id,
             req.params.reviewId
         );
@@ -212,7 +218,7 @@ export const deleteProductReview = async (req, res) => {
 
 export const getProductAnalytics = async (req, res) => {
     try {
-        const analytics = await getProductAnalytics(req.params.id);
+        const analytics = await getProductAnalyticsService(req.params.id);
         if (!analytics)
             return res.status(404).json({ message: "Product not found" });
         res.json(analytics);
