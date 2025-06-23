@@ -12,6 +12,8 @@ const productSchema = new mongoose.Schema(
         ratings: { type: Number, default: 0 },
         reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
         isFeatured: { type: Boolean, default: false },
+        views: { type: Number, default: 0 },
+        salesCount: { type: Number, default: 0 },
     },
     { timestamps: true }
 );
