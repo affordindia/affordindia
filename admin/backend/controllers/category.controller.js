@@ -5,7 +5,7 @@ import {
     updateCategoryService,
     disableCategoryService,
     restoreCategoryService,
-    permanentDeleteCategoryService,
+    deleteCategoryService,
 } from "../services/category.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import {
@@ -146,11 +146,9 @@ export const restoreCategory = async (req, res) => {
     }
 };
 
-export const permanentDeleteCategory = async (req, res) => {
+export const deleteCategory = async (req, res) => {
     try {
-        const { error, deleted } = await permanentDeleteCategoryService(
-            req.params.id
-        );
+        const { error, deleted } = await deleteCategoryService(req.params.id);
         if (error) {
             return res.status(400).json({ message: error });
         }

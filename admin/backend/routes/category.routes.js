@@ -8,7 +8,7 @@ import {
     updateCategory,
     disableCategory,
     restoreCategory,
-    permanentDeleteCategory,
+    deleteCategory,
 } from "../controllers/category.controller.js";
 
 const router = Router();
@@ -19,9 +19,8 @@ router.post("/", upload.single("image"), createCategory);
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryById);
 router.put("/:id", upload.single("image"), updateCategory);
-router.delete("/:id", deleteCategory);
 router.patch("/:id/disable", disableCategory);
 router.patch("/:id/restore", restoreCategory);
-router.delete("/:id/permanent", permanentDeleteCategory);
+router.delete("/:id/delete", deleteCategory);
 
 export default router;

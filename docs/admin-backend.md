@@ -11,6 +11,7 @@ This documentation covers the RESTful API endpoints for the AffordIndia admin ba
 -   [Authentication](#authentication)
 -   [Product Management](#product-management)
 -   [Category Management](#category-management)
+-   [Order Management](#order-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -544,6 +545,125 @@ GET /api/categories?status=active&search=electronics&limit=10
 
 ---
 
+## Order Management
+
+### Order Object Fields
+
+An order object may include:
+
+-   `_id`: string (auto-generated)
+-   `user`: string (user ID)
+-   `items`: array of objects (each with `product`, `quantity`, `price`)
+-   `shippingAddress`: object (houseNumber, street, landmark, area, city, state, pincode, country)
+-   `paymentMethod`: string
+-   `paymentStatus`: string ("pending", "paid", "failed")
+-   `paymentInfo`: object (Razorpay/Stripe/etc. payment details)
+-   `status`: string ("pending", "processing", "shipped", "delivered", "cancelled", "returned")
+-   `subtotal`, `shippingFee`, `discount`, `total`: number
+-   `trackingNumber`: string
+-   `deliveredAt`, `cancelledAt`: ISO date strings
+-   `coupon`: string (coupon ID, optional)
+-   `notes`: string
+-   `createdAt`, `updatedAt`: ISO date strings
+
+---
+
+### 1. Get All Orders
+
+**GET** `/api/orders`
+
+-   **Description:** Retrieve a list of orders with support for advanced filter, multi-value, date range, sort, and pagination via query parameters.
+-   **Query Parameters:**
+    -   `status` (string or array, optional) — Filter by one or more statuses (e.g., `status=pending&status=processing`)
+    -   `paymentStatus` (string or array, optional) — Filter by one or more payment statuses
+    -   `user` (string, optional) — Filter by user ID
+    -   `coupon` (string, optional) — Filter by coupon ID
+    -   `startDate` (string, optional, ISO) — Filter orders created after this date
+    -   `endDate` (string, optional, ISO) — Filter orders created before this date
+    -   `skip` (number, optional) — Pagination offset (default: 0)
+    -   `limit` (number, optional) — Pagination limit (default: 40)
+    -   `sort` (stringified JSON, optional) — e.g. `{ "createdAt": -1 }` for newest first
+-   **Request Example:**
+
+```
+GET /api/orders?status=pending&status=processing&user=USER_ID&startDate=2025-06-01&endDate=2025-06-24&limit=20&sort={"createdAt":-1}
+```
+
+-   **Response Example:**
+
+```
+{
+  "success": true,
+  "orders": [
+    {
+      "_id": "...",
+      "user": { ... },
+      "items": [ ... ],
+      ...
+    },
+    ...
+  ],
+  "total": 42
+}
+```
+
+---
+
+### 2. Get Order by ID
+
+**GET** `/api/orders/:id`
+
+-   **Description:** Retrieve a single order by its ID.
+-   **Response Example:**
+
+```
+{
+  "success": true,
+  "order": {
+    "_id": "...",
+    ...
+  }
+}
+```
+
+---
+
+### 3. Update Order
+
+**PATCH** `/api/orders/:id`
+
+-   **Description:** Update order details (status, tracking, etc.).
+-   **Body Parameters:** Only include fields to update.
+-   **Response Example:**
+
+```
+{
+  "success": true,
+  "order": {
+    "_id": "...",
+    ...
+  }
+}
+```
+
+---
+
+### 4. Delete Order
+
+**DELETE** `/api/orders/:id`
+
+-   **Description:** Permanently delete an order.
+-   **Response Example:**
+
+```
+{
+  "success": true,
+  "message": "Order deleted"
+}
+```
+
+---
+
 ## Error Handling
 
 All error responses follow this format:
@@ -560,10 +680,11 @@ All error responses follow this format:
 ## Notes
 
 -   All endpoints require authentication unless otherwise specified.
--   Product and category pagination defaults are separate and configurable in backend.
+-   Product, category, and order pagination defaults are separate and configurable in backend.
 -   For image upload, use `multipart/form-data` with the `image` or `images` field.
 -   For sorting, pass a stringified JSON object in the `sort` query param (e.g., `{"price":-1}`).
 -   Disabling a category does not remove it from the database; use permanent delete to remove it completely.
+-   For multi-value filters (e.g., status), pass the same query param multiple times: `status=pending&status=processing`.
 
 ---
 

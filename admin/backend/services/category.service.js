@@ -88,7 +88,7 @@ export const restoreCategoryService = async (id) => {
     return { category };
 };
 
-export const permanentDeleteCategoryService = async (id) => {
+export const deleteCategoryService = async (id) => {
     // Optionally: handle orphaned subcategories or products here
     const deleted = await Category.findByIdAndDelete(id);
     return { deleted };
