@@ -10,6 +10,7 @@ This documentation covers the RESTful API endpoints for the AffordIndia admin ba
 
 -   [Authentication](#authentication)
 -   [Product Management](#product-management)
+-   [Category Management](#category-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -374,6 +375,175 @@ GET /api/products?search=phone&minPrice=100&maxPrice=1000&limit=10&sort={"price"
 
 ---
 
+## Category Management
+
+### Category Object Fields
+
+A category object may include:
+
+-   `_id`: string (auto-generated)
+-   `name`: string (required, unique)
+-   `description`: string
+-   `image`: string (Cloudinary URL)
+-   `parentCategory`: string (category ID, optional)
+-   `status`: string ("active" or "inactive")
+-   `order`: number (for sibling display order)
+-   `createdAt`, `updatedAt`: ISO date strings
+
+---
+
+### 1. Create Category
+
+**POST** `/api/categories`
+
+-   **Description:** Create a new category. Supports image upload (multipart/form-data).
+-   **Body Parameters:**
+    -   `name` (string, required, unique)
+    -   `description` (string, optional)
+    -   `image` (file, optional, via multipart/form-data)
+    -   `parentCategory` (string, optional)
+    -   `order` (number, optional)
+-   **Request Example (JSON):**
+
+```
+{
+  "name": "Electronics",
+  "description": "All electronic items",
+  "parentCategory": null,
+  "order": 1
+}
+```
+
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "name": "Electronics",
+  "description": "All electronic items",
+  "image": "https://...",
+  "parentCategory": null,
+  "status": "active",
+  "order": 1,
+  ...
+}
+```
+
+---
+
+### 2. Get All Categories
+
+**GET** `/api/categories`
+
+-   **Description:** Retrieve a list of categories with support for search, filter, and pagination via query parameters.
+-   **Query Parameters:**
+    -   `status` (string, optional) — Filter by status ("active"/"inactive")
+    -   `parentCategory` (string, optional) — Filter by parent category ID
+    -   `search` (string, optional) — Search by category name
+    -   `skip` (number, optional) — Pagination offset (default: 0)
+    -   `limit` (number, optional) — Pagination limit (default: 100)
+-   **Request Example:**
+
+```
+GET /api/categories?status=active&search=electronics&limit=10
+```
+
+-   **Response Example:**
+
+```
+[
+  {
+    "_id": "...",
+    "name": "Electronics",
+    ...
+  },
+  ...
+]
+```
+
+---
+
+### 3. Get Category by ID
+
+**GET** `/api/categories/:id`
+
+-   **Description:** Retrieve a single category by its ID.
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "name": "Electronics",
+  ...
+}
+```
+
+---
+
+### 4. Update Category
+
+**PUT** `/api/categories/:id`
+
+-   **Description:** Update category details. Supports image upload (multipart/form-data).
+-   **Body Parameters:** Same as create. Only include fields to update.
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "name": "Updated Category",
+  ...
+}
+```
+
+---
+
+### 5. Disable (Soft Delete) Category
+
+**PATCH** `/api/categories/:id/disable`
+
+-   **Description:** Disable (soft delete) a category by setting its status to "inactive".
+-   **Response Example:**
+
+```
+{
+  "message": "Category disabled (status set to inactive)"
+}
+```
+
+---
+
+### 6. Restore Category
+
+**PATCH** `/api/categories/:id/restore`
+
+-   **Description:** Restore a previously disabled category by setting its status to "active".
+-   **Response Example:**
+
+```
+{
+  "message": "Category restored",
+  "category": { ... }
+}
+```
+
+---
+
+### 7. Permanently Delete Category
+
+**DELETE** `/api/categories/:id/permanent`
+
+-   **Description:** Permanently delete a category from the database.
+-   **Response Example:**
+
+```
+{
+  "message": "Category permanently deleted"
+}
+```
+
+---
+
 ## Error Handling
 
 All error responses follow this format:
@@ -390,9 +560,10 @@ All error responses follow this format:
 ## Notes
 
 -   All endpoints require authentication unless otherwise specified.
--   Pagination defaults: `skip = 0`, `limit = 20` (configurable in backend).
--   For image upload, use `multipart/form-data` with the `images` field.
+-   Product and category pagination defaults are separate and configurable in backend.
+-   For image upload, use `multipart/form-data` with the `image` or `images` field.
 -   For sorting, pass a stringified JSON object in the `sort` query param (e.g., `{"price":-1}`).
+-   Disabling a category does not remove it from the database; use permanent delete to remove it completely.
 
 ---
 

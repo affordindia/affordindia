@@ -5,8 +5,25 @@ import {
 } from "../config/pagination.config.js";
 
 export const createCategoryService = async (data) => {
+    // Validation: name required
+    if (!data.name || data.name.trim() === "") {
+        return { error: "Category name is required" };
+    }
+    // Validation: unique name
+    const existing = await Category.findOne({ name: data.name });
+    if (existing) {
+        return { error: "Category name must be unique" };
+    }
+    // Validation: parentCategory exists (if provided)
+    if (data.parentCategory) {
+        const parent = await Category.findById(data.parentCategory);
+        if (!parent) {
+            return { error: "Parent category does not exist" };
+        }
+    }
     const category = new Category(data);
-    return await category.save();
+    await category.save();
+    return { category };
 };
 
 export const getAllCategoriesService = async (filter = {}, options = {}) => {
@@ -29,14 +46,50 @@ export const getCategoryByIdService = async (id) => {
 };
 
 export const updateCategoryService = async (id, updateData) => {
-    return await Category.findByIdAndUpdate(id, updateData, { new: true });
+    // Validation: name unique (if changed)
+    if (updateData.name) {
+        const existing = await Category.findOne({
+            name: updateData.name,
+            _id: { $ne: id },
+        });
+        if (existing) {
+            return { error: "Category name must be unique" };
+        }
+    }
+    // Validation: parentCategory exists (if provided)
+    if (updateData.parentCategory) {
+        const parent = await Category.findById(updateData.parentCategory);
+        if (!parent) {
+            return { error: "Parent category does not exist" };
+        }
+    }
+    const category = await Category.findByIdAndUpdate(id, updateData, {
+        new: true,
+    });
+    return { category };
 };
 
-export const deleteCategoryService = async (id) => {
+export const disableCategoryService = async (id) => {
     // Soft delete: set status to 'inactive'
-    return await Category.findByIdAndUpdate(
+    const category = await Category.findByIdAndUpdate(
         id,
         { status: "inactive" },
         { new: true }
     );
+    return { category };
+};
+
+export const restoreCategoryService = async (id) => {
+    const category = await Category.findByIdAndUpdate(
+        id,
+        { status: "active" },
+        { new: true }
+    );
+    return { category };
+};
+
+export const permanentDeleteCategoryService = async (id) => {
+    // Optionally: handle orphaned subcategories or products here
+    const deleted = await Category.findByIdAndDelete(id);
+    return { deleted };
 };

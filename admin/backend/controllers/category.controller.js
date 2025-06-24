@@ -3,7 +3,9 @@ import {
     getAllCategoriesService,
     getCategoryByIdService,
     updateCategoryService,
-    deleteCategoryService,
+    disableCategoryService,
+    restoreCategoryService,
+    permanentDeleteCategoryService,
 } from "../services/category.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import {
@@ -26,7 +28,11 @@ export const createCategory = async (req, res) => {
         const categoryData = imageUrl
             ? { ...req.body, image: imageUrl }
             : req.body;
-        const category = await createCategoryService(categoryData);
+        // All validation and DB logic handled in service
+        const { error, category } = await createCategoryService(categoryData);
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
         res.status(201).json(category);
     } catch (error) {
         res.status(500).json({
@@ -90,7 +96,14 @@ export const updateCategory = async (req, res) => {
         const updateData = imageUrl
             ? { ...req.body, image: imageUrl }
             : req.body;
-        const category = await updateCategoryService(req.params.id, updateData);
+        // All validation and DB logic handled in service
+        const { error, category } = await updateCategoryService(
+            req.params.id,
+            updateData
+        );
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
         if (!category)
             return res.status(404).json({ message: "Category not found" });
         res.json(category);
@@ -102,15 +115,51 @@ export const updateCategory = async (req, res) => {
     }
 };
 
-export const deleteCategory = async (req, res) => {
+export const disableCategory = async (req, res) => {
     try {
-        const category = await deleteCategoryService(req.params.id);
+        const { category } = await disableCategoryService(req.params.id);
         if (!category)
             return res.status(404).json({ message: "Category not found" });
-        res.json({ message: "Category deleted (status set to inactive)" });
+        res.json({ message: "Category disabled (status set to inactive)" });
     } catch (error) {
         res.status(500).json({
-            message: "Failed to delete category",
+            message: "Failed to disable category",
+            error: error.message,
+        });
+    }
+};
+
+export const restoreCategory = async (req, res) => {
+    try {
+        const { error, category } = await restoreCategoryService(req.params.id);
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+        if (!category)
+            return res.status(404).json({ message: "Category not found" });
+        res.json({ message: "Category restored", category });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to restore category",
+            error: error.message,
+        });
+    }
+};
+
+export const permanentDeleteCategory = async (req, res) => {
+    try {
+        const { error, deleted } = await permanentDeleteCategoryService(
+            req.params.id
+        );
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+        if (!deleted)
+            return res.status(404).json({ message: "Category not found" });
+        res.json({ message: "Category permanently deleted" });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to permanently delete category",
             error: error.message,
         });
     }
