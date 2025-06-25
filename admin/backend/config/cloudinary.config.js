@@ -1,3 +1,6 @@
+import "../load-env.js";
+//this is done because of a stupid bug
+
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
