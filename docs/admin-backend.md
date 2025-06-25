@@ -13,6 +13,7 @@ This documentation covers the RESTful API endpoints for the AffordIndia admin ba
 -   [Category Management](#category-management)
 -   [Order Management](#order-management)
 -   [User Management](#user-management)
+-   [Banner Management](#banner-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -738,6 +739,155 @@ GET /api/users?name=john&isBlocked=false&page=1&limit=10
   "email": "john@example.com",
   "isBlocked": false,
   ...
+}
+```
+
+---
+
+## Banner Management
+
+### Banner Object Fields
+
+A banner object may include:
+
+-   `_id`: string (auto-generated)
+-   `title`: string (required)
+-   `image`: string (Cloudinary URL, required)
+-   `link`: string (optional)
+-   `isActive`: boolean
+-   `status`: string ("active", "inactive", "scheduled")
+-   `order`: number (for display priority)
+-   `startDate`, `endDate`: ISO date strings
+-   `createdAt`, `updatedAt`: ISO date strings
+
+---
+
+### 1. Create Banner
+
+**POST** `/api/banners`
+
+-   **Description:** Create a new banner. Supports image upload (multipart/form-data).
+-   **Body Parameters:**
+    -   `title` (string, required)
+    -   `image` (file, required, via multipart/form-data)
+    -   `link` (string, optional)
+    -   `order` (number, optional)
+    -   `startDate` (string, ISO, optional)
+    -   `endDate` (string, ISO, optional)
+    -   `status` (string, optional)
+    -   `isActive` (boolean, optional)
+-   **Request Example:**
+
+```
+{
+  "title": "Summer Sale",
+  "link": "https://yourshop.com/sale",
+  "order": 1,
+  "startDate": "2025-07-01T00:00:00.000Z",
+  "endDate": "2025-07-31T23:59:59.999Z",
+  "status": "active"
+}
+```
+
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "title": "Summer Sale",
+  "image": "https://...",
+  "link": "https://yourshop.com/sale",
+  "order": 1,
+  "startDate": "2025-07-01T00:00:00.000Z",
+  "endDate": "2025-07-31T23:59:59.999Z",
+  "status": "active",
+  ...
+}
+```
+
+---
+
+### 2. Get All Banners
+
+**GET** `/api/banners`
+
+-   **Description:** Retrieve all banners, sorted by `order`.
+-   **Response Example:**
+
+```
+[
+  {
+    "_id": "...",
+    "title": "Summer Sale",
+    ...
+  },
+  ...
+]
+```
+
+---
+
+### 3. Get Banner by ID
+
+**GET** `/api/banners/:id`
+
+-   **Description:** Retrieve a single banner by its ID.
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "title": "Summer Sale",
+  ...
+}
+```
+
+---
+
+### 4. Update Banner
+
+**PUT** `/api/banners/:id`
+
+-   **Description:** Update banner details. Supports image upload (multipart/form-data).
+-   **Body Parameters:** Same as create. Only include fields to update.
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "title": "Updated Banner",
+  ...
+}
+```
+
+---
+
+### 5. Delete Banner
+
+**DELETE** `/api/banners/:id`
+
+-   **Description:** Permanently delete a banner.
+-   **Response Example:**
+
+```
+{
+  "message": "Banner deleted"
+}
+```
+
+---
+
+### 6. Toggle Banner Status
+
+**PATCH** `/api/banners/:id/toggle-status`
+
+-   **Description:** Toggle a banner's status between `active` and `inactive`.
+-   **Response Example:**
+
+```
+{
+  "message": "Banner status set to active",
+  "banner": { ... }
 }
 ```
 

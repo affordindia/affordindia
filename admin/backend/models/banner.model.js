@@ -8,6 +8,12 @@ const bannerSchema = new mongoose.Schema(
         isActive: { type: Boolean, default: true },
         startDate: { type: Date },
         endDate: { type: Date },
+        status: {
+            type: String,
+            enum: ["active", "inactive", "scheduled"],
+            default: "inactive",
+        },
+        order: { type: Number, default: 0 },
     },
     { timestamps: true }
 );
