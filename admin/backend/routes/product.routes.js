@@ -26,8 +26,6 @@ router.post("/", upload.array("images"), createProduct);
 router.get("/:id", getProductById);
 router.put("/:id", upload.array("images"), updateProduct);
 router.delete("/:id", deleteProduct);
-
-// Extra product management routes
 router.delete("/:id/images", removeProductImage);
 router.patch("/:id/stock", updateProductStock);
 router.patch("/:id/feature", updateProductFeature);

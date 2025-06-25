@@ -29,13 +29,13 @@ All admin endpoints (except login) require authentication via JWT. Obtain a toke
 
 -   **Description:** Authenticate as admin and receive a JWT token.
 -   **Body Parameters:**
-    -   `username` (string, required)
+    -   `email` (string, required)
     -   `password` (string, required)
 -   **Request Example:**
 
 ```
 {
-  "username": "admin",
+  "email": "admin@admin.com",
   "password": "yourpassword"
 }
 ```
