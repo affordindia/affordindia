@@ -12,6 +12,7 @@ This documentation covers the RESTful API endpoints for the AffordIndia admin ba
 -   [Product Management](#product-management)
 -   [Category Management](#category-management)
 -   [Order Management](#order-management)
+-   [User Management](#user-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -659,6 +660,84 @@ GET /api/orders?status=pending&status=processing&user=USER_ID&startDate=2025-06-
 {
   "success": true,
   "message": "Order deleted"
+}
+```
+
+---
+
+## User Management
+
+### User Object Fields
+
+A user object may include:
+
+-   `_id`: string (auto-generated)
+-   `name`: string (required)
+-   `email`: string (required, unique)
+-   `password`: string (hashed, not returned)
+-   `address`: object (houseNumber, street, landmark, area, city, state, pincode, country)
+-   `phone`: string
+-   `isBlocked`: boolean
+-   `orders`: array of order IDs
+-   `wishlist`: array of product IDs
+-   `createdAt`, `updatedAt`: ISO date strings
+
+---
+
+### 1. Get All Users
+
+**GET** `/api/users`
+
+-   **Description:** Retrieve a list of users with support for filter, pagination, and sorting via query parameters.
+-   **Query Parameters:**
+    -   `name` (string, optional) — Filter by name (partial match)
+    -   `email` (string, optional) — Filter by email (partial match)
+    -   `isBlocked` (boolean, optional)
+    -   `page` (number, optional, default: 1)
+    -   `limit` (number, optional, default: 20)
+    -   `sort` (string, optional, default: "-createdAt")
+-   **Request Example:**
+
+```
+GET /api/users?name=john&isBlocked=false&page=1&limit=10
+```
+
+-   **Response Example:**
+
+```
+{
+  "users": [
+    {
+      "_id": "...",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "isBlocked": false,
+      ...
+    },
+    ...
+  ],
+  "total": 42,
+  "page": 1,
+  "limit": 10
+}
+```
+
+---
+
+### 2. Get User by ID
+
+**GET** `/api/users/:id`
+
+-   **Description:** Retrieve a single user by their ID.
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "isBlocked": false,
+  ...
 }
 ```
 
