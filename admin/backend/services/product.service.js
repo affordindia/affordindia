@@ -1,6 +1,7 @@
 import Product from "../models/product.model.js";
 import Review from "../models/review.model.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
+import mongoose from "mongoose";
 
 export const createProduct = async (productData) => {
     const product = new Product(productData);
@@ -69,7 +70,15 @@ export const updateProductFeature = async (productId, isFeatured) => {
 };
 
 export const addProductReview = async (productId, reviewData) => {
-    const review = new Review({ ...reviewData, product: productId });
+    // Ensure user and product are ObjectId
+    const userId = reviewData.user
+        ? new mongoose.Types.ObjectId(reviewData.user)
+        : undefined;
+    const review = new Review({
+        ...reviewData,
+        user: userId,
+        product: new mongoose.Types.ObjectId(productId),
+    });
     await review.save();
     const product = await Product.findById(productId);
     if (!product) return null;
