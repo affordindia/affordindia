@@ -2,16 +2,13 @@ import User from "../models/user.model.js";
 
 // Get all users with optional filtering and pagination
 export const getAllUsersService = async (filter = {}, options = {}) => {
-    const { page = 1, limit = 20, sort = "-createdAt" } = options;
-    const skip = (page - 1) * limit;
     const query = User.find(filter)
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .select("-password"); // Exclude password
+        .sort(options.sort || {})
+        .skip(options.skip !== undefined ? options.skip : 0)
+        .limit(options.limit !== undefined ? options.limit : 50)
+        .select("-password");
     const users = await query.exec();
-    const total = await User.countDocuments(filter);
-    return { users, total, page, limit };
+    return users;
 };
 
 // Get a single user by ID

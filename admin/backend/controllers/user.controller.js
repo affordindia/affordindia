@@ -8,12 +8,12 @@ export const getAllUsers = async (req, res) => {
     try {
         const { page, limit, sort, ...filter } = req.query;
         const options = {
-            page: parseInt(page) || 1,
-            limit: parseInt(limit) || 20,
             sort: sort || "-createdAt",
+            skip: req.query.skip !== undefined ? parseInt(req.query.skip) : 0,
+            limit: limit !== undefined ? parseInt(limit) : 50,
         };
-        const result = await getAllUsersService(filter, options);
-        res.json(result);
+        const users = await getAllUsersService(filter, options);
+        res.json(users);
     } catch (err) {
         res.status(500).json({
             message: "Failed to fetch users",
