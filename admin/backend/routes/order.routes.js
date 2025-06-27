@@ -10,7 +10,7 @@ import adminAuth from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.get("/", adminAuth, getAllOrders);
-router.get("/:id", getOrderById);
+router.get("/:id", adminAuth, getOrderById);
 router.patch("/:id", adminAuth, updateOrder);
 router.delete("/:id", adminAuth, deleteOrder);
 
