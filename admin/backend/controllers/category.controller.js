@@ -12,9 +12,18 @@ import {
     DEFAULT_CATEGORY_SKIP,
     DEFAULT_CATEGORY_LIMIT,
 } from "../config/pagination.config.js";
+import Category from "../models/category.model.js";
 
 export const createCategory = async (req, res) => {
     try {
+        // Check for duplicate category by name before uploading image
+        const { name } = req.body;
+        const existing = await Category.findOne({ name });
+        if (existing) {
+            return res.status(400).json({
+                message: "A category with this name already exists.",
+            });
+        }
         let imageUrl = undefined;
         if (req.file) {
             const uploadResult = await uploadToCloudinary(
@@ -35,6 +44,12 @@ export const createCategory = async (req, res) => {
         }
         res.status(201).json(category);
     } catch (error) {
+        // Handle duplicate key error from MongoDB
+        if (error.code === 11000) {
+            return res.status(400).json({
+                message: "A category with this name already exists.",
+            });
+        }
         res.status(500).json({
             message: "Failed to create category",
             error: error.message,

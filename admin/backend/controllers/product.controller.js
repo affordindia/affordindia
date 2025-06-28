@@ -14,9 +14,19 @@ import {
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
+import Product from "../models/Product.js"; // Import the Product model
 
 export const createProduct = async (req, res) => {
     try {
+        // Check for duplicate before uploading images
+        const { name, category } = req.body;
+        const existing = await Product.findOne({ name, category });
+        if (existing) {
+            return res.status(400).json({
+                message:
+                    "A product with this name already exists in this category.",
+            });
+        }
         let imageUrls = [];
         if (req.files && req.files.length > 0) {
             // Upload each file to Cloudinary
@@ -34,6 +44,13 @@ export const createProduct = async (req, res) => {
         const product = await createProductService(productData);
         res.status(201).json(product);
     } catch (error) {
+        // Handle duplicate key error from MongoDB
+        if (error.code === 11000) {
+            return res.status(400).json({
+                message:
+                    "A product with this name already exists in this category.",
+            });
+        }
         res.status(500).json({
             message: "Failed to create product",
             error: error.message,

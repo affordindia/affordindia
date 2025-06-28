@@ -18,5 +18,7 @@ const productSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+productSchema.index({ name: 1, category: 1 }, { unique: true });
+
 const Product = mongoose.model("Product", productSchema);
 export default Product;
