@@ -14,7 +14,7 @@ import {
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
-import Product from "../models/Product.js"; // Import the Product model
+import Product from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
     try {
