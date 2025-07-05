@@ -1,140 +1,134 @@
-import React, { useState } from "react";
+// src/pages/Add.jsx
+
+import React from "react";
+import { useAddproduct } from "../context/AddproductContext";
 
 const Add = () => {
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [bestseller, setBestseller] = useState(false);
-
-  const sizes = ["S", "M", "L", "XL", "XXL"];
-
-  const toggleSize = (size) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size)
-        ? prev.filter((s) => s !== size)
-        : [...prev, size]
-    );
-  };
+  const {
+    formData,
+    setFormData,
+    handleImageChange,
+    handleSubmit,
+    isLoading,
+  } = useAddproduct();
 
   return (
-    <div className="p-4 sm:p-6 w-full max-w-5xl mx-auto">
-      <h2 className="text-xl font-semibold mb-6 text-gray-800">Upload Image</h2>
+    <div className="p-4 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold text-[#2c2a4a] mb-6">Upload Product</h2>
 
       {/* Upload Images */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {[0, 1, 2, 3, 4].map((item) => (
           <label
-            key={i}
-            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-24 cursor-pointer hover:bg-gray-50"
+            key={item}
+            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 h-24 cursor-pointer hover:bg-gray-50 rounded overflow-hidden"
           >
-            <span className="text-gray-400 text-sm">Upload</span>
-            <input type="file" className="hidden" />
+            {formData.previews[item] ? (
+              <img
+                src={formData.previews[item]}
+                alt="preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-400 text-sm">Upload</span>
+            )}
+            <input
+              type="file"
+              className="hidden"
+              onChange={(e) => handleImageChange(e, item)}
+            />
           </label>
         ))}
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-4">
-        {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Product name
-          </label>
+      {/* Product Name */}
+      <div className="mb-6">
+        <label className="block text-[#2c2a4a]">
+          <span className="text-lg sm:text-xl font-semibold">Product Name</span>
           <input
             type="text"
-            placeholder="Type here"
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="Enter Product Name..."
+            className="border border-gray-300 w-full h-12 p-2 mt-2 rounded hover:bg-gray-50"
+            value={formData.productName}
+            onChange={(e) =>
+              setFormData({ ...formData, productName: e.target.value })
+            }
           />
-        </div>
+        </label>
+      </div>
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Product description
-          </label>
+      {/* Description */}
+      <div className="mb-6">
+        <label className="block text-[#2c2a4a]">
+          <span className="text-lg sm:text-xl font-semibold">Product Description</span>
           <textarea
-            rows={3}
-            placeholder="Write content here"
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="Enter Product Description..."
+            className="border border-gray-300 w-full h-24 p-2 mt-2 rounded hover:bg-gray-50"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+          ></textarea>
+        </label>
+      </div>
+
+      {/* Price and Stock */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <label className="block text-[#2c2a4a]">
+          <span className="text-lg sm:text-xl font-semibold">Price</span>
+          <input
+            type="number"
+            placeholder="Enter Price..."
+            className="border border-gray-300 w-full h-12 p-2 mt-2 rounded hover:bg-gray-50"
+            value={formData.price}
+            onChange={(e) =>
+              setFormData({ ...formData, price: e.target.value })
+            }
           />
-        </div>
+        </label>
 
-        {/* Category, Subcategory, Price */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Product category
-            </label>
-            <select className="w-full border border-gray-300 rounded px-3 py-2">
-              <option>Men</option>
-              <option>Women</option>
-              <option>Kids</option>
-            </select>
-          </div>
+        <label className="block text-[#2c2a4a]">
+          <span className="text-lg sm:text-xl font-semibold">Stock</span>
+          <input
+            type="number"
+            placeholder="Enter Stock..."
+            className="border border-gray-300 w-full h-12 p-2 mt-2 rounded hover:bg-gray-50"
+            value={formData.stock}
+            onChange={(e) =>
+              setFormData({ ...formData, stock: e.target.value })
+            }
+          />
+        </label>
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Sub category
-            </label>
-            <select className="w-full border border-gray-300 rounded px-3 py-2">
-              <option>Topwear</option>
-              <option>Bottomwear</option>
-              <option>Footwear</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Product Price
-            </label>
-            <input
-              type="number"
-              placeholder="Price"
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
-          </div>
-        </div>
-
-        {/* Sizes */}
-        <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Product Sizes
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {sizes.map((size) => (
-              <button
-                key={size}
-                type="button"
-                onClick={() => toggleSize(size)}
-                className={`px-4 py-1 border rounded ${
-                  selectedSizes.includes(size)
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Bestseller */}
-        <div className="flex items-center mt-2">
+      {/* Bestseller Checkbox */}
+      <div className="mb-4">
+        <label className="inline-flex items-center">
           <input
             type="checkbox"
-            checked={bestseller}
-            onChange={(e) => setBestseller(e.target.checked)}
-            className="mr-2 w-4 h-4"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={formData.bestseller}
+            onChange={(e) =>
+              setFormData({ ...formData, bestseller: e.target.checked })
+            }
           />
-          <label className="text-sm font-medium text-gray-600">
-            Add to bestseller
-          </label>
-        </div>
+          <span className="ml-2 text-[#2c2a4a] text-lg">Bestseller</span>
+        </label>
+      </div>
 
-        {/* Submit Button */}
-        <div className="pt-4">
-          <button className="w-full sm:w-auto bg-black text-white px-6 py-2 rounded shadow hover:bg-gray-900 transition">
-            ADD
-          </button>
-        </div>
+      {/* Submit Button */}
+      <div className="mt-6">
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading}
+          className={`px-6 py-2 rounded text-white ${
+            isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#2c2a4a] hover:bg-[#1f1d38]"
+          }`}
+        >
+          {isLoading ? "Submitting..." : "Submit"}
+        </button>
       </div>
     </div>
   );

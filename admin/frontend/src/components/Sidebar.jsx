@@ -31,6 +31,11 @@ const Sidebar = () => {
         <ChartNoAxesCombined size={24} />
         <p>Analytics</p>
       </NavLink>
+
+       <NavLink to="/otplogin" className={linkClass}>
+        <ChartNoAxesCombined size={24} />
+        <p>OTP Login</p>
+      </NavLink>
     </div>
   );
 };

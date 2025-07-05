@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLogin } from "../context/LoginContext";
 
 const Login = () => {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login } = useLogin();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,8 +11,7 @@ const Login = () => {
     e.preventDefault();
 
     if (email && password) {
-      login();
-      navigate("/");
+      login({ email, password });
     } else {
       alert("Please enter email and password.");
     }

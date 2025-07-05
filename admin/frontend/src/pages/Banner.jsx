@@ -2,9 +2,9 @@ import React from 'react'
 
 const Banner = () => {
   return (
-    <div>
-      Banner Section
-    </div>
+    <>
+    <h1>Banner my mvhfcvjfkb</h1>
+    </>
   )
 }
 
