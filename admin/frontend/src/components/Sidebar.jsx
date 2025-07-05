@@ -8,6 +8,9 @@ import {
   ChartNoAxesCombined,
 } from "lucide-react";
 
+
+// ...same imports
+
 const Sidebar = () => {
   const baseLinkClass =
     "flex items-center gap-2 p-2 rounded-md transition-colors duration-200";
@@ -65,6 +68,7 @@ const Sidebar = () => {
         <ChartNoAxesCombined size={24} />
         <p className="hidden md:block">Analytics</p>
       </NavLink>
+
       <NavLink
         to="/otplogin"
         className={({ isActive }) =>
@@ -74,13 +78,10 @@ const Sidebar = () => {
         <ChartNoAxesCombined size={24} />
         <p className="hidden md:block">OTP Login</p>
       </NavLink>
-
-       <NavLink to="/otplogin" className={linkClass}>
-        <ChartNoAxesCombined size={24} />
-        <p>OTP Login</p>
-      </NavLink>
     </div>
   );
 };
 
 export default Sidebar;
+
+
