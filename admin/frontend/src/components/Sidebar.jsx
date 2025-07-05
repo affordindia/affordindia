@@ -1,35 +1,78 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { ShoppingBag, PackageSearch, ClockArrowDown, Monitor, ChartNoAxesCombined } from "lucide-react";
+import {
+  ShoppingBag,
+  PackageSearch,
+  ClockArrowDown,
+  Monitor,
+  ChartNoAxesCombined,
+} from "lucide-react";
 
 const Sidebar = () => {
-  const linkClass = "flex items-center gap-2 p-2 text-gray-700 hover:bg-gray-200 rounded-md";
+  const baseLinkClass =
+    "flex items-center gap-2 p-2 rounded-md transition-colors duration-200";
+  const activeClass = "bg-gray-300 text-black font-semibold";
+  const inactiveClass = "text-gray-700 hover:bg-gray-200";
 
   return (
     <div className="p-4 space-y-2">
-      <NavLink to="/add" className={linkClass}>
+      <NavLink
+        to="/add"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
         <ShoppingBag size={24} />
-        <p>Add Items</p>
+        <p className="hidden md:block">Add Items</p>
       </NavLink>
 
-      <NavLink to="/products" className={linkClass}>
+      <NavLink
+        to="/products"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
         <PackageSearch size={24} />
-        <p>All Products</p>
+        <p className="hidden md:block">All Products</p>
       </NavLink>
 
-      <NavLink to="/orders" className={linkClass}>
-        <ClockArrowDown  size={24} />
-        <p>Orders Details</p>
+      <NavLink
+        to="/orders"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
+        <ClockArrowDown size={24} />
+        <p className="hidden md:block">Orders Details</p>
       </NavLink>
 
-      <NavLink to="/banners" className={linkClass}>
+      <NavLink
+        to="/banners"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
         <Monitor size={24} />
-        <p>Banner Image</p>
+        <p className="hidden md:block">Banner Image</p>
       </NavLink>
 
-      <NavLink to="/analytics" className={linkClass}>
+      <NavLink
+        to="/analytics"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
         <ChartNoAxesCombined size={24} />
-        <p>Analytics</p>
+        <p className="hidden md:block">Analytics</p>
+      </NavLink>
+      <NavLink
+        to="/otplogin"
+        className={({ isActive }) =>
+          `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+        }
+      >
+        <ChartNoAxesCombined size={24} />
+        <p className="hidden md:block">OTP Login</p>
       </NavLink>
 
        <NavLink to="/otplogin" className={linkClass}>
