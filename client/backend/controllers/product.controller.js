@@ -31,12 +31,11 @@ export const listProducts = async (req, res, next) => {
             if (req.query.maxPrice)
                 filter.price.$lte = Number(req.query.maxPrice);
         }
-        const [products, totalCount] = await Promise.all([
-            getProducts(filter, { skip, limit, sort }),
-            getProducts(filter, { skip: 0, limit: 0, sort }).then(
-                (res) => res.length
-            ),
-        ]);
+        const { products, totalCount } = await getProducts(filter, {
+            skip,
+            limit,
+            sort,
+        });
         res.json({
             page,
             limit,

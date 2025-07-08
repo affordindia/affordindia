@@ -4,12 +4,16 @@ import config from "../config/server.config.js";
 export const getProducts = async (filter, options) => {
     // filter: object for MongoDB query
     // options: { skip, limit, sort }
-    return Product.find(filter)
-        .sort(options.sort)
-        .skip(options.skip)
-        .limit(options.limit)
-        .populate("category")
-        .lean();
+    const [products, totalCount] = await Promise.all([
+        Product.find(filter)
+            .sort(options.sort)
+            .skip(options.skip)
+            .limit(options.limit)
+            .populate("category")
+            .lean(),
+        Product.countDocuments(filter),
+    ]);
+    return { products, totalCount };
 };
 
 export const getProductById = async (id) => {
