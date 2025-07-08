@@ -24,7 +24,7 @@ router.get("/:id", getProduct);
 router.use("/:productId/reviews", reviewRoutes);
 
 // Example: If you add product wishlist, cart, or order actions that require auth, protect like this:
-// router.post("/:id/wishlist", auth, ...);
-// router.post("/:id/cart", auth, ...);
+// router.post(":id/wishlist", auth, ...);
+// router.post(":id/cart", auth, ...);
 
 export default router;
