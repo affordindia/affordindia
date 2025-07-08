@@ -10,6 +10,8 @@ This documentation covers the RESTful API endpoints for the AffordIndia client (
 
 -   [Product Management](#product-management)
 -   [Review Management](#review-management)
+-   [Cart Management](#cart-management)
+-   [Wishlist Management](#wishlist-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -297,6 +299,191 @@ A review object may include:
   "success": true
 }
 ```
+
+---
+
+## Cart Management
+
+### Cart Object Fields
+
+-   `_id`: string (auto-generated)
+-   `user`: string (user ID)
+-   `items`: array of cart items
+    -   Each item:
+        -   `_id`: string
+        -   `product`: string (product ID)
+        -   `name`: string
+        -   `images`: string[]
+        -   `stock`: number
+        -   `quantity`: number
+        -   `priceAtAdd`: number (price when added)
+        -   `currentPrice`: number (current product price)
+-   `updatedAt`, `createdAt`: ISO date strings
+
+---
+
+### 1. Get User Cart
+
+**GET** `/api/cart`
+
+-   **Description:** Get the current user's cart with all items and current product details.
+-   **Auth:** Required
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "user": "...",
+  "items": [
+    {
+      "_id": "...",
+      "product": "...",
+      "name": "Product Name",
+      "images": ["..."],
+      "stock": 10,
+      "quantity": 2,
+      "priceAtAdd": 99.99,
+      "currentPrice": 109.99
+    },
+    ...
+  ],
+  "updatedAt": "...",
+  "createdAt": "..."
+}
+```
+
+---
+
+### 2. Add or Update Cart Item
+
+**POST** `/api/cart`
+
+-   **Description:** Add a product to the cart or update its quantity.
+-   **Auth:** Required
+-   **Body Parameters:**
+    -   `productId` (string, required)
+    -   `quantity` (number, required, min: 1)
+-   **Request Example:**
+
+```
+{
+  "productId": "...",
+  "quantity": 3
+}
+```
+
+-   **Response:** Returns the updated cart (see above).
+
+---
+
+### 3. Remove Cart Item
+
+**DELETE** `/api/cart/:itemId`
+
+-   **Description:** Remove an item from the cart by its item ID.
+-   **Auth:** Required
+-   **Response:** Returns the updated cart.
+
+---
+
+### 4. Clear Cart
+
+**DELETE** `/api/cart/clear`
+
+-   **Description:** Remove all items from the cart.
+-   **Auth:** Required
+-   **Response:** Returns the updated (empty) cart.
+
+---
+
+### 5. Merge Guest Cart
+
+**POST** `/api/cart/merge`
+
+-   **Description:** Merge a guest cart (from localStorage) into the user's cart after login.
+-   **Auth:** Required
+-   **Body Parameters:**
+    -   `items`: array of `{ product: string, quantity: number }`
+-   **Response:** Returns the merged cart.
+
+---
+
+## Wishlist Management
+
+### Wishlist Object Fields
+
+-   `_id`: string (auto-generated)
+-   `user`: string (user ID)
+-   `items`: array of product objects (populated)
+-   `createdAt`, `updatedAt`: ISO date strings
+
+---
+
+### 1. Get User Wishlist
+
+**GET** `/api/wishlist`
+
+-   **Description:** Get the current user's wishlist. Supports filters via query parameters.
+-   **Auth:** Required
+-   **Query Parameters:**
+    -   `category` (string, optional)
+    -   `brand` (string, optional)
+    -   `minPrice` (number, optional)
+    -   `maxPrice` (number, optional)
+    -   `search` (string, optional)
+-   **Response Example:**
+
+```
+{
+  "_id": "...",
+  "user": "...",
+  "items": [
+    {
+      "_id": "...",
+      "name": "Product Name",
+      "category": "...",
+      "brand": "...",
+      "price": 99.99,
+      ...
+    },
+    ...
+  ],
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+---
+
+### 2. Add to Wishlist
+
+**POST** `/api/wishlist`
+
+-   **Description:** Add a product to the wishlist.
+-   **Auth:** Required
+-   **Body Parameters:**
+    -   `productId` (string, required)
+-   **Response:** Returns the updated wishlist.
+
+---
+
+### 3. Remove from Wishlist
+
+**DELETE** `/api/wishlist/:productId`
+
+-   **Description:** Remove a product from the wishlist.
+-   **Auth:** Required
+-   **Response:** Returns the updated wishlist.
+
+---
+
+### 4. Move to Cart
+
+**POST** `/api/wishlist/:productId/move-to-cart`
+
+-   **Description:** Add a product from the wishlist to the cart (quantity 1) and remove it from the wishlist.
+-   **Auth:** Required
+-   **Response:** Returns the updated wishlist.
 
 ---
 
