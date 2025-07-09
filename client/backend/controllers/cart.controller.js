@@ -79,5 +79,3 @@ export const validateMergeCart = [
         .isInt({ min: 1 })
         .withMessage("Quantity in items must be at least 1"),
 ];
-
-export { validateAddOrUpdateItem, validateRemoveItem, validateMergeCart };
