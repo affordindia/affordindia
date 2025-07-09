@@ -54,11 +54,14 @@ const orderSchema = new mongoose.Schema(
         trackingNumber: { type: String },
         deliveredAt: { type: Date },
         cancelledAt: { type: Date },
+        returnedAt: { type: Date },
         coupon: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
         notes: { type: String },
     },
     { timestamps: true }
 );
+
+orderSchema.index({ user: 1 });
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

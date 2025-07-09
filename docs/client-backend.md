@@ -12,6 +12,7 @@ This documentation covers the RESTful API endpoints for the AffordIndia client (
 -   [Review Management](#review-management)
 -   [Cart Management](#cart-management)
 -   [Wishlist Management](#wishlist-management)
+-   [Order Management](#order-management)
 -   [Error Handling](#error-handling)
 -   [Notes](#notes)
 
@@ -484,6 +485,122 @@ A review object may include:
 -   **Description:** Add a product from the wishlist to the cart (quantity 1) and remove it from the wishlist.
 -   **Auth:** Required
 -   **Response:** Returns the updated wishlist.
+
+---
+
+## Order Management
+
+### Order Object Fields
+
+A user order object includes:
+
+- `_id`: string (auto-generated)
+- `user`: string (user ID)
+- `items`: array of products, quantity, and price at order time
+- `shippingAddress`: object (houseNumber, street, city, state, pincode, country, etc.)
+- `paymentMethod`: string (e.g., 'COD', 'ONLINE')
+- `paymentStatus`: string ('pending', 'paid', 'failed')
+- `paymentInfo`: object (payment gateway info, if any)
+- `status`: string ('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned')
+- `subtotal`: number (total price of items)
+- `shippingFee`: number
+- `discount`: number
+- `total`: number (final order total)
+- `trackingNumber`: string (optional)
+- `deliveredAt`: ISO date string (when delivered)
+- `cancelledAt`: ISO date string (when cancelled)
+- `returnedAt`: ISO date string (when returned)
+- `coupon`: string (coupon ID, optional)
+- `notes`: string (optional)
+- `createdAt`, `updatedAt`: ISO date strings (auto)
+
+---
+
+### 1. Place Order
+
+**POST** `/api/orders`
+
+- **Description:** Place a new order using the current cart. Deducts stock and clears cart.
+- **Body Parameters:**
+    - `shippingAddress` (object, required)
+    - `paymentMethod` (string, required)
+    - `paymentInfo` (object, optional)
+- **Auth:** Required
+- **Response:** Returns the created order object.
+
+---
+
+### 2. Get User Orders
+
+**GET** `/api/orders`
+
+- **Description:** Get a list of the current user's orders (most recent first).
+- **Auth:** Required
+- **Response:** Array of order objects.
+
+---
+
+### 3. Get Order by ID
+
+**GET** `/api/orders/:orderId`
+
+- **Description:** Get details of a specific order (must belong to user).
+- **Auth:** Required
+- **Response:** Order object.
+
+---
+
+### 4. Cancel Order
+
+**POST** `/api/orders/:orderId/cancel`
+
+- **Description:** Cancel an order (if status is 'pending' or 'processing').
+- **Auth:** Required
+- **Response:** Updated order object (status = 'cancelled', `cancelledAt` set).
+
+---
+
+### 5. Return Order
+
+**POST** `/api/orders/:orderId/return`
+
+- **Description:** Return an order (if status is 'delivered').
+- **Auth:** Required
+- **Response:** Updated order object (status = 'returned', `returnedAt` set).
+
+---
+
+### Status & Timestamps
+- `status` reflects the current state of the order.
+- `deliveredAt`, `cancelledAt`, `returnedAt` are set when the order is delivered, cancelled, or returned, respectively.
+- `createdAt` and `updatedAt` are set automatically by the database.
+
+---
+
+### Example Order Object
+
+```json
+{
+  "_id": "...",
+  "user": "...",
+  "items": [
+    { "product": "...", "quantity": 2, "price": 499 }
+  ],
+  "shippingAddress": { "city": "Delhi", ... },
+  "paymentMethod": "COD",
+  "paymentStatus": "pending",
+  "status": "pending",
+  "subtotal": 998,
+  "shippingFee": 50,
+  "discount": 0,
+  "total": 1048,
+  "deliveredAt": null,
+  "cancelledAt": null,
+  "returnedAt": null,
+  "createdAt": "2025-07-09T12:00:00.000Z",
+  "updatedAt": "2025-07-09T12:00:00.000Z"
+}
+```
 
 ---
 
