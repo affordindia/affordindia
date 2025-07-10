@@ -1,4 +1,5 @@
 import Product from "../models/product.model.js";
+import Category from "../models/category.model.js"; //necessary for populate
 import config from "../config/server.config.js";
 
 export const getProducts = async (filter, options) => {
