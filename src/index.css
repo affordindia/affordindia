@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* ========== Custom Slick Slider Dots ========== */
+
+/* Wrap the entire slider with this class: custom-dots */
+.custom-dots {
+  position: relative;       /* Needed for absolute dots */
+  padding-bottom: 40px;     /* Space below image for dots */
+}
+
+/* Dots container */
+.custom-dots .slick-dots {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  z-index: 10;
+}
+
+/* Hide default text and apply custom small circular dot */
+.custom-dots .slick-dots li button:before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: #ffffff;
+  border-radius: 9999px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+/* Active dot styling */
+.custom-dots .slick-dots li.slick-active button:before {
+  width: 8px;
+  height: 8px;
+  background-color: #ff6347; /* Tomato */
+  opacity: 1;
+}
+
+/* ========== Responsive Dot Adjustments ========== */
+@media (min-width: 640px) {
+  .custom-dots {
+    padding-bottom: 48px;
+  }
+
+  .custom-dots .slick-dots li button:before {
+    width: 7px;
+    height: 7px;
+  }
+
+  .custom-dots .slick-dots li.slick-active button:before {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .custom-dots {
+    padding-bottom: 56px;
+  }
+
+  .custom-dots .slick-dots li button:before {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-dots .slick-dots li.slick-active button:before {
+    width: 10px;
+    height: 10px;
+  }
+}
