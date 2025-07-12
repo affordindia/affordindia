@@ -54,14 +54,7 @@ const ProductDetail = () => {
           <div className="text-xl font-semibold text-green-700">{product.price}</div>
           <div className="text-sm text-green-600">In Stock ({product.stock} left)</div>
 
-          <div>
-            <label className="block mb-1 font-medium">Delivery</label>
-            <div className="flex gap-2">
-              <input type="text" placeholder="Enter Pincode" className="border px-2 py-1" />
-              <button className="px-3 py-1 bg-gray-200 rounded">Check</button>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">Expected arrival on 10th July</div>
-          </div>
+        
 
         
 
