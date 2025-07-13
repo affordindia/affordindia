@@ -15,23 +15,23 @@ export const getProductById = async (id) => {
 };
 
 // Get featured products
-export const getFeaturedProducts = async () => {
-    console.log("API CALL: getFeaturedProducts");
-    const res = await api.get("/products/featured");
+export const getFeaturedProducts = async (params) => {
+    console.log("API CALL: getFeaturedProducts", params);
+    const res = await api.get("/products/featured", { params });
     return res.data;
 };
 
 // Get new products
-export const getNewProducts = async () => {
-    console.log("API CALL: getNewProducts");
-    const res = await api.get("/products/new");
+export const getNewProducts = async (params) => {
+    console.log("API CALL: getNewProducts", params);
+    const res = await api.get("/products/new", { params });
     return res.data;
 };
 
 // Get popular products
-export const getPopularProducts = async () => {
-    console.log("API CALL: getPopularProducts");
-    const res = await api.get("/products/popular");
+export const getPopularProducts = async (params) => {
+    console.log("API CALL: getPopularProducts", params);
+    const res = await api.get("/products/popular", { params });
     return res.data;
 };
 
