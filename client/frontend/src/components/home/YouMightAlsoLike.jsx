@@ -50,6 +50,8 @@ const YouMightAlsoLike = () => {
         fetchProducts();
     }, []);
 
+    // For mobile, show only 4 products in a 2x2 grid; for desktop, show all 5 in a row
+    const mobileProducts = products.slice(0, 4);
     return (
         <section className="py-8 px-2 md:px-8 bg-secondary">
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-center mb-6">
@@ -58,16 +60,30 @@ const YouMightAlsoLike = () => {
             {loading ? (
                 <div className="text-center py-8 text-gray-500">Loading...</div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 overflow-x-auto md:overflow-visible">
-                    {products.map((product) => (
-                        <div
-                            key={product._id}
-                            className="flex justify-center items-center"
-                        >
-                            <ProductCard product={product} small />
-                        </div>
-                    ))}
-                </div>
+                <>
+                    {/* Mobile: 2x2 grid, only 4 products */}
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
+                        {mobileProducts.map((product) => (
+                            <div
+                                key={product._id}
+                                className="flex justify-center items-center"
+                            >
+                                <ProductCard product={product} small />
+                            </div>
+                        ))}
+                    </div>
+                    {/* Desktop: 5 in a row */}
+                    <div className="hidden md:grid md:grid-cols-5 md:gap-4">
+                        {products.map((product) => (
+                            <div
+                                key={product._id}
+                                className="flex justify-center items-center"
+                            >
+                                <ProductCard product={product} small />
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
         </section>
     );
