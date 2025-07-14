@@ -5,34 +5,20 @@ import {
     getPopularProducts,
 } from "../api/product.js";
 import ExploreMaterials from "../components/home/ExploreMaterials.jsx";
+import NewArrivals from "../components/home/NewArrivals.jsx";
+import FeaturedProducts from "../components/home/FeaturedProducts.jsx";
+import PopularProducts from "../components/home/PopularProducts.jsx";
+import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 
 const Home = () => {
-    const [featured, setFeatured] = useState([]);
-    const [popular, setPopular] = useState([]);
-    const [newProducts, setNewProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        setLoading(true);
-        Promise.all([
-            getFeaturedProducts(),
-            getPopularProducts(),
-            getNewProducts(),
-        ])
-            .then(([f, p, n]) => {
-                setFeatured(f.products || f);
-                setPopular(p.products || p);
-                setNewProducts(n.products || n);
-            })
-            .finally(() => setLoading(false));
-    }, []);
-
-    if (loading) return <div>Loading...</div>;
-
     return (
         <>
             <div className="h-10"></div>
             <ExploreMaterials />
+            <NewArrivals />
+            <FeaturedProducts />
+            {/* <PopularProducts /> */}
+            <YouMightAlsoLike />
         </>
     );
 };
