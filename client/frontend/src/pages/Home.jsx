@@ -4,6 +4,7 @@ import {
     getNewProducts,
     getPopularProducts,
 } from "../api/product.js";
+import ExploreMaterials from "../components/home/ExploreMaterials.jsx";
 
 const Home = () => {
     const [featured, setFeatured] = useState([]);
@@ -29,26 +30,10 @@ const Home = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div>
-            <h2>Featured Products</h2>
-            <ul>
-                {featured.map((p) => (
-                    <li key={p._id}>{p.name}</li>
-                ))}
-            </ul>
-            <h2>Popular Products</h2>
-            <ul>
-                {popular.map((p) => (
-                    <li key={p._id}>{p.name}</li>
-                ))}
-            </ul>
-            <h2>New Arrivals</h2>
-            <ul>
-                {newProducts.map((p) => (
-                    <li key={p._id}>{p.name}</li>
-                ))}
-            </ul>
-        </div>
+        <>
+            <div className="h-10"></div>
+            <ExploreMaterials />
+        </>
     );
 };
 

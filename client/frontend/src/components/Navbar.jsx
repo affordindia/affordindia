@@ -1,41 +1,171 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    FaHeart,
+    FaShoppingCart,
+    FaUser,
+    FaSearch,
+    FaBars,
+} from "react-icons/fa";
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
+import { getCategories } from "../api/category.js";
+import NavLogo from "../assets/NavLogo.png";
 
 const Navbar = () => {
     const { cart } = useCart();
     const { wishlist } = useWishlist();
+    const [categories, setCategories] = useState([]);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const cartCount = cart?.items?.length || 0;
-    // Wishlist is auth-only, so show 0 or disabled if not available
     const wishlistCount = wishlist?.items?.length || 0;
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+    useEffect(() => {
+        getCategories()
+            .then((data) => setCategories(data.categories || data))
+            .catch(() => setCategories([]));
+    }, []);
 
     return (
-        <nav className="bg-white shadow flex items-center justify-between px-6 py-3 mb-6">
-            <div className="flex items-center gap-6">
-                <Link to="/" className="font-bold text-lg text-blue-600">
-                    AffordIndia
-                </Link>
-                <Link to="/products" className="hover:text-blue-600">
-                    Products
-                </Link>
+        <nav className="bg-secondary text-black sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-2 py-3 flex items-center justify-between">
+                {/* Left: Logo, Hamburger, and Categories */}
+                <div className="flex items-center space-x-4 md:space-x-8">
+                    {/* Hamburger for mobile */}
+                    <button
+                        className="md:hidden p-2 focus:outline-none"
+                        onClick={() => setMobileMenuOpen((open) => !open)}
+                        aria-label="Toggle menu"
+                    >
+                        <FaBars className="w-6 h-6" />
+                    </button>
+                    <Link to="/" className="flex items-center space-x-2">
+                        <img
+                            src={NavLogo}
+                            alt="Afford India Logo"
+                            className="h-8 w-auto object-contain md:h-10"
+                        />
+                    </Link>
+                    {/* Desktop categories */}
+                    <div className="hidden md:flex space-x-6 text-lg text-[#363230]">
+                        {categories.length > 0 ? (
+                            categories.map((cat) => (
+                                <Link
+                                    key={cat._id || cat.name}
+                                    to={`/category/${
+                                        cat.slug || cat.name.toLowerCase()
+                                    }`}
+                                    className="hover:text-black capitalize"
+                                >
+                                    {cat.name}
+                                </Link>
+                            ))
+                        ) : (
+                            <span className="text-gray-400">Loading...</span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right: Search and Icons */}
+                <div className="flex items-center space-x-4">
+                    {/* Mobile search icon */}
+                    <button
+                        type="button"
+                        className="md:hidden p-2 hover:text-black focus:outline-none"
+                        aria-label="Search"
+                        onClick={() => setMobileSearchOpen(true)}
+                    >
+                        <FaSearch className="text-xl" />
+                    </button>
+                    {/* Desktop search bar */}
+                    <div className="relative items-center w-40 md:w-80 hidden md:flex">
+                        <input
+                            type="text"
+                            placeholder="Search Here"
+                            className="px-4 py-1.5 rounded-lg border border-black text-base w-full focus:outline-none pr-10 bg-primary text-black placeholder:text-black/80"
+                            style={{ minHeight: "24px" }}
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A9A9A9] hover:text-black focus:outline-none"
+                        >
+                            <FaSearch className="text-lg" />
+                        </button>
+                    </div>
+                    <Link
+                        to="/wishlist"
+                        className="relative"
+                        aria-label="Wishlist"
+                    >
+                        <FaHeart className="text-xl hover:text-black" />
+                        {wishlistCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                {wishlistCount}
+                            </span>
+                        )}
+                    </Link>
+                    <Link to="/cart" className="relative" aria-label="Cart">
+                        <FaShoppingCart className="text-xl hover:text-black" />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                    </Link>
+                    <Link to="/profile" aria-label="Profile">
+                        <FaUser className="text-xl hover:text-black" />
+                    </Link>
+                </div>
             </div>
-            <div className="flex items-center gap-4">
-                <Link to="/wishlist" className="relative flex items-center">
-                    <span className="material-icons">favorite_border</span>
-                    <span className="ml-1">Wishlist</span>
-                    <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1.5">
-                        {wishlistCount}
-                    </span>
-                </Link>
-                <Link to="/cart" className="relative flex items-center">
-                    <span className="material-icons">shopping_cart</span>
-                    <span className="ml-1">Cart</span>
-                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full px-1.5">
-                        {cartCount}
-                    </span>
-                </Link>
+            {/* Mobile menu dropdown */}
+            <div
+                className={`md:hidden bg-secondary px-4 pb-4 pt-2 space-y-2 shadow transition-all duration-300 ease-in-out transform ${
+                    mobileMenuOpen
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-4 pointer-events-none"
+                }`}
+                style={{ position: "absolute", left: 0, right: 0, top: "100%" }}
+            >
+                {categories.length > 0 ? (
+                    categories.map((cat) => (
+                        <Link
+                            key={cat._id || cat.name}
+                            to={`/category/${
+                                cat.slug || cat.name.toLowerCase()
+                            }`}
+                            className="block py-2 text-lg capitalize hover:text-black"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            {cat.name}
+                        </Link>
+                    ))
+                ) : (
+                    <span className="text-gray-400">Loading...</span>
+                )}
             </div>
+
+            {/* Mobile search overlay */}
+            {mobileSearchOpen && (
+                <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center md:hidden">
+                    <div className="bg-secondary w-full px-4 py-4 flex items-center gap-2 shadow-lg relative">
+                        <input
+                            type="text"
+                            autoFocus
+                            placeholder="Search Here"
+                            className="flex-1 px-4 py-2 rounded-lg border border-black text-base focus:outline-none bg-primary text-black placeholder:text-black/80"
+                        />
+                        <button
+                            type="button"
+                            className="p-2 text-black hover:text-primary focus:outline-none"
+                            onClick={() => setMobileSearchOpen(false)}
+                            aria-label="Close search"
+                        >
+                            &#10005;
+                        </button>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 };
