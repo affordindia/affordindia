@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-    getFeaturedProducts,
-    getNewProducts,
-    getPopularProducts,
-} from "../api/product.js";
+
 import ExploreMaterials from "../components/home/ExploreMaterials.jsx";
 import NewArrivals from "../components/home/NewArrivals.jsx";
 import FeaturedProducts from "../components/home/FeaturedProducts.jsx";
-import PopularProducts from "../components/home/PopularProducts.jsx";
+// import PopularProducts from "../components/home/PopularProducts.jsx";
 import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 
 const Home = () => {

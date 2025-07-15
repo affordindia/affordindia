@@ -7,10 +7,10 @@ import {
     FaSearch,
     FaBars,
 } from "react-icons/fa";
-import { useCart } from "../context/CartContext.jsx";
-import { useWishlist } from "../context/WishlistContext.jsx";
-import { getCategories } from "../api/category.js";
-import NavLogo from "../assets/NavLogo.png";
+import { useCart } from "../../context/CartContext.jsx";
+import { useWishlist } from "../../context/WishlistContext.jsx";
+import { getCategories } from "../../api/category.js";
+import NavLogo from "../../assets/NavLogo.png";
 
 const Navbar = () => {
     const { cart } = useCart();
