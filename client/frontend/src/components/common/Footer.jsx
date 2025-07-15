@@ -37,7 +37,7 @@ const Footer = () => {
                             SHOP PRODUCTS
                         </h3>
                         <ul className="space-y-0.5 text-xs">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+                            {[1, 2, 3, 4].map((item) => (
                                 <li key={item}>{item}</li>
                             ))}
                         </ul>
@@ -63,10 +63,6 @@ const Footer = () => {
                             <div className="flex items-center gap-1 text-xs">
                                 <FaLinkedinIn className="text-[#0A66C2]" />
                                 <span>LinkedIn</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs">
-                                <FaPinterestP className="text-[#E60023]" />
-                                <span>Pinterest</span>
                             </div>
                         </div>
                     </div>

@@ -25,13 +25,31 @@ const ProductCard = ({ product, small }) => {
             </div>
 
             {/* Info */}
-            <div className="p-3 flex flex-col gap-1 flex-1 min-h-0">
-                <h3 className="text-lg font-medium truncate">{product.name}</h3>
+            <div
+                className={`p-3 flex flex-col gap-1 flex-1 min-h-0 ${
+                    small ? "pt-2 pb-2" : ""
+                }`}
+            >
+                <h3
+                    className={`${
+                        small ? "text-sm font-medium" : "text-lg font-medium"
+                    } truncate`}
+                >
+                    {product.name}
+                </h3>
                 <div className="flex items-center justify-between w-full">
-                    <div className="text-gray-700 font-semibold">
+                    <div
+                        className={`${
+                            small ? "text-xs" : "text-base"
+                        } text-gray-700 font-semibold`}
+                    >
                         ₹{product.price}
                     </div>
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div
+                        className={`flex items-center ${
+                            small ? "text-xs" : "text-sm"
+                        } text-gray-600`}
+                    >
                         <span className="flex items-center gap-1">
                             {product.rating || "4.5"}
                         </span>
