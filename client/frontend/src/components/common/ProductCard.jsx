@@ -33,7 +33,6 @@ const ProductCard = ({ product, small }) => {
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                         <span className="flex items-center gap-1">
-                            <FaStar className="text-yellow-500" />
                             {product.rating || "4.5"}
                         </span>
                         <span className="ml-1">★</span>

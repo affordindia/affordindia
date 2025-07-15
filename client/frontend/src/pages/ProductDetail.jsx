@@ -4,6 +4,10 @@ import { getProductById } from "../api/product.js";
 import { getProductReviews } from "../api/review.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
+import HighlightsSection from "../components/productDetail/HighlightsSection.jsx";
+import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
+
+import { FaRegHeart } from "react-icons/fa";
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -13,13 +17,18 @@ const ProductDetail = () => {
     const { addToCart } = useCart();
     const { wishlist, fetchWishlist } = useWishlist();
     const [wishlistMsg, setWishlistMsg] = useState("");
+    const [selectedImage, setSelectedImage] = useState("");
 
     useEffect(() => {
         setLoading(true);
         Promise.all([getProductById(id), getProductReviews(id)])
             .then(([p, r]) => {
-                setProduct(p.product || p);
+                const prod = p.product || p;
+                setProduct(prod);
                 setReviews(r.reviews || r);
+                if (prod.images && prod.images.length > 0) {
+                    setSelectedImage(prod.images[0]);
+                }
             })
             .finally(() => setLoading(false));
     }, [id]);
@@ -42,39 +51,131 @@ const ProductDetail = () => {
     if (!product)
         return <div className="p-8 text-center">Product not found</div>;
 
-    return (
-        <div className="max-w-2xl mx-auto p-4 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
-            <div className="text-lg text-gray-700 mb-4">₹{product.price}</div>
-            <div className="flex gap-4 mb-4">
-                <button
-                    onClick={handleAddToCart}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Add to Cart
-                </button>
-                <button
-                    onClick={handleAddToWishlist}
-                    className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600"
-                >
-                    Add to Wishlist
-                </button>
+    // Stock status logic
+    const stock =
+        typeof product.stock === "number"
+            ? product.stock
+            : product.stock === 0
+            ? 0
+            : undefined;
+    let stockStatus = null;
+    if (!stock) {
+        stockStatus = (
+            <div className="text-red-600 font-medium">Out of Stock</div>
+        );
+    } else if (stock > 10) {
+        stockStatus = (
+            <div className="text-green-600 dark:text-green-400 font-medium">
+                In Stock
             </div>
-            {wishlistMsg && (
-                <div className="mb-4 text-sm text-gray-600">{wishlistMsg}</div>
-            )}
-            <h3 className="text-lg font-semibold mt-6 mb-2">Reviews</h3>
-            <ul className="divide-y">
-                {reviews.length === 0 && (
-                    <li className="py-2 text-gray-500">No reviews yet.</li>
-                )}
-                {reviews.map((rev) => (
-                    <li key={rev._id} className="py-2">
-                        {rev.comment}
-                    </li>
-                ))}
-            </ul>
-        </div>
+        );
+    } else if (stock < 5) {
+        stockStatus = (
+            <div className="text-red-600 font-medium">
+                Only {stock} left in stock.
+            </div>
+        );
+    } else {
+        stockStatus = (
+            <div className="text-orange-500 font-medium">
+                In Stock ({stock} left)
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className="max-w-7xl mx-auto px-4 md:px-4 py-8 flex flex-col md:flex-row md:items-start gap-8 md:gap-12 text-[#404040] dark:text-gray-200">
+                {/* LEFT SECTION: IMAGE DISPLAY */}
+                <div className="flex-shrink-0 w-full md:w-[440px]">
+                    <div className="w-full aspect-square rounded-lg overflow-hidden border bg-white dark:bg-gray-900">
+                        <img
+                            src={selectedImage}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <div className="flex flex-wrap gap-3 mt-4">
+                        {product.images?.map((img, idx) => (
+                            <img
+                                key={idx}
+                                src={img}
+                                alt={`thumbnail-${idx}`}
+                                onClick={() => setSelectedImage(img)}
+                                className={`w-16 h-16 rounded-lg border cursor-pointer object-cover transition-all duration-200 ${
+                                    selectedImage === img
+                                        ? "ring-2 ring-red-500"
+                                        : "opacity-80 hover:opacity-100"
+                                }`}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* RIGHT SECTION: DETAILS */}
+                <div className="flex flex-col gap-3 flex-1 min-w-0 text-[#404040]">
+                    <h1 className="text-4xl font-semibold break-words">
+                        {product.name}
+                    </h1>
+                    <div className="text-lg">
+                        ★ {product.rating || "4.5"} (
+                        {product.numReviews || "122"} Ratings)
+                    </div>
+                    <div className="text-2xl font-semibold">
+                        ₹{product.price}
+                    </div>
+                    {stockStatus}
+
+                    {/* Buttons */}
+                    <div className="flex gap-4 mt-4 flex-wrap">
+                        <button
+                            onClick={handleAddToCart}
+                            className="bg-[#A89A3D] text-white px-6 py-2 rounded-sm font-semibold"
+                        >
+                            Add to Cart
+                        </button>
+                        <button
+                            onClick={handleAddToWishlist}
+                            className="bg-[#272727] px-4 py-2 rounded-md text-white"
+                        >
+                            <FaRegHeart className="text-2xl" />
+                        </button>
+                    </div>
+                    {wishlistMsg && (
+                        <p className="text-sm mt-1 text-gray-500">
+                            {wishlistMsg}
+                        </p>
+                    )}
+
+                    {/* Description */}
+                    <div className="mt-6">
+                        <h2 className="text-lg font-semibold mb-2">
+                            Description
+                        </h2>
+                        <div className="text-sm leading-relaxed">
+                            {product.description
+                                ? product.description
+                                      .split(/\r?\n/)
+                                      .map((para, idx) =>
+                                          para.trim() ? (
+                                              <p
+                                                  key={idx}
+                                                  className="mb-2 last:mb-0"
+                                              >
+                                                  {para}
+                                              </p>
+                                          ) : null
+                                      )
+                                : null}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <HighlightsSection />
+
+            <YouMightAlsoLike />
+        </>
     );
 };
 
