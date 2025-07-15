@@ -99,17 +99,16 @@ const Banners = () => {
                         {banners.map((banner) => (
                             <div
                                 key={banner._id}
-                                className="keen-slider__slide flex justify-center items-center bg-gray-100 w-full"
-                                style={{ minHeight: 180 }}
+                                className="keen-slider__slide flex bg-gray-100 w-full"
                             >
                                 {banner.image ? (
                                     <img
                                         src={banner.image}
                                         alt={banner.title || "Banner"}
-                                        className="w-full object-cover"
+                                        className="w-full object-fit"
                                     />
                                 ) : (
-                                    <div className="w-full h-48 flex items-center justify-center text-gray-400 bg-gray-200">
+                                    <div className="w-full flex items-center justify-center text-gray-400 bg-gray-200">
                                         No Image
                                     </div>
                                 )}
