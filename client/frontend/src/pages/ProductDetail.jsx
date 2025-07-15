@@ -20,6 +20,9 @@ const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState("");
 
     useEffect(() => {
+        // Scroll to top whenever the product changes
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
         setLoading(true);
         Promise.all([getProductById(id), getProductReviews(id)])
             .then(([p, r]) => {
