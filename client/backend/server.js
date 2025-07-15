@@ -11,6 +11,7 @@ import wishlistRoutes from "./routes/wishlist.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
+import bannerRoutes from "./routes/banner.routes.js";
 // import userRoutes from "./routes/user.routes.js";
 // import reviewRoutes from "./routes/review.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
@@ -36,6 +37,7 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/banners", bannerRoutes);
 // app.use("/api/users", userRoutes);
 // app.use("/api/reviews", reviewRoutes);
 
