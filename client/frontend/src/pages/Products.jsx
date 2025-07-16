@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/product.js";
 import { getBanners } from "../api/banner.js";
 import { getCategories } from "../api/category.js";
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Banners from "../components/common/Banners.jsx";
+import ProductFilters from "../components/products/ProductFilters.jsx";
+import ProductList from "../components/products/ProductList.jsx";
+import ProductPagination from "../components/products/ProductPagination.jsx";
 
 const priceRanges = [
     { label: "Under ₹500", min: 0, max: 500 },
@@ -25,7 +28,6 @@ const Products = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [products, setProducts] = useState([]);
-    const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -69,11 +71,10 @@ const Products = () => {
         }
     }, [urlSearch, urlSort, urlMinPrice, urlMaxPrice, urlPage, material]);
 
-    // Fetch banners and products
+    // Fetch products only
     useEffect(() => {
         if (selectedMaterial === "wood") {
             setProducts([]);
-            setBanners([]);
             setLoading(false);
             setError(null);
             return;
@@ -105,29 +106,20 @@ const Products = () => {
                     ...(skip > 0 ? { skip } : {}),
                     // Do NOT send limit, let backend use config default
                 };
-                return Promise.all([getProducts(productParams), getBanners()]);
+                return getProducts(productParams);
             })
-            .then(([prodRes, bannerRes]) => {
-                // prodRes should be an array or an object with products/total
+            .then((prodRes) => {
                 if (Array.isArray(prodRes)) {
                     setProducts(prodRes);
-                    setTotal(0); // No total info
+                    setTotal(0);
                 } else {
                     setProducts(prodRes.products || []);
                     setTotal(prodRes.total || 0);
                 }
-                let bannersArr = bannerRes?.banners || bannerRes || [];
-                if (selectedMaterial !== "all") {
-                    bannersArr = bannersArr.filter(
-                        (b) => b.material?.toLowerCase() === selectedMaterial
-                    );
-                }
-                setBanners(bannersArr);
             })
             .catch((err) => {
-                setError(err.message || "Error fetching products/banners");
+                setError(err.message || "Error fetching products");
                 setProducts([]);
-                setBanners([]);
             })
             .finally(() => setLoading(false));
     }, [selectedMaterial, search, sort, selectedPrice, page]);
@@ -200,6 +192,7 @@ const Products = () => {
     };
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
+
     if (selectedMaterial === "wood") {
         return (
             <div className="max-w-4xl mx-auto">
@@ -213,91 +206,80 @@ const Products = () => {
         return <div className="p-8 text-center text-red-500">{error}</div>;
 
     return (
-        <div className="max-w-4xl mx-auto">
-            {/* Banner(s) */}
-            {banners.length > 0 && <Banners banners={banners} />}
+        <div className="w-full">
+            <Banners material={selectedMaterial} />
 
-            <div className="flex gap-4 mb-4 items-center">
-                <select
-                    className="border px-2 py-1 rounded"
-                    value={sort}
-                    onChange={handleSort}
-                >
-                    <option value="">Sort by</option>
-                    <option value="price">Price (Low to High)</option>
-                    <option value="-price">Price (High to Low)</option>
-                </select>
-                <div className="flex gap-2 items-center">
-                    <span className="text-sm">Price:</span>
-                    {priceRanges.map((range, idx) => (
-                        <label
-                            key={range.label}
-                            className="flex items-center gap-1 cursor-pointer"
-                        >
-                            <input
-                                type="checkbox"
-                                checked={selectedPrice === idx}
-                                onChange={() => handlePrice(idx)}
-                                className="accent-blue-500"
+            <section className="w-full px-4 md:px-8 py-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Top Controls */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        {/* Filters (Mobile Only Display) */}
+                        <div className="md:hidden w-full">
+                            <ProductFilters
+                                sort={sort}
+                                onSort={handleSort}
+                                priceRanges={priceRanges}
+                                selectedPrice={selectedPrice}
+                                onPrice={handlePrice}
+                                materialOptions={materialOptions}
+                                selectedMaterial={selectedMaterial}
+                                onMaterial={handleMaterial}
+                                layout="vertical"
                             />
-                            <span className="text-xs">{range.label}</span>
-                        </label>
-                    ))}
-                </div>
-                {/* Material filter */}
-                <div className="flex gap-2 items-center">
-                    <span className="text-sm">Material:</span>
-                    <select
-                        className="border px-2 py-1 rounded"
-                        value={selectedMaterial}
-                        onChange={handleMaterial}
-                    >
-                        {materialOptions.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {products.map((p) => (
-                    <li
-                        key={p._id}
-                        className="border rounded p-4 flex flex-col gap-2 bg-white"
-                    >
-                        <Link
-                            to={`/products/${p._id}`}
-                            className="font-semibold text-blue-600 hover:underline"
-                        >
-                            {p.name}
-                        </Link>
-                        <div className="text-gray-700">₹{p.price}</div>
-                    </li>
-                ))}
-            </ul>
-            {/* Pagination */}
-            {total > DEFAULT_LIMIT && (
-                <div className="flex justify-center mt-6 gap-2">
-                    {Array.from(
-                        { length: Math.ceil(total / DEFAULT_LIMIT) },
-                        (_, i) => (
-                            <button
-                                key={i + 1}
-                                className={`px-3 py-1 rounded border ${
-                                    page === i + 1
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-white text-blue-500"
-                                }`}
-                                onClick={() => handlePageChange(i + 1)}
-                                disabled={page === i + 1}
+                            <hr className="my-4" />
+                        </div>
+
+                        {/* Sort Dropdown */}
+                        <div className="ml-auto">
+                            <select
+                                className="border px-3 py-2 rounded-md text-sm"
+                                value={sort}
+                                onChange={handleSort}
                             >
-                                {i + 1}
-                            </button>
-                        )
-                    )}
+                                <option value="">Sort by</option>
+                                <option value="price">
+                                    Price (Low to High)
+                                </option>
+                                <option value="-price">
+                                    Price (High to Low)
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex gap-8 items-start">
+                        {/* Sidebar Filters (Desktop Only) */}
+                        <aside className="hidden md:block w-48 flex-shrink-0 bg-gray-50 p-4 rounded-md">
+                            <ProductFilters
+                                sort={sort}
+                                onSort={handleSort}
+                                priceRanges={priceRanges}
+                                selectedPrice={selectedPrice}
+                                onPrice={handlePrice}
+                                materialOptions={materialOptions}
+                                selectedMaterial={selectedMaterial}
+                                onMaterial={handleMaterial}
+                                layout="vertical"
+                            />
+                        </aside>
+
+                        {/* Product List & Pagination */}
+                        <main className="flex-1 min-w-0">
+                            <ProductList products={products} />
+
+                            <div className="mt-8">
+                                <ProductPagination
+                                    total={total}
+                                    limit={DEFAULT_LIMIT}
+                                    page={page}
+                                    onPageChange={handlePageChange}
+                                />
+                            </div>
+                        </main>
+                    </div>
                 </div>
-            )}
+            </section>
         </div>
     );
 };

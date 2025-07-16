@@ -124,7 +124,7 @@ const Navbar = () => {
                         )}
                         <button
                             type="submit"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A9A9A9] hover:text-black focus:outline-none"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A9A9A9] hover:text-black focus:outline-none cursor-pointer"
                         >
                             <FaSearch className="text-lg" />
                         </button>

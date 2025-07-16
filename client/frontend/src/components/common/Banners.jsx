@@ -36,13 +36,17 @@ function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
     };
 }
 
-const Banners = () => {
+const Banners = ({ material = "all" }) => {
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [sliderRef, instanceRef] = useKeenSlider(
         {
             loop: true,
             slides: { perView: 1 },
+            slideChanged(s) {
+                setCurrentSlide(s.track.details.rel);
+            },
         },
         [Autoplay({ interval: 3500 })]
     );
@@ -53,6 +57,13 @@ const Banners = () => {
             try {
                 const res = await getBanners();
                 let arr = res?.banners || res || [];
+                // Filter by material if not 'all'
+                if (material && material !== "all") {
+                    arr = arr.filter(
+                        (b) =>
+                            b.material?.toLowerCase() === material.toLowerCase()
+                    );
+                }
                 // Sort by 'order' field ascending
                 arr = arr
                     .slice()
@@ -65,10 +76,10 @@ const Banners = () => {
             }
         };
         fetchBanners();
-    }, []);
+    }, [material]);
 
-    const goPrev = () => instanceRef.current && instanceRef.current.prev();
-    const goNext = () => instanceRef.current && instanceRef.current.next();
+    const goTo = (idx) =>
+        instanceRef.current && instanceRef.current.moveToIdx(idx);
 
     return (
         <section className="relative w-full">
@@ -82,15 +93,6 @@ const Banners = () => {
                 </div>
             ) : (
                 <div className="relative w-full">
-                    {/* Left arrow */}
-                    <button
-                        onClick={goPrev}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 border border-gray-300 rounded-full w-7 h-7 md:w-9 md:h-9 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors group"
-                        aria-label="Previous"
-                    >
-                        <FaChevronLeft className="text-lg md:text-xl text-gray-700 group-hover:text-[#A89A3D] transition-colors" />
-                    </button>
-
                     {/* keen-slider carousel */}
                     <div
                         ref={sliderRef}
@@ -115,15 +117,23 @@ const Banners = () => {
                             </div>
                         ))}
                     </div>
-
-                    {/* Right arrow */}
-                    <button
-                        onClick={goNext}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 border border-gray-300 rounded-full w-7 h-7 md:w-9 md:h-9 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors group"
-                        aria-label="Next"
-                    >
-                        <FaChevronRight className="text-lg md:text-xl text-gray-700 group-hover:text-[#A89A3D] transition-colors" />
-                    </button>
+                    {/* Dots below banner (show only on md and up) */}
+                    {banners.length > 1 && (
+                        <div className="hidden md:flex justify-center gap-2 my-3">
+                            {banners.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => goTo(idx)}
+                                    className={`w-2.5 h-2.5 rounded-full border border-gray-400 transition-all duration-200 focus:outline-none ${
+                                        currentSlide === idx
+                                            ? "bg-[#A89A3D] border-[#A89A3D] scale-110 shadow"
+                                            : "bg-gray-200"
+                                    }`}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </section>
