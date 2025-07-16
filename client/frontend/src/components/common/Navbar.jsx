@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     FaHeart,
     FaShoppingCart,
@@ -7,6 +7,7 @@ import {
     FaSearch,
     FaBars,
 } from "react-icons/fa";
+import { RxCross1 } from "react-icons/rx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useWishlist } from "../../context/WishlistContext.jsx";
 import { getCategories } from "../../api/category.js";
@@ -20,6 +21,9 @@ const Navbar = () => {
     const cartCount = cart?.items?.length || 0;
     const wishlistCount = wishlist?.items?.length || 0;
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
+    const [mobileSearchValue, setMobileSearchValue] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         getCategories()
@@ -53,10 +57,13 @@ const Navbar = () => {
                             categories.map((cat) => (
                                 <Link
                                     key={cat._id || cat.name}
-                                    to={`/category/${
-                                        cat.slug || cat.name.toLowerCase()
-                                    }`}
+                                    to={`/products/${cat.name.toLowerCase()}`}
                                     className="hover:text-black capitalize"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        // Always clear search param when switching material
+                                        window.location.href = `/products/${cat.name.toLowerCase()}`;
+                                    }}
                                 >
                                     {cat.name}
                                 </Link>
@@ -79,20 +86,49 @@ const Navbar = () => {
                         <FaSearch className="text-xl" />
                     </button>
                     {/* Desktop search bar */}
-                    <div className="relative items-center w-40 md:w-80 hidden md:flex">
+                    <form
+                        className="relative items-center w-40 md:w-80 hidden md:flex"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            if (searchValue.trim()) {
+                                // Reset all filters, only keep search
+                                navigate(
+                                    `/products?search=${encodeURIComponent(
+                                        searchValue.trim()
+                                    )}`
+                                );
+                            }
+                        }}
+                    >
                         <input
                             type="text"
                             placeholder="Search Here"
                             className="px-4 py-1.5 rounded-lg border border-black text-base w-full focus:outline-none pr-10 bg-primary text-black placeholder:text-black/80"
                             style={{ minHeight: "24px" }}
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
                         />
+                        {searchValue && (
+                            <button
+                                type="button"
+                                className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black focus:outline-none"
+                                aria-label="Clear search"
+                                onClick={() => {
+                                    setSearchValue("");
+                                    navigate("/products", { replace: true });
+                                    window.location.href = "/products";
+                                }}
+                            >
+                                <RxCross1 />
+                            </button>
+                        )}
                         <button
-                            type="button"
+                            type="submit"
                             className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A9A9A9] hover:text-black focus:outline-none"
                         >
                             <FaSearch className="text-lg" />
                         </button>
-                    </div>
+                    </form>
                     <Link
                         to="/wishlist"
                         className="relative"
@@ -149,20 +185,63 @@ const Navbar = () => {
             {mobileSearchOpen && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center md:hidden">
                     <div className="bg-secondary w-full px-4 py-4 flex items-center gap-2 shadow-lg relative">
-                        <input
-                            type="text"
-                            autoFocus
-                            placeholder="Search Here"
-                            className="flex-1 px-4 py-2 rounded-lg border border-black text-base focus:outline-none bg-primary text-black placeholder:text-black/80"
-                        />
-                        <button
-                            type="button"
-                            className="p-2 text-black hover:text-primary focus:outline-none"
-                            onClick={() => setMobileSearchOpen(false)}
-                            aria-label="Close search"
+                        <form
+                            className="flex-1 flex gap-2"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (mobileSearchValue.trim()) {
+                                    // Reset all filters, only keep search
+                                    navigate(
+                                        `/products?search=${encodeURIComponent(
+                                            mobileSearchValue.trim()
+                                        )}`
+                                    );
+                                    setMobileSearchOpen(false);
+                                }
+                            }}
                         >
-                            &#10005;
-                        </button>
+                            <input
+                                type="text"
+                                autoFocus
+                                placeholder="Search Here"
+                                className="flex-1 px-4 py-2 rounded-lg border border-black text-base focus:outline-none bg-primary text-black placeholder:text-black/80"
+                                value={mobileSearchValue}
+                                onChange={(e) =>
+                                    setMobileSearchValue(e.target.value)
+                                }
+                            />
+                            {mobileSearchValue && (
+                                <button
+                                    type="button"
+                                    className="p-2 text-gray-400 hover:text-black focus:outline-none"
+                                    aria-label="Clear search"
+                                    onClick={() => {
+                                        setMobileSearchValue("");
+                                        navigate("/products", {
+                                            replace: true,
+                                        });
+                                        window.location.href = "/products";
+                                    }}
+                                >
+                                    <RxCross1 className="" />
+                                </button>
+                            )}
+                            <button
+                                type="submit"
+                                className="p-2 text-black hover:text-primary focus:outline-none"
+                                aria-label="Search"
+                            >
+                                <FaSearch className="text-lg" />
+                            </button>
+                            <button
+                                type="button"
+                                className="p-2 text-black hover:text-primary focus:outline-none"
+                                onClick={() => setMobileSearchOpen(false)}
+                                aria-label="Close search"
+                            >
+                                &#10005;
+                            </button>
+                        </form>
                     </div>
                 </div>
             )}

@@ -5,7 +5,7 @@ import { FaHeart, FaStar } from "react-icons/fa";
 const ProductCard = ({ product, small }) => {
     return (
         <Link
-            to={`/products/${product._id}`}
+            to={`/products/id/${product._id}`}
             className={`bg-[#f9f7f3] rounded-xl shadow-md overflow-hidden relative hover:shadow-lg transition-all flex flex-col group ${
                 small ? "w-[140px] md:w-[160px]" : "w-[250px]"
             }`}

@@ -20,9 +20,13 @@ const ExploreMaterials = () => {
             <div className="flex flex-row flex-wrap gap-4 px-4 justify-center">
                 {categories.map((category) => (
                     <Link
-                        to={`/category/${category.slug || category._id}`}
+                        to={`/products/${category.name.toLowerCase()}`}
                         key={category._id}
                         className="relative overflow-hidden rounded-lg shadow-md flex-shrink-0 h-[160px] min-w-16 w-16 md:h-[300px] md:min-w-[160px] md:w-[150px]"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = `/products/${category.name.toLowerCase()}`;
+                        }}
                     >
                         <img
                             src={category.image || "/placeholder.jpg"}
