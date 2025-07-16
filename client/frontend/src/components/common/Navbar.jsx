@@ -167,7 +167,7 @@ const Navbar = () => {
                     categories.map((cat) => (
                         <Link
                             key={cat._id || cat.name}
-                            to={`/category/${
+                            to={`/products/${
                                 cat.slug || cat.name.toLowerCase()
                             }`}
                             className="block py-2 text-lg capitalize hover:text-black"
