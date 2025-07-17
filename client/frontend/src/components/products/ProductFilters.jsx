@@ -10,7 +10,13 @@ function ProductFilters({
     layout = "vertical",
 }) {
     return (
-        <div className="hidden md:flex flex-col gap-8">
+        <div
+            className={
+                layout === "vertical"
+                    ? "flex flex-col gap-8"
+                    : "flex flex-wrap gap-4 mb-4 items-center"
+            }
+        >
             {/* Material Checkboxes */}
             <div>
                 <h3 className="text-md font-semibold mb-3 text-gray-800">

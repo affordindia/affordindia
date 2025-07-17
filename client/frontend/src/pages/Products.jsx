@@ -10,6 +10,7 @@ import ProductPagination from "../components/products/ProductPagination.jsx";
 import DesignJourney from "../components/products/DesignJourney.jsx";
 import Craftsmanship from "../components/products/Craftsmanship.jsx";
 import WhyChooseOurProducts from "../components/products/WhyChooseOurProducts.jsx";
+import MobileProductControls from "../components/products/MobileProductControls.jsx";
 
 const priceRanges = [
     { label: "Under ₹500", min: 0, max: 500 },
@@ -17,6 +18,7 @@ const priceRanges = [
     { label: "₹1000 - ₹5000", min: 1000, max: 5000 },
     { label: "₹5000 - ₹10000", min: 5000, max: 10000 },
 ];
+
 const materialOptions = [
     { label: "All", value: "all" },
     { label: "Silver", value: "silver" },
@@ -24,7 +26,7 @@ const materialOptions = [
     { label: "Wood", value: "wood" },
 ];
 
-const DEFAULT_LIMIT = 20; // Keep in sync with backend config
+const DEFAULT_LIMIT = 20;
 
 const Products = () => {
     const { material = "all" } = useParams();
@@ -33,6 +35,7 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [banners, setBanners] = useState([]);
 
     const params = new URLSearchParams(location.search);
     const urlSearch = params.get("search") || "";
@@ -40,6 +43,7 @@ const Products = () => {
     const urlMinPrice = params.get("minPrice");
     const urlMaxPrice = params.get("maxPrice");
     const urlPage = parseInt(params.get("page") || "1", 10);
+
     const [search, setSearch] = useState(urlSearch);
     const [sort, setSort] = useState(urlSort);
     const [selectedPrice, setSelectedPrice] = useState(() => {
@@ -74,7 +78,16 @@ const Products = () => {
         }
     }, [urlSearch, urlSort, urlMinPrice, urlMaxPrice, urlPage, material]);
 
-    // Fetch products only
+    // Load banners
+    useEffect(() => {
+        getBanners()
+            .then((bannerRes) => {
+                setBanners(bannerRes.banners || bannerRes || []);
+            })
+            .catch((err) => console.error("Error loading banners:", err));
+    }, []);
+
+    // Fetch products
     useEffect(() => {
         if (selectedMaterial === "wood") {
             setProducts([]);
@@ -82,8 +95,10 @@ const Products = () => {
             setError(null);
             return;
         }
+
         setLoading(true);
         setError(null);
+
         getCategories()
             .then((catRes) => {
                 const categories = catRes.categories || catRes || [];
@@ -94,7 +109,7 @@ const Products = () => {
                     );
                     if (match) categoryId = match._id;
                 }
-                // Build product params from URL state
+
                 const skip = (page - 1) * DEFAULT_LIMIT;
                 const productParams = {
                     ...(categoryId ? { category: categoryId } : {}),
@@ -107,7 +122,6 @@ const Products = () => {
                         : {}),
                     ...(search && search.trim() !== "" ? { search } : {}),
                     ...(skip > 0 ? { skip } : {}),
-                    // Do NOT send limit, let backend use config default
                 };
                 return getProducts(productParams);
             })
@@ -117,7 +131,7 @@ const Products = () => {
                     setTotal(0);
                 } else {
                     setProducts(prodRes.products || []);
-                    setTotal(prodRes.total || 0);
+                    setTotal(prodRes.total || prodRes.totalCount || 0);
                 }
             })
             .catch((err) => {
@@ -148,7 +162,6 @@ const Products = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Reset all filters including material to 'all' when searching
         navigate({
             pathname: "/products",
             search: search ? `?search=${encodeURIComponent(search)}` : "",
@@ -181,7 +194,6 @@ const Products = () => {
     const handleMaterial = (e) => {
         const value = e.target.value;
         setSelectedMaterial(value);
-        // Preserve search and filters when switching material via filter dropdown
         const params = new URLSearchParams(location.search);
         navigate({
             pathname: value === "all" ? "/products" : `/products/${value}`,
@@ -194,30 +206,107 @@ const Products = () => {
         updateQueryParams({ page: newPage });
     };
 
+    // New handler for mobile controls to apply multiple filters simultaneously
+    const handleApplyMobileFilters = (pendingPrice, pendingMaterial) => {
+        const filterParams = { page: 1 }; // Reset to page 1 when applying filters
+
+        // Handle price filter
+        if (pendingPrice !== null && pendingPrice >= 0) {
+            setSelectedPrice(pendingPrice);
+            filterParams.minPrice = priceRanges[pendingPrice].min;
+            filterParams.maxPrice = priceRanges[pendingPrice].max;
+        } else {
+            setSelectedPrice(null);
+            filterParams.minPrice = undefined;
+            filterParams.maxPrice = undefined;
+        }
+
+        // Handle material filter
+        if (pendingMaterial && pendingMaterial !== "all") {
+            setSelectedMaterial(pendingMaterial);
+            // Material affects the pathname, so we'll handle this in navigation
+        } else {
+            setSelectedMaterial("all");
+            pendingMaterial = "all";
+        }
+
+        // Navigate with all parameters at once
+        const params = new URLSearchParams(location.search);
+        Object.entries(filterParams).forEach(([key, value]) => {
+            if (value === undefined || value === null || value === "") {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        });
+
+        navigate({
+            pathname:
+                pendingMaterial === "all"
+                    ? "/products"
+                    : `/products/${pendingMaterial}`,
+            search: params.toString() ? `?${params.toString()}` : "",
+        });
+    };
+
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     if (selectedMaterial === "wood") {
         return (
-            <div className="max-w-4xl mx-auto">
-                <div className="text-3xl font-bold text-center py-16 text-gray-600">
-                    Wood Collection Coming Soon!
+            <div className="min-h-screen bg-white">
+                <Banners banners={banners} />
+                <div className="p-8 text-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        Wood Products Coming Soon
+                    </h2>
+                    <p className="text-gray-600">
+                        We're working on adding beautiful wooden products to our
+                        collection. Stay tuned!
+                    </p>
                 </div>
             </div>
         );
     }
-    if (error)
-        return <div className="p-8 text-center text-red-500">{error}</div>;
 
     return (
-        <div className="w-full">
-            <Banners material={selectedMaterial} />
+        <div className="min-h-screen bg-white">
+            <Banners banners={banners} />
 
-            <section className="w-full px-4 md:px-8 py-8">
+            {/* Search Results Info */}
+            {search && search.trim() !== "" && (
+                <div className="px-4 pt-4 md:hidden">
+                    <div className="max-w-7xl mx-auto">
+                        <p className="text-sm text-gray-600">
+                            Showing products for "
+                            <span className="font-medium text-gray-800">
+                                {search}
+                            </span>
+                            "
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Main Content */}
+            <div className="px-4 py-4">
                 <div className="max-w-7xl mx-auto">
                     {/* Top Controls (PC only) */}
                     <div className="hidden md:flex flex-row justify-between items-center mb-6 gap-4">
+                        {/* Search Results Info for Desktop */}
+                        <div className="flex-1">
+                            {search && search.trim() !== "" && (
+                                <p className="text-sm text-gray-600">
+                                    Showing products for "
+                                    <span className="font-medium text-gray-800">
+                                        {search}
+                                    </span>
+                                    "
+                                </p>
+                            )}
+                        </div>
+
                         {/* Sort Dropdown */}
-                        <div className="ml-auto bg-[#F7F4EF]">
+                        <div className="bg-[#F7F4EF]">
                             <select
                                 className="px-3 py-2 rounded-md text-sm bg-[#F7F4EF]"
                                 value={sort}
@@ -234,13 +323,10 @@ const Products = () => {
                         </div>
                     </div>
 
-                    {/* Main Content */}
                     <div className="flex gap-8 items-start">
                         {/* Sidebar Filters (Desktop Only) */}
                         <aside className="hidden md:block w-48 flex-shrink-0 bg-[#F7F4EF] p-4 rounded-md">
                             <ProductFilters
-                                sort={sort}
-                                onSort={handleSort}
                                 priceRanges={priceRanges}
                                 selectedPrice={selectedPrice}
                                 onPrice={handlePrice}
@@ -251,23 +337,50 @@ const Products = () => {
                             />
                         </aside>
 
-                        {/* Product List & Pagination */}
-                        <main className="flex-1 min-w-0">
-                            <ProductList products={products} />
-
-                            <div className="mt-8">
-                                <ProductPagination
-                                    total={total}
-                                    limit={DEFAULT_LIMIT}
-                                    page={page}
-                                    onPageChange={handlePageChange}
-                                />
-                            </div>
+                        {/* Product List */}
+                        <main className="flex-1">
+                            {error ? (
+                                <div className="text-center text-red-500 py-8">
+                                    {error}
+                                </div>
+                            ) : products.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">
+                                    No products found. Try adjusting your
+                                    filters.
+                                </div>
+                            ) : (
+                                <>
+                                    <ProductList products={products} />
+                                    {total > DEFAULT_LIMIT && (
+                                        <ProductPagination
+                                            currentPage={page}
+                                            totalPages={Math.ceil(
+                                                total / DEFAULT_LIMIT
+                                            )}
+                                            onPageChange={handlePageChange}
+                                        />
+                                    )}
+                                </>
+                            )}
                         </main>
                     </div>
                 </div>
-            </section>
+            </div>
 
+            {/* Mobile Controls */}
+            <MobileProductControls
+                priceRanges={priceRanges}
+                selectedPrice={selectedPrice}
+                onPrice={handlePrice}
+                materialOptions={materialOptions}
+                selectedMaterial={selectedMaterial}
+                onMaterial={handleMaterial}
+                onApplyMobileFilters={handleApplyMobileFilters}
+                sort={sort}
+                handleSort={handleSort}
+            />
+
+            {/* Additional Sections */}
             <DesignJourney />
             <Craftsmanship />
             <WhyChooseOurProducts />
