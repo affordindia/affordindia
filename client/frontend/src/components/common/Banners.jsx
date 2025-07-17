@@ -40,6 +40,10 @@ const Banners = ({ material = "all" }) => {
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Only enable autoplay if more than one banner
+    const keenSliderPlugins =
+        banners.length > 1 ? [Autoplay({ interval: 3500 })] : [];
     const [sliderRef, instanceRef] = useKeenSlider(
         {
             loop: true,
@@ -48,7 +52,7 @@ const Banners = ({ material = "all" }) => {
                 setCurrentSlide(s.track.details.rel);
             },
         },
-        [Autoplay({ interval: 3500 })]
+        keenSliderPlugins
     );
 
     useEffect(() => {

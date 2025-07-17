@@ -144,7 +144,7 @@ const Navbar = () => {
                     <Link to="/cart" className="relative" aria-label="Cart">
                         <FaShoppingCart className="text-xl hover:text-black" />
                         {cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                            <span className="absolute -top-3 -right-3 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                                 {cartCount}
                             </span>
                         )}

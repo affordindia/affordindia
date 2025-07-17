@@ -7,6 +7,9 @@ import Banners from "../components/common/Banners.jsx";
 import ProductFilters from "../components/products/ProductFilters.jsx";
 import ProductList from "../components/products/ProductList.jsx";
 import ProductPagination from "../components/products/ProductPagination.jsx";
+import DesignJourney from "../components/products/DesignJourney.jsx";
+import Craftsmanship from "../components/products/Craftsmanship.jsx";
+import WhyChooseOurProducts from "../components/products/WhyChooseOurProducts.jsx";
 
 const priceRanges = [
     { label: "Under ₹500", min: 0, max: 500 },
@@ -280,6 +283,10 @@ const Products = () => {
                     </div>
                 </div>
             </section>
+
+            <DesignJourney />
+            <Craftsmanship />
+            <WhyChooseOurProducts />
         </div>
     );
 };

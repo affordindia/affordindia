@@ -1,57 +1,153 @@
 import React from "react";
 import { useCart } from "../context/CartContext.jsx";
+import { FaTrash } from "react-icons/fa";
 
 const Cart = () => {
     const { cart, updateCartItem, removeFromCart, clearCart } = useCart();
     const items = cart?.items || [];
 
-    if (!items.length)
-        return <div className="p-6 text-center">Your cart is empty.</div>;
+    const deliveryFee = items.length ? 50 : 0;
+    const subtotal = items.reduce(
+        (acc, { product, quantity }) => acc + product.price * quantity,
+        0
+    );
+    const total = subtotal + deliveryFee;
+
+    if (!items.length) {
+        return (
+            <div className="p-6 text-center text-xl text-gray-600">
+                Your cart is empty.
+            </div>
+        );
+    }
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            <h2 className="text-xl font-bold mb-4">Your Cart</h2>
-            <ul className="divide-y">
+        <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-5">
+            <h2 className="text-2xl font-bold mb-2">Your Shopping Cart</h2>
+
+            {/* Header Row */}
+            <div className="hidden md:flex font-semibold text-gray-700 px-4 w-full">
+                <span className="flex-[2]">Products</span>
+                <span className="flex-1 text-center">Price</span>
+                <span className="flex-1 text-center">Quantity</span>
+                <span className="flex-1 text-center">Subtotal</span>
+                <span className="flex-1 text-center">Delete</span>
+            </div>
+
+            {/* Cart Items */}
+            <div className="space-y-4">
                 {items.map(({ product, quantity }) => (
-                    <li
+                    <div
                         key={product._id}
-                        className="flex items-center justify-between py-3"
+                        className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#F7F4EF] text-[#404040] rounded-md w-full border border-gray-300"
                     >
-                        <div>
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-sm text-gray-500">
+                        {/* Product Info */}
+                        <div className="flex items-center gap-4 flex-[2]">
+                            <img
+                                src={product.images?.[0] || "/placeholder.png"}
+                                alt={product.name}
+                                className="w-20 h-20 object-cover rounded-sm border border-[#626262]"
+                            />
+                            <div className="text-sm">{product.name}</div>
+                        </div>
+
+                        {/* Price */}
+                        <div className="flex-1 flex md:justify-center items-center">
+                            <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 ₹{product.price}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="number"
-                                min={1}
-                                value={quantity}
-                                onChange={(e) =>
-                                    updateCartItem(
-                                        product._id,
-                                        Number(e.target.value)
-                                    )
-                                }
-                                className="w-16 border rounded px-2 py-1"
-                            />
+
+                        {/* Quantity */}
+                        <div className="flex-1 flex md:justify-center items-center">
+                            <div className="flex items-center bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10">
+                                <button
+                                    className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
+                                    onClick={() =>
+                                        updateCartItem(
+                                            product._id,
+                                            Math.max(1, quantity - 1)
+                                        )
+                                    }
+                                >
+                                    –
+                                </button>
+                                <div className="flex-1 text-center text-sm select-none">
+                                    {quantity}
+                                </div>
+                                <button
+                                    className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
+                                    onClick={() =>
+                                        updateCartItem(
+                                            product._id,
+                                            quantity + 1
+                                        )
+                                    }
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Subtotal */}
+                        <div className="flex-1 flex md:justify-center items-center">
+                            <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
+                                ₹{product.price * quantity}
+                            </div>
+                        </div>
+
+                        {/* Delete */}
+                        <div className="flex-1 flex md:justify-center items-center">
                             <button
                                 onClick={() => removeFromCart(product._id)}
-                                className="text-red-500 hover:underline ml-2"
+                                className="text-[#404040] hover:text-black text-lg"
+                                aria-label="Remove item"
                             >
-                                Remove
+                                <FaTrash />
                             </button>
                         </div>
-                    </li>
+                    </div>
                 ))}
-            </ul>
-            <button
-                onClick={clearCart}
-                className="mt-6 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-                Clear Cart
-            </button>
+            </div>
+
+            {/* Actions & Order Summary (side by side on PC) */}
+            <div className="flex flex-col md:flex-row md:items-start gap-8 mt-6">
+                {/* Actions */}
+                <div className="w-full md:max-w-xs">
+                    <div className="flex flex-row md:flex-col gap-4">
+                        <button
+                            onClick={clearCart}
+                            className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 hover:bg-[#f0ebe1] text-sm w-full"
+                        >
+                            Clear Cart
+                        </button>
+                        <button className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 text-sm hover:bg-[#f0ebe1] w-full">
+                            Add More From Favorites
+                        </button>
+                    </div>
+                </div>
+
+                {/* Order Summary */}
+                <div className="w-full md:max-w-md md:ml-auto">
+                    <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
+                        <div className="flex justify-between mb-2">
+                            <span>Subtotal</span>
+                            <span>₹{subtotal}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                            <span>Delivery Charge</span>
+                            <span>₹{deliveryFee}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-base mt-4">
+                            <span>Grand Total</span>
+                            <span>₹{total}</span>
+                        </div>
+                        <button className="mt-6 w-full bg-black text-white py-2 rounded hover:opacity-90 transition">
+                            Proceed to Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
