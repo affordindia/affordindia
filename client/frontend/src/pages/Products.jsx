@@ -214,28 +214,12 @@ const Products = () => {
 
             <section className="w-full px-4 md:px-8 py-8">
                 <div className="max-w-7xl mx-auto">
-                    {/* Top Controls */}
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        {/* Filters (Mobile Only Display) */}
-                        <div className="md:hidden w-full">
-                            <ProductFilters
-                                sort={sort}
-                                onSort={handleSort}
-                                priceRanges={priceRanges}
-                                selectedPrice={selectedPrice}
-                                onPrice={handlePrice}
-                                materialOptions={materialOptions}
-                                selectedMaterial={selectedMaterial}
-                                onMaterial={handleMaterial}
-                                layout="vertical"
-                            />
-                            <hr className="my-4" />
-                        </div>
-
+                    {/* Top Controls (PC only) */}
+                    <div className="hidden md:flex flex-row justify-between items-center mb-6 gap-4">
                         {/* Sort Dropdown */}
-                        <div className="ml-auto">
+                        <div className="ml-auto bg-[#F7F4EF]">
                             <select
-                                className="border px-3 py-2 rounded-md text-sm"
+                                className="px-3 py-2 rounded-md text-sm bg-[#F7F4EF]"
                                 value={sort}
                                 onChange={handleSort}
                             >
@@ -253,7 +237,7 @@ const Products = () => {
                     {/* Main Content */}
                     <div className="flex gap-8 items-start">
                         {/* Sidebar Filters (Desktop Only) */}
-                        <aside className="hidden md:block w-48 flex-shrink-0 bg-gray-50 p-4 rounded-md">
+                        <aside className="hidden md:block w-48 flex-shrink-0 bg-[#F7F4EF] p-4 rounded-md">
                             <ProductFilters
                                 sort={sort}
                                 onSort={handleSort}
