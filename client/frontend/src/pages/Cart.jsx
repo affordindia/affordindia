@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
 
 const Cart = () => {
-    const { cart, updateCartItem, removeFromCart, clearCart } = useCart();
+    const { cart, updateCartItem, removeFromCart } = useCart();
     const items = cart?.items || [];
 
     const deliveryFee = items.length ? 50 : 0;
@@ -115,12 +115,6 @@ const Cart = () => {
                 {/* Actions */}
                 <div className="w-full md:max-w-xs">
                     <div className="flex flex-row md:flex-col gap-4">
-                        <button
-                            onClick={clearCart}
-                            className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 hover:bg-[#f0ebe1] text-sm w-full"
-                        >
-                            Clear Cart
-                        </button>
                         <button className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 text-sm hover:bg-[#f0ebe1] w-full">
                             Add More From Favorites
                         </button>

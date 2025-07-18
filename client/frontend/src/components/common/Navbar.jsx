@@ -103,7 +103,7 @@ const Navbar = () => {
                         <input
                             type="text"
                             placeholder="Search Here"
-                            className="px-4 py-1.5 rounded-lg border border-black text-base w-full focus:outline-none pr-10 bg-primary text-black placeholder:text-black/80"
+                            className="px-4 py-1.5 rounded-lg text-base w-full focus:outline-none pr-10 bg-primary text-black placeholder:text-[#8c8c8c]/80 shadow-md hover:shadow-lg"
                             style={{ minHeight: "24px" }}
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}
