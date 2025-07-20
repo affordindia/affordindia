@@ -6,16 +6,19 @@ import {
     FaUser,
     FaSearch,
     FaBars,
+    FaSignOutAlt,
 } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useWishlist } from "../../context/WishlistContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { getCategories } from "../../api/category.js";
 import NavLogo from "../../assets/NavLogo.png";
 
 const Navbar = () => {
     const { cart } = useCart();
     const { wishlist } = useWishlist();
+    const { isAuthenticated, user, logout } = useAuth();
     const [categories, setCategories] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const cartCount = cart?.items?.length || 0;
@@ -149,9 +152,26 @@ const Navbar = () => {
                             </span>
                         )}
                     </Link>
-                    <Link to="/profile" aria-label="Profile">
-                        <FaUser className="text-xl hover:text-black" />
-                    </Link>
+                    {isAuthenticated ? (
+                        <div className="flex items-center space-x-4">
+                            <Link to="/profile" aria-label="Profile" className="relative">
+                                <FaUser className="text-xl hover:text-black" />
+                                <span className="sr-only">Profile</span>
+                            </Link>
+                            <button
+                                onClick={logout}
+                                aria-label="Logout"
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <FaSignOutAlt className="text-xl hover:text-black" />
+                            </button>
+                        </div>
+                    ) : (
+                        <Link to="/login" aria-label="Login" className="relative">
+                            <FaUser className="text-xl hover:text-black" />
+                            <span className="sr-only">Login</span>
+                        </Link>
+                    )}
                 </div>
             </div>
             {/* Mobile menu dropdown */}
@@ -179,6 +199,41 @@ const Navbar = () => {
                 ) : (
                     <span className="text-gray-400">Loading...</span>
                 )}
+                
+                {/* Mobile Authentication Options */}
+                <div className="border-t border-gray-300 pt-2 mt-2">
+                    {isAuthenticated ? (
+                        <>
+                            <Link
+                                to="/profile"
+                                className="flex items-center py-2 text-lg hover:text-black"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <FaUser className="mr-2" />
+                                Profile
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    setMobileMenuOpen(false);
+                                }}
+                                className="flex items-center py-2 text-lg hover:text-black w-full text-left"
+                            >
+                                <FaSignOutAlt className="mr-2" />
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="flex items-center py-2 text-lg hover:text-black"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <FaUser className="mr-2" />
+                            Login
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {/* Mobile search overlay */}

@@ -7,28 +7,56 @@ import Products from "./pages/Products.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import Cart from "./pages/Cart.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
+import Signup from "./pages/Signup.jsx";
+import Profile from "./pages/Profile.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
-const App = () => (
-    <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1">
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/products/:material" element={<Products />} />
-                <Route path="/products/id/:id" element={<ProductDetail />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route
-                    path="*"
-                    element={
-                        <div className="p-8 text-center">404 Not Found</div>
-                    }
-                />
-            </Routes>
-        </main>
-        <Footer />
-    </div>
-);
+const App = () => {
+    const { login } = useAuth();
+
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/products/:material" element={<Products />} />
+                    <Route path="/products/id/:id" element={<ProductDetail />} />
+                    <Route path="/login" element={<Signup onAuthSuccess={login} />} />
+                    <Route path="/signup" element={<Signup onAuthSuccess={login} />} />
+                    <Route 
+                        path="/profile" 
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/cart" 
+                        element={<Cart />} 
+                    />
+                    <Route 
+                        path="/wishlist" 
+                        element={
+                            <ProtectedRoute>
+                                <Wishlist />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route
+                        path="*"
+                        element={
+                            <div className="p-8 text-center">404 Not Found</div>
+                        }
+                    />
+                </Routes>
+            </main>
+            <Footer />
+        </div>
+    );
+};
 
 export default App;

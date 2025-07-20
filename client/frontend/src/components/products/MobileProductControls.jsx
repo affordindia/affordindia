@@ -34,13 +34,6 @@ const MobileProductControls = ({
 
     // When user clicks Apply Filters, apply the pending filters
     const applyFilters = () => {
-        console.log("Applying mobile filters:", {
-            pendingPrice,
-            pendingMaterial,
-            priceRange:
-                pendingPrice !== null ? priceRanges[pendingPrice] : null,
-        });
-
         // Use the new combined handler that applies all filters simultaneously
         if (onApplyMobileFilters) {
             onApplyMobileFilters(pendingPrice, pendingMaterial);

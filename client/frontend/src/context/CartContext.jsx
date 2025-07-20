@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext } from "react";
-import { useUser } from "./UserContext.jsx";
+import { useAuth } from "./AuthContext.jsx";
 import * as cartApi from "../api/cart.js";
 
 const CartContext = createContext();
@@ -14,7 +14,7 @@ const getInitialCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-    const { user } = useUser();
+    const { user } = useAuth();
     const [cart, setCart] = useState(getInitialCart);
     const [loading, setLoading] = useState(false);
 
