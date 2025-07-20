@@ -20,7 +20,15 @@ import errorHandler from "./middlewares/error.middleware.js";
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+        origin: [
+            "http://localhost:5174",
+            "https://client-frontend-chi.vercel.app/",
+        ],
+        credentials: true, // if you use cookies/auth
+    })
+);
 app.use(express.json());
 
 // Connect to DB
