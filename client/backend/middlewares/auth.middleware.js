@@ -6,37 +6,37 @@ const authMiddleware = async (req, res, next) => {
         const token = req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token) {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Access denied. No token provided." 
+            return res.status(401).json({
+                success: false,
+                message: "Access denied. No token provided.",
             });
         }
 
         // Verify JWT token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         // Check if it's an access token
-        if (decoded.type !== 'access') {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Invalid token type. Access token required." 
+        if (decoded.type !== "access") {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid token type. Access token required.",
             });
         }
-        
+
         // Find user to ensure they still exist and are not blocked
         const user = await User.findById(decoded.userId);
-        
+
         if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "User not found" 
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
             });
         }
 
         if (user.isBlocked) {
-            return res.status(403).json({ 
-                success: false, 
-                message: "Account is blocked. Please contact support." 
+            return res.status(403).json({
+                success: false,
+                message: "Account is blocked. Please contact support.",
             });
         }
 
@@ -46,32 +46,31 @@ const authMiddleware = async (req, res, next) => {
             name: user.name, // Include name (may be null)
             phone: user.phone,
             email: user.email,
-            authMethod: user.authMethod
+            authMethod: user.authMethod,
         };
 
         next();
-
     } catch (error) {
         console.error("Auth middleware error:", error);
-        
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Token has expired" 
-            });
-        }
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Invalid token" 
+
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({
+                success: false,
+                message: "Token has expired",
             });
         }
 
-        res.status(500).json({ 
-            success: false, 
-            message: "Authentication failed", 
-            error: error.message 
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid token",
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Authentication failed",
+            error: error.message,
         });
     }
 };
