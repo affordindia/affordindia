@@ -1,69 +1,98 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { FaEdit } from 'react-icons/fa';
 
 const Profile = () => {
-    const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
-    return (
-        <div className="max-w-4xl mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-lg p-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1>
-                
-                <div className="space-y-6">
-                    <div className="border-b border-gray-200 pb-4">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Account Information</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Phone Number
-                                </label>
-                                <p className="text-lg text-gray-800">{user?.phone || 'Not available'}</p>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Name
-                                </label>
-                                <p className="text-lg text-gray-800">{user?.name || 'Not provided'}</p>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Account Created
-                                </label>
-                                <p className="text-lg text-gray-800">
-                                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Not available'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="border-b border-gray-200 pb-4">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Quick Actions</h2>
-                        <div className="flex flex-wrap gap-4">
-                            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                Edit Profile
-                            </button>
-                            <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                Order History
-                            </button>
-                            <button className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                                Addresses
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="pt-4">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Account Settings</h2>
-                        <button 
-                            onClick={logout}
-                            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="flex justify-center items-center py-10">
+      <div className="bg-gray-200 p-8 rounded-lg shadow-md w-full max-w-2xl">
+        
+        {/* Contact Details */}
+        <h2 className="text-center text-lg font-semibold mb-4 flex items-center justify-center gap-2">
+          Contact Details <FaEdit className="text-sm text-gray-600" />
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="First Name"
+            defaultValue={user?.firstName || ""}
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Second Name"
+            defaultValue={user?.lastName || ""}
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Mobile Number"
+            defaultValue={user?.phone || ""}
+            className="p-2 border border-gray-300 rounded sm:col-span-2"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            defaultValue={user?.email || ""}
+            className="p-2 border border-gray-300 rounded sm:col-span-2"
+          />
         </div>
-    );
+
+        {/* Address Section */}
+        <h2 className="text-center text-lg font-semibold mb-4 mt-6 flex items-center justify-center gap-2">
+          Address <FaEdit className="text-sm text-gray-600" />
+        </h2>
+        <div className="grid grid-cols-1 gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Pin code"
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Address (House No., Building, Street, Area)"
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Locality/Town"
+            className="p-2 border border-gray-300 rounded"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="City/District"
+              className="p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              placeholder="State"
+              className="p-2 border border-gray-300 rounded"
+            />
+          </div>
+        </div>
+
+        {/* Add Another Address */}
+        <div className="text-center mt-6">
+          <button className="bg-black text-white px-6 py-2 rounded hover:opacity-90">
+            Add another Address
+          </button>
+        </div>
+
+        {/* Logout Button */}
+        <div className="text-center mt-4">
+          <button
+            onClick={logout}
+            className="text-red-600 underline text-sm hover:text-red-800"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Profile;
