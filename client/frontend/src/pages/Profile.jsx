@@ -6,8 +6,8 @@ const Profile = () => {
   const { user, logout } = useAuth();
 
   return (
-    <div className="flex justify-center items-center py-10">
-      <div className="bg-gray-200 p-8 rounded-lg shadow-md w-full max-w-2xl">
+    <div className="flex justify-center items-center py-10 bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
         
         {/* Contact Details */}
         <h2 className="text-center text-lg font-semibold mb-4 flex items-center justify-center gap-2">
@@ -18,25 +18,25 @@ const Profile = () => {
             type="text"
             placeholder="First Name"
             defaultValue={user?.firstName || ""}
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Second Name"
             defaultValue={user?.lastName || ""}
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Mobile Number"
             defaultValue={user?.phone || ""}
-            className="p-2 border border-gray-300 rounded sm:col-span-2"
+            className="p-2 border border-gray-300 rounded bg-white sm:col-span-2"
           />
           <input
             type="email"
             placeholder="Email"
             defaultValue={user?.email || ""}
-            className="p-2 border border-gray-300 rounded sm:col-span-2"
+            className="p-2 border border-gray-300 rounded bg-white sm:col-span-2"
           />
         </div>
 
@@ -48,28 +48,28 @@ const Profile = () => {
           <input
             type="text"
             placeholder="Pin code"
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Address (House No., Building, Street, Area)"
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Locality/Town"
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded bg-white"
           />
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
               placeholder="City/District"
-              className="p-2 border border-gray-300 rounded"
+              className="p-2 border border-gray-300 rounded bg-white"
             />
             <input
               type="text"
               placeholder="State"
-              className="p-2 border border-gray-300 rounded"
+              className="p-2 border border-gray-300 rounded bg-white"
             />
           </div>
         </div>
