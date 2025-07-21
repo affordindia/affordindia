@@ -2,6 +2,7 @@ import {
     getUserWishlist,
     addToWishlist,
     removeFromWishlist,
+    moveWishlistItemToCart,
 } from "../services/wishlist.service.js";
 import { addOrUpdateCartItem } from "../services/cart.service.js";
 import { body, param, query } from "express-validator";
@@ -29,10 +30,11 @@ export const removeItem = async (req, res, next) => {
 export const moveToCart = async (req, res, next) => {
     try {
         const { productId } = req.params;
-        // Add to cart
-        await addOrUpdateCartItem(req.user._id, productId, 1);
-        // Remove from wishlist
-        const wishlist = await removeFromWishlist(req.user._id, productId);
+        const wishlist = await moveWishlistItemToCart(
+            req.user._id,
+            productId,
+            addOrUpdateCartItem
+        );
         res.json(wishlist);
     } catch (err) {
         next(err);
@@ -41,39 +43,7 @@ export const moveToCart = async (req, res, next) => {
 
 export const getWishlist = async (req, res, next) => {
     try {
-        const { category, brand, minPrice, maxPrice, search } = req.query;
-        let wishlist = await getUserWishlist(req.user._id);
-        // Filter populated products if filters are provided
-        if (
-            wishlist &&
-            wishlist.items &&
-            wishlist.items.length > 0 &&
-            (category || brand || minPrice || maxPrice || search)
-        ) {
-            wishlist.items = wishlist.items.filter((product) => {
-                let match = true;
-                if (
-                    category &&
-                    product.category &&
-                    product.category.toString() !== category
-                )
-                    match = false;
-                if (
-                    brand &&
-                    product.brand &&
-                    product.brand.toString() !== brand
-                )
-                    match = false;
-                if (minPrice && product.price < Number(minPrice)) match = false;
-                if (maxPrice && product.price > Number(maxPrice)) match = false;
-                if (
-                    search &&
-                    !product.name.toLowerCase().includes(search.toLowerCase())
-                )
-                    match = false;
-                return match;
-            });
-        }
+        const wishlist = await getUserWishlist(req.user._id);
         res.json(wishlist);
     } catch (err) {
         next(err);

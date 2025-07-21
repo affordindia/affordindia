@@ -143,6 +143,20 @@ export const CartProvider = ({ children }) => {
         }
     };
 
+    const refreshCart = async () => {
+        if (user) {
+            setLoading(true);
+            try {
+                const dbCart = await cartApi.getCart();
+                setCart(dbCart);
+            } catch {
+                setCart({ items: [] });
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
     return (
         <CartContext.Provider
             value={{
@@ -151,6 +165,7 @@ export const CartProvider = ({ children }) => {
                 updateCartItem,
                 removeFromCart,
                 clearCart,
+                refreshCart,
                 loading,
             }}
         >

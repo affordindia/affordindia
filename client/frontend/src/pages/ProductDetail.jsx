@@ -15,7 +15,12 @@ const ProductDetail = () => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
-    const { wishlist, fetchWishlist } = useWishlist();
+    const {
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        loading: wishlistLoading,
+    } = useWishlist();
     const [wishlistMsg, setWishlistMsg] = useState("");
     const [selectedImage, setSelectedImage] = useState("");
 
@@ -41,13 +46,28 @@ const ProductDetail = () => {
     };
 
     const handleAddToWishlist = async () => {
+        if (!product) return;
+
         setWishlistMsg("");
         try {
-            await fetchWishlist();
-            setWishlistMsg("Added to wishlist (if logged in)");
-        } catch {
-            setWishlistMsg("Login to use wishlist");
+            // Check if item is already in wishlist
+            const isInWishlist = wishlist?.items?.some(
+                (item) => item._id === product._id
+            );
+
+            if (isInWishlist) {
+                await removeFromWishlist(product._id);
+                setWishlistMsg("Removed from wishlist");
+            } else {
+                await addToWishlist(product._id);
+                setWishlistMsg("Added to wishlist");
+            }
+        } catch (error) {
+            setWishlistMsg("Please login to use wishlist");
         }
+
+        // Clear message after 3 seconds
+        setTimeout(() => setWishlistMsg(""), 3000);
     };
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
@@ -140,9 +160,28 @@ const ProductDetail = () => {
                         </button>
                         <button
                             onClick={handleAddToWishlist}
-                            className="bg-[#272727] px-4 py-2 rounded-md text-white transition-all duration-200 hover:bg-[#1a1a1a] hover:scale-105 active:scale-95 focus:outline-none"
+                            disabled={wishlistLoading}
+                            className={`px-4 py-2 rounded-md text-white transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ${
+                                wishlist?.items?.some(
+                                    (item) => item._id === product._id
+                                )
+                                    ? "bg-red-500 hover:bg-red-600"
+                                    : "bg-[#272727] hover:bg-[#1a1a1a]"
+                            } ${
+                                wishlistLoading
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                            }`}
                         >
-                            <FaRegHeart className="text-2xl transition-transform duration-200 hover:scale-110 active:scale-95" />
+                            <FaRegHeart
+                                className={`text-2xl transition-transform duration-200 hover:scale-110 active:scale-95 ${
+                                    wishlist?.items?.some(
+                                        (item) => item._id === product._id
+                                    )
+                                        ? "fill-current"
+                                        : ""
+                                }`}
+                            />
                         </button>
                     </div>
                     {wishlistMsg && (

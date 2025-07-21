@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart, FaStar } from "react-icons/fa";
+import { useWishlist } from "../../context/WishlistContext.jsx";
 
 const ProductCard = ({ product, small }) => {
+    const { wishlist, addToWishlist, removeFromWishlist, loading } =
+        useWishlist();
+    const [actionLoading, setActionLoading] = useState(false);
+
+    const isInWishlist = wishlist?.items?.some(
+        (item) => item._id === product._id
+    );
+
+    const handleWishlistToggle = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setActionLoading(true);
+        try {
+            if (isInWishlist) {
+                await removeFromWishlist(product._id);
+            } else {
+                await addToWishlist(product._id);
+            }
+        } catch (error) {
+            // Handle error silently or show toast notification
+            console.error("Wishlist error:", error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
     return (
         <Link
             to={`/products/id/${product._id}`}
@@ -11,9 +38,24 @@ const ProductCard = ({ product, small }) => {
             }`}
         >
             {/* Wishlist Icon */}
-            <div className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer z-10">
-                <FaHeart />
-            </div>
+            <button
+                onClick={handleWishlistToggle}
+                disabled={loading || actionLoading}
+                className={`absolute top-2 right-2 cursor-pointer z-10 p-1 transition-colors ${
+                    isInWishlist
+                        ? "text-red-500 hover:text-red-600"
+                        : "text-gray-400 hover:text-red-500"
+                } ${
+                    loading || actionLoading
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                }`}
+                title={
+                    isInWishlist ? "Remove from wishlist" : "Add to wishlist"
+                }
+            >
+                <FaHeart className={isInWishlist ? "fill-current" : ""} />
+            </button>
 
             {/* Image - always square, info below, scales on hover */}
             <div className="w-full aspect-square bg-gray-100 flex-shrink-0 overflow-hidden">

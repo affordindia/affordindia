@@ -1,9 +1,9 @@
 import axios from "./axios";
 
-// Get wishlist (supports filters: category, brand, minPrice, maxPrice, search)
-export const getWishlist = async (params) => {
-    console.log("API CALL: getWishlist", params);
-    const res = await axios.get("/wishlist", { params });
+// Get wishlist (no filters)
+export const getWishlist = async () => {
+    console.log("API CALL: getWishlist");
+    const res = await axios.get("/wishlist");
     return res.data;
 };
 

@@ -23,28 +23,30 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/products/:material" element={<Products />} />
-                    <Route path="/products/id/:id" element={<ProductDetail />} />
-                    <Route path="/login" element={<Signup onAuthSuccess={login} />} />
-                    <Route path="/signup" element={<Signup onAuthSuccess={login} />} />
-                    <Route 
-                        path="/profile" 
+                    <Route
+                        path="/products/id/:id"
+                        element={<ProductDetail />}
+                    />
+                    <Route
+                        path="/login"
+                        element={<Signup onAuthSuccess={login} />}
+                    />
+                    <Route
+                        path="/profile"
                         element={
                             <ProtectedRoute>
                                 <Profile />
                             </ProtectedRoute>
-                        } 
+                        }
                     />
-                    <Route 
-                        path="/cart" 
-                        element={<Cart />} 
-                    />
-                    <Route 
-                        path="/wishlist" 
+                    <Route path="/cart" element={<Cart />} />
+                    <Route
+                        path="/wishlist"
                         element={
                             <ProtectedRoute>
                                 <Wishlist />
                             </ProtectedRoute>
-                        } 
+                        }
                     />
                     <Route
                         path="*"

@@ -7,6 +7,7 @@ import {
     FaSearch,
     FaBars,
     FaSignOutAlt,
+    FaClipboardList,
 } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
 import { useCart } from "../../context/CartContext.jsx";
@@ -21,6 +22,7 @@ const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
     const [categories, setCategories] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const cartCount = cart?.items?.length || 0;
     const wishlistCount = wishlist?.items?.length || 0;
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -33,6 +35,23 @@ const Navbar = () => {
             .then((data) => setCategories(data.categories || data))
             .catch(() => setCategories([]));
     }, []);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                profileDropdownOpen &&
+                !event.target.closest(".profile-dropdown-container")
+            ) {
+                setProfileDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [profileDropdownOpen]);
 
     return (
         <nav className="bg-secondary text-black sticky top-0 z-50">
@@ -139,7 +158,7 @@ const Navbar = () => {
                     >
                         <FaHeart className="text-xl hover:text-black" />
                         {wishlistCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                            <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                                 {wishlistCount}
                             </span>
                         )}
@@ -153,24 +172,108 @@ const Navbar = () => {
                         )}
                     </Link>
                     {isAuthenticated ? (
-                        <div className="flex items-center space-x-4">
-                            <Link to="/profile" aria-label="Profile" className="relative">
-                                <FaUser className="text-xl hover:text-black" />
-                                <span className="sr-only">Profile</span>
-                            </Link>
+                        <div className="relative profile-dropdown-container">
                             <button
-                                onClick={logout}
-                                aria-label="Logout"
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                onClick={() =>
+                                    setProfileDropdownOpen(!profileDropdownOpen)
+                                }
+                                aria-label="Profile Menu"
+                                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <FaSignOutAlt className="text-xl hover:text-black" />
+                                <FaUser className="text-xl hover:text-black" />
                             </button>
+
+                            {/* Profile Dropdown */}
+                            {profileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                    <div className="py-2">
+                                        <Link
+                                            to="/cart"
+                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            onClick={() =>
+                                                setProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <FaShoppingCart className="mr-3" />
+                                            Cart
+                                        </Link>
+                                        <Link
+                                            to="/wishlist"
+                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            onClick={() =>
+                                                setProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <FaHeart className="mr-3" />
+                                            Wishlist
+                                        </Link>
+                                        <Link
+                                            to="/orders"
+                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            onClick={() =>
+                                                setProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <FaClipboardList className="mr-3" />
+                                            Orders
+                                        </Link>
+                                        <Link
+                                            to="/profile"
+                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            onClick={() =>
+                                                setProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <FaUser className="mr-3" />
+                                            Profile
+                                        </Link>
+                                        <hr className="my-1" />
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setProfileDropdownOpen(false);
+                                            }}
+                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            <FaSignOutAlt className="mr-3" />
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : (
-                        <Link to="/login" aria-label="Login" className="relative">
-                            <FaUser className="text-xl hover:text-black" />
-                            <span className="sr-only">Login</span>
-                        </Link>
+                        <div className="relative profile-dropdown-container">
+                            <button
+                                onClick={() =>
+                                    setProfileDropdownOpen(!profileDropdownOpen)
+                                }
+                                aria-label="Login Menu"
+                                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <FaUser className="text-xl hover:text-black" />
+                            </button>
+
+                            {/* Login Dropdown */}
+                            {profileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 text-sm">
+                                    <div className="py-3 px-4">
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Please login to access your account
+                                        </p>
+                                        <Link
+                                            to="/login"
+                                            className="block w-full bg-black text-white text-center py-2 px-4 rounded hover:bg-gray-800 transition-colors text-sm"
+                                            onClick={() =>
+                                                setProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            Login / Sign Up
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
@@ -199,7 +302,7 @@ const Navbar = () => {
                 ) : (
                     <span className="text-gray-400">Loading...</span>
                 )}
-                
+
                 {/* Mobile Authentication Options */}
                 <div className="border-t border-gray-300 pt-2 mt-2">
                     {isAuthenticated ? (

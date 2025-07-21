@@ -1,6 +1,7 @@
 import React from "react";
 import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
     const { cart, updateCartItem, removeFromCart } = useCart();
@@ -115,9 +116,12 @@ const Cart = () => {
                 {/* Actions */}
                 <div className="w-full md:max-w-xs">
                     <div className="flex flex-row md:flex-col gap-4">
-                        <button className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 text-sm hover:bg-[#f0ebe1] w-full">
-                            Add More From Favorites
-                        </button>
+                        <Link
+                            to="/wishlist"
+                            className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 text-sm hover:bg-[#f0ebe1] w-full text-center transition-colors"
+                        >
+                            Add More From Wishlist
+                        </Link>
                     </div>
                 </div>
 
