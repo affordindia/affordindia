@@ -133,15 +133,16 @@ const ProductDetail = () => {
                     <div className="flex gap-4 mt-4 flex-wrap">
                         <button
                             onClick={handleAddToCart}
-                            className="bg-[#A89A3D] text-white px-6 py-2 rounded-sm font-semibold"
+                            className="bg-[#A89A3D] text-white px-6 py-2 rounded-sm font-semibold transition-all duration-200 hover:bg-[#968632] hover:scale-105 active:scale-95 focus:outline-none"
+                            disabled={!stock}
                         >
                             Add to Cart
                         </button>
                         <button
                             onClick={handleAddToWishlist}
-                            className="bg-[#272727] px-4 py-2 rounded-md text-white"
+                            className="bg-[#272727] px-4 py-2 rounded-md text-white transition-all duration-200 hover:bg-[#1a1a1a] hover:scale-105 active:scale-95 focus:outline-none"
                         >
-                            <FaRegHeart className="text-2xl" />
+                            <FaRegHeart className="text-2xl transition-transform duration-200 hover:scale-110 active:scale-95" />
                         </button>
                     </div>
                     {wishlistMsg && (

@@ -229,7 +229,7 @@ export const refreshToken = async (req, res) => {
 // Get current user info
 export const getCurrentUser = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user._id;
         
         const user = await User.findById(userId).select('-password -firebaseUid');
         

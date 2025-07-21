@@ -19,6 +19,13 @@ export const getCart = async (req, res, next) => {
 export const addOrUpdateItem = async (req, res, next) => {
     try {
         const { productId, quantity } = req.body;
+        
+        if (!productId || !quantity) {
+            return res.status(400).json({
+                error: "Product ID and quantity are required"
+            });
+        }
+        
         const cart = await addOrUpdateCartItem(
             req.user._id,
             productId,
@@ -52,6 +59,13 @@ export const clear = async (req, res, next) => {
 export const mergeCart = async (req, res, next) => {
     try {
         const { items } = req.body; // guest cart items
+        
+        if (!items || !Array.isArray(items)) {
+            return res.status(400).json({
+                error: "Items array is required"
+            });
+        }
+        
         const cart = await mergeGuestCart(req.user._id, items);
         res.json(cart);
     } catch (err) {

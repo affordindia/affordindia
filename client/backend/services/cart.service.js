@@ -1,111 +1,179 @@
 import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
 
+// Helper function to transform cart items for frontend
+const transformCartItems = (items) => {
+    return items.map((item) => ({
+        _id: item._id,
+        product: {
+            _id: item.product._id,
+            name: item.product.name,
+            images: item.product.images,
+            stock: item.product.stock,
+            price: item.product.price,
+        },
+        quantity: item.quantity,
+        priceAtAdd: item.priceAtAdd,
+        currentPrice: item.product.price,
+    }));
+};
+
 export const getUserCart = async (userId) => {
-    let cart = await Cart.findOne({ user: userId }).populate({
-        path: "items.product",
-        select: "name price images stock",
-    });
-    if (!cart) {
-        cart = await Cart.create({ user: userId, items: [] });
-    }
-    // Map items to include current product price
-    const itemsWithCurrentPrice = cart.items.map((item) => {
-        const product = item.product;
+    try {
+        let cart = await Cart.findOneAndUpdate(
+            { user: userId },
+            { $setOnInsert: { user: userId, items: [] } },
+            { upsert: true, new: true }
+        ).populate({
+            path: "items.product",
+            select: "name price images stock",
+        });
+
         return {
-            _id: item._id,
-            product: product._id,
-            name: product.name,
-            images: product.images,
-            stock: product.stock,
-            quantity: item.quantity,
-            priceAtAdd: item.priceAtAdd,
-            currentPrice: product.price,
+            _id: cart._id,
+            user: cart.user,
+            items: transformCartItems(cart.items),
+            updatedAt: cart.updatedAt,
+            createdAt: cart.createdAt,
         };
-    });
-    return {
-        _id: cart._id,
-        user: cart.user,
-        items: itemsWithCurrentPrice,
-        updatedAt: cart.updatedAt,
-        createdAt: cart.createdAt,
-    };
+    } catch (error) {
+        console.error("Error in getUserCart:", error);
+        throw new Error("Failed to get user cart");
+    }
 };
 
 export const addOrUpdateCartItem = async (userId, productId, quantity) => {
-    const product = await Product.findById(productId);
-    if (!product) {
-        throw new Error("Product not found");
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new Error("Product not found");
+        }
+        if (product.stock < quantity) {
+            throw new Error("Insufficient stock for the requested quantity");
+        }
+
+        // Try to update existing item first
+        const updatedCart = await Cart.findOneAndUpdate(
+            { user: userId, "items.product": productId },
+            {
+                $set: {
+                    "items.$.quantity": quantity,
+                    "items.$.priceAtAdd": product.price,
+                },
+            },
+            { new: true }
+        );
+
+        // If no existing item found, add new item
+        if (!updatedCart) {
+            await Cart.findOneAndUpdate(
+                { user: userId },
+                {
+                    $push: {
+                        items: {
+                            product: productId,
+                            quantity,
+                            priceAtAdd: product.price,
+                        },
+                    },
+                    $setOnInsert: { user: userId },
+                },
+                { upsert: true }
+            );
+        }
+
+        return await getUserCart(userId);
+    } catch (error) {
+        console.error("Error in addOrUpdateCartItem:", error);
+        throw error;
     }
-    if (product.stock < quantity) {
-        throw new Error("Insufficient stock for the requested quantity");
-    }
-    let cart = await Cart.findOne({ user: userId });
-    if (!cart) {
-        cart = new Cart({ user: userId, items: [] });
-    }
-    const itemIndex = cart.items.findIndex(
-        (item) => item.product.toString() === productId
-    );
-    if (itemIndex > -1) {
-        cart.items[itemIndex].quantity = quantity;
-        cart.items[itemIndex].priceAtAdd = product.price;
-    } else {
-        cart.items.push({
-            product: productId,
-            quantity,
-            priceAtAdd: product.price,
-        });
-    }
-    await cart.save();
-    // Repopulate cart to return with current product details
-    return await getUserCart(userId);
 };
 
 export const removeCartItem = async (userId, itemId) => {
-    const cart = await Cart.findOne({ user: userId });
-    if (!cart) throw new Error("Cart not found");
-    const initialLength = cart.items.length;
-    cart.items = cart.items.filter((item) => item._id.toString() !== itemId);
-    if (cart.items.length === initialLength) {
-        throw new Error("Cart item not found");
+    try {
+        const result = await Cart.findOneAndUpdate(
+            { user: userId },
+            { $pull: { items: { _id: itemId } } },
+            { new: true }
+        );
+
+        if (!result) {
+            throw new Error("Cart not found");
+        }
+
+        return await getUserCart(userId);
+    } catch (error) {
+        console.error("Error in removeCartItem:", error);
+        throw error;
     }
-    await cart.save();
-    return await getUserCart(userId);
 };
 
 export const clearCart = async (userId) => {
-    const cart = await Cart.findOne({ user: userId });
-    if (!cart) throw new Error("Cart not found");
-    cart.items = [];
-    await cart.save();
-    return await getUserCart(userId);
+    try {
+        await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
+
+        return await getUserCart(userId);
+    } catch (error) {
+        console.error("Error in clearCart:", error);
+        throw error;
+    }
 };
 
 export const mergeGuestCart = async (userId, guestItems) => {
-    let cart = await Cart.findOne({ user: userId });
-    if (!cart) cart = new Cart({ user: userId, items: [] });
-    for (const guestItem of guestItems) {
-        const product = await Product.findById(guestItem.product);
-        if (!product) continue;
-        const itemIndex = cart.items.findIndex(
-            (item) => item.product.toString() === guestItem.product
-        );
-        const quantity = Math.min(
-            (cart.items[itemIndex]?.quantity || 0) + guestItem.quantity,
-            product.stock
-        );
-        if (itemIndex > -1) {
-            cart.items[itemIndex].quantity = quantity;
-            cart.items[itemIndex].priceAtAdd = product.price;
-        } else {
-            cart.items.push({
-                product: guestItem.product,
-                quantity,
-                priceAtAdd: product.price,
-            });
+    try {
+        if (!guestItems || !Array.isArray(guestItems)) {
+            throw new Error("Invalid guest items");
         }
+
+        // Ensure cart exists
+        await Cart.findOneAndUpdate(
+            { user: userId },
+            { $setOnInsert: { user: userId, items: [] } },
+            { upsert: true }
+        );
+
+        for (const guestItem of guestItems) {
+            if (!guestItem.product || !guestItem.quantity) {
+                continue; // Skip invalid items
+            }
+
+            const product = await Product.findById(guestItem.product);
+            if (!product) {
+                continue; // Skip items with invalid products
+            }
+
+            // Try to update existing item
+            const updated = await Cart.findOneAndUpdate(
+                { user: userId, "items.product": guestItem.product },
+                {
+                    $inc: { "items.$.quantity": guestItem.quantity },
+                    $set: { "items.$.priceAtAdd": product.price },
+                }
+            );
+
+            // If no existing item, add new one
+            if (!updated) {
+                await Cart.findOneAndUpdate(
+                    { user: userId },
+                    {
+                        $push: {
+                            items: {
+                                product: guestItem.product,
+                                quantity: Math.min(
+                                    guestItem.quantity,
+                                    product.stock
+                                ),
+                                priceAtAdd: product.price,
+                            },
+                        },
+                    }
+                );
+            }
+        }
+
+        return await getUserCart(userId);
+    } catch (error) {
+        console.error("Error in mergeGuestCart:", error);
+        throw error;
     }
-    await cart.save();
-    return await getUserCart(userId);
 };
