@@ -7,8 +7,10 @@ const Profile = () => {
 
   return (
     <div className="flex justify-center items-center py-10 bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        
+      <div
+        className="p-8 rounded-lg shadow-md w-full max-w-2xl"
+        style={{ backgroundColor: '#E0E0E0' }}
+      >
         {/* Contact Details */}
         <h2 className="text-center text-lg font-semibold mb-4 flex items-center justify-center gap-2">
           Contact Details <FaEdit className="text-sm text-gray-600" />
@@ -17,25 +19,25 @@ const Profile = () => {
           <input
             type="text"
             placeholder="First Name"
-            defaultValue={user?.firstName || ""}
+            defaultValue={user?.firstName || ''}
             className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Second Name"
-            defaultValue={user?.lastName || ""}
+            defaultValue={user?.lastName || ''}
             className="p-2 border border-gray-300 rounded bg-white"
           />
           <input
             type="text"
             placeholder="Mobile Number"
-            defaultValue={user?.phone || ""}
+            defaultValue={user?.phone || ''}
             className="p-2 border border-gray-300 rounded bg-white sm:col-span-2"
           />
           <input
             type="email"
             placeholder="Email"
-            defaultValue={user?.email || ""}
+            defaultValue={user?.email || ''}
             className="p-2 border border-gray-300 rounded bg-white sm:col-span-2"
           />
         </div>
