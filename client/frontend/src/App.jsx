@@ -11,52 +11,56 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
+import ReturnPolicy from "./pages/ReturnPolicy";
+import TermsCondition from "./pages/TermsCondition.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import Shipping from "./pages/Shipping.jsx";
 
 const App = () => {
-    const { login } = useAuth();
+  const { login } = useAuth();
 
-    return (
-        <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/products/:material" element={<Products />} />
-                    <Route path="/products/id/:id" element={<ProductDetail />} />
-                    <Route path="/login" element={<Signup onAuthSuccess={login} />} />
-                    <Route path="/signup" element={<Signup onAuthSuccess={login} />} />
-                    <Route 
-                        path="/profile" 
-                        element={
-                            <ProtectedRoute>
-                                <Profile />
-                            </ProtectedRoute>
-                        } 
-                    />
-                    <Route 
-                        path="/cart" 
-                        element={<Cart />} 
-                    />
-                    <Route 
-                        path="/wishlist" 
-                        element={
-                            <ProtectedRoute>
-                                <Wishlist />
-                            </ProtectedRoute>
-                        } 
-                    />
-                    <Route
-                        path="*"
-                        element={
-                            <div className="p-8 text-center">404 Not Found</div>
-                        }
-                    />
-                </Routes>
-            </main>
-            <Footer />
-        </div>
-    );
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:material" element={<Products />} />
+          <Route path="/products/id/:id" element={<ProductDetail />} />
+          <Route path="/login" element={<Signup onAuthSuccess={login} />} />
+          <Route path="/signup" element={<Signup onAuthSuccess={login} />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/cart" element={<Cart />} />
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="*"
+            element={<div className="p-8 text-center">404 Not Found</div>}
+          />
+
+          <Route path="/returnpolicy" element={<ReturnPolicy />} />
+          <Route path="/terms" element={<TermsCondition />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/shipping" element={<Shipping />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
 };
 
 export default App;
