@@ -10,11 +10,11 @@ import logo from "../../assets/logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#F5F1E8] text-[#1F1F1F] py-10 text-sm">
-      {/* Increase padding on both sides evenly */}
-      <div className="max-w-[1200px] mx-auto px-12">
+    <footer className="bg-[#F5F1E8] text-[#1F1F1F] py-10 pb-12 text-sm mt-12">
+      <div className="max-w-[1200px] mx-auto px-9 sm:px-10 lg:px-20">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-14 text-left">
+
           {/* QUICK LINKS */}
           <div>
             <h3 className="font-semibold mb-2">QUICK LINKS</h3>
@@ -22,7 +22,7 @@ const Footer = () => {
               <li><Link to="/about" className="hover:underline">About Us</Link></li>
               <li><Link to="/contact" className="hover:underline">Contact Us</Link></li>
             </ul>
-            <div className="mt-14 flex justify-center md:justify-start">
+            <div className="mt-14 flex justify-start">
               <img src={logo} alt="Afford India Logo" className="h-10" />
             </div>
           </div>
@@ -50,7 +50,7 @@ const Footer = () => {
               <li>4</li>
               <li>5</li>
             </ul>
-            <div className="flex justify-center md:justify-start gap-4 mt-4">
+            <div className="flex justify-start gap-4 mt-4">
               <FaFacebook className="text-xl hover:text-blue-600 cursor-pointer" />
               <FaSquareInstagram className="text-xl hover:text-pink-500 cursor-pointer" />
               <FaSquareXTwitter className="text-xl hover:text-black cursor-pointer" />
