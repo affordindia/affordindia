@@ -15,6 +15,8 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import TermsCondition from "./pages/TermsCondition.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Shipping from "./pages/Shipping.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
 const App = () => {
   const { login } = useAuth();
@@ -56,6 +58,9 @@ const App = () => {
           <Route path="/terms" element={<TermsCondition />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/shipping" element={<Shipping />} />
+          <Route path="/about" element={<AboutUs/>}/>
+          <Route path="/contact" element={<ContactUs/>}/>
+          
         </Routes>
       </main>
       <Footer />

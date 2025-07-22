@@ -6,7 +6,7 @@ const TermsCondition = () => {
       {/* Page Title */}
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold border-b-4 border-[#C1B086] inline-block pb-1">
-          Terms & Condiitons
+          Terms & Condition
         </h1>
       </div>
 
