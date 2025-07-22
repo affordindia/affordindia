@@ -11,6 +11,12 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
+import ReturnPolicy from "./pages/ReturnPolicy";
+import TermsCondition from "./pages/TermsCondition.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import Shipping from "./pages/Shipping.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
 const App = () => {
     const { login } = useAuth();
@@ -29,6 +35,10 @@ const App = () => {
                     />
                     <Route
                         path="/login"
+                        element={<Signup onAuthSuccess={login} />}
+                    />
+                    <Route
+                        path="/signup"
                         element={<Signup onAuthSuccess={login} />}
                     />
                     <Route
@@ -54,6 +64,13 @@ const App = () => {
                             <div className="p-8 text-center">404 Not Found</div>
                         }
                     />
+
+                    <Route path="/returnpolicy" element={<ReturnPolicy />} />
+                    <Route path="/terms" element={<TermsCondition />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/shipping" element={<Shipping />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/contact" element={<ContactUs />} />
                 </Routes>
             </main>
             <Footer />
