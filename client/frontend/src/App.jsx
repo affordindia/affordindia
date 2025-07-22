@@ -11,11 +11,11 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
-import ReturnPolicy from "./pages/ReturnPolicy";
-import TermsCondition from "./pages/TermsCondition.jsx";
-import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
-import Shipping from "./pages/Shipping.jsx";
-import AboutUs from "./pages/AboutUs.jsx";
+import ReturnPolicy from "./pages/static/ReturnPolicy.jsx";
+import TermsCondition from "./pages/static/TermsCondition.jsx";
+import PrivacyPolicy from "./pages/static/PrivacyPolicy.jsx";
+import Shipping from "./pages/static/Shipping.jsx";
+import AboutUs from "./pages/static/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 
 const App = () => {
