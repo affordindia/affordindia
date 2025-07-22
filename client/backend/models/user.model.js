@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
     {
         name: { type: String, required: false }, // Optional name field (not required for auth)
-        email: { type: String, unique: true, sparse: true }, // Make email optional for phone auth
+        email: { type: String, sparse: true }, // Make email optional for phone auth - not unique
         password: { type: String }, // Make password optional for phone auth
         phone: { type: String, unique: true, sparse: true }, // Make phone unique and optional
-        authMethod: { 
-            type: String, 
-            enum: ['email', 'phone'], 
-            default: 'phone' // Default to phone auth
+        authMethod: {
+            type: String,
+            enum: ["email", "phone"],
+            default: "phone", // Default to phone auth
         }, // Track authentication method
         firebaseUid: { type: String, unique: true, sparse: true }, // Store Firebase UID for phone auth
         addresses: [
