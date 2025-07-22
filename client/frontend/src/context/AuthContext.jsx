@@ -1,12 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentUser, refreshToken, setAuthTokens, getAuthToken, getRefreshToken, removeAuthTokens } from '../api/auth.api';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import {
+    getCurrentUser,
+    refreshToken,
+    setAuthTokens,
+    getAuthToken,
+    getRefreshToken,
+    removeAuthTokens,
+} from "../api/auth.api";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+        throw new Error("useAuth must be used within an AuthProvider");
     }
     return context;
 };
@@ -23,7 +30,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const savedToken = getAuthToken();
                 const savedRefreshToken = getRefreshToken();
-                
+
                 if (savedToken && savedRefreshToken) {
                     // Verify token is still valid by fetching user info
                     const response = await getCurrentUser();
@@ -34,7 +41,7 @@ export const AuthProvider = ({ children }) => {
                     setIsAuthenticated(false);
                 }
             } catch (error) {
-                console.error('Auth initialization error:', error);
+                console.error("Auth initialization error:", error);
                 // Token might be expired or invalid, clear them
                 removeAuthTokens();
                 setIsAuthenticated(false);
@@ -53,27 +60,28 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(accessToken, refreshToken);
     };
 
-    const logout = () => {
-        setUser(null);
-        setToken(null);
-        setIsAuthenticated(false);
-        removeAuthTokens();
-    };
-
     const refreshAuthToken = async () => {
         try {
             const savedRefreshToken = getRefreshToken();
-            if (!savedRefreshToken) throw new Error('No refresh token available');
-            
+            if (!savedRefreshToken)
+                throw new Error("No refresh token available");
+
             const response = await refreshToken(savedRefreshToken);
             setToken(response.token);
             setAuthTokens(response.token, response.refreshToken);
             return response.token;
         } catch (error) {
-            console.error('Token refresh error:', error);
+            console.error("Token refresh error:", error);
             logout();
             throw error;
         }
+    };
+
+    const logout = () => {
+        setUser(null);
+        setToken(null);
+        setIsAuthenticated(false);
+        removeAuthTokens();
     };
 
     const updateUser = (userData) => {
@@ -88,12 +96,10 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         refreshToken: refreshAuthToken,
-        updateUser
+        updateUser,
     };
 
     return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
     );
 };
