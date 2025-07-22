@@ -6,9 +6,13 @@ import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import Cart from "./pages/Cart.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import OrderDetail from "./pages/OrderDetail.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
+import Orders from "./pages/Orders.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import ReturnPolicy from "./pages/static/ReturnPolicy.jsx";
@@ -49,7 +53,39 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/orders"
+                        element={
+                            <ProtectedRoute>
+                                <Orders />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/orders/:orderId"
+                        element={
+                            <ProtectedRoute>
+                                <OrderDetail />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="/cart" element={<Cart />} />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <ProtectedRoute>
+                                <Checkout />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/order-confirmation/:orderId"
+                        element={
+                            <ProtectedRoute>
+                                <OrderConfirmation />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/wishlist"
                         element={

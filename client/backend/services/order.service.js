@@ -75,11 +75,19 @@ export const placeOrder = async (
 };
 
 export const getUserOrders = async (userId) => {
-    return Order.find({ user: userId }).sort("-createdAt");
+    return Order.find({ user: userId })
+        .populate({
+            path: "items.product",
+            select: "name price images description",
+        })
+        .sort("-createdAt");
 };
 
 export const getOrderById = async (userId, orderId) => {
-    const order = await Order.findOne({ _id: orderId, user: userId });
+    const order = await Order.findOne({ _id: orderId, user: userId }).populate({
+        path: "items.product",
+        select: "name price images description",
+    });
     if (!order) throw new Error("Order not found");
     return order;
 };

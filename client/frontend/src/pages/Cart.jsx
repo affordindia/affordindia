@@ -140,9 +140,12 @@ const Cart = () => {
                             <span>Grand Total</span>
                             <span>₹{total}</span>
                         </div>
-                        <button className="mt-6 w-full bg-black text-white py-2 rounded hover:opacity-90 transition">
+                        <Link
+                            to="/checkout"
+                            className="mt-6 w-full bg-black text-white py-2 rounded hover:opacity-90 transition block text-center"
+                        >
                             Proceed to Checkout
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
