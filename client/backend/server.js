@@ -25,6 +25,7 @@ app.use(
             "http://localhost:5173",
             "http://localhost:5174",
             "https://client-frontend-chi.vercel.app",
+            "https://client-frontend-hw8c.onrender.com",
         ],
         credentials: true,
     })
