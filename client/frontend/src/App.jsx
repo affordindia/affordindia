@@ -11,10 +11,11 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
-import ReturnPolicy from "./pages/ReturnPolicy";
-import TermsCondition from "./pages/TermsCondition.jsx";
-import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
-import Shipping from "./pages/Shipping.jsx";
+import ReturnPolicy from "./pages/static/ReturnPolicy.jsx";
+import TermsCondition from "./pages/static/TermsCondition.jsx";
+import PrivacyPolicy from "./pages/static/PrivacyPolicy.jsx";
+import Shipping from "./pages/static/Shipping.jsx";
+import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 
@@ -58,8 +59,9 @@ const App = () => {
           <Route path="/terms" element={<TermsCondition />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/shipping" element={<Shipping />} />
-          <Route path="/about" element={<AboutUs/>}/>
-          <Route path="/contact" element={<ContactUs/>}/>
+          <Route path="/cancel" element={<CancelationPolicy />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<AboutUs />} />
           
         </Routes>
       </main>
