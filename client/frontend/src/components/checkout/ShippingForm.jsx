@@ -81,7 +81,16 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
     };
 
     const handleInputChange = (field, value) => {
-        onChange((prev) => ({ ...prev, [field]: value }));
+        // Special handling for pincode - only allow numeric values and max 6 digits
+        if (field === "pincode") {
+            // Remove any non-numeric characters
+            const numericValue = value.replace(/[^0-9]/g, "");
+            // Limit to 6 digits
+            const limitedValue = numericValue.slice(0, 6);
+            onChange((prev) => ({ ...prev, [field]: limitedValue }));
+        } else {
+            onChange((prev) => ({ ...prev, [field]: value }));
+        }
 
         // Clear selected address when user manually edits
         if (selectedAddressId !== "new" && selectedAddressId !== "") {
@@ -105,8 +114,15 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
                 if (!value?.trim()) error = "This field is required";
                 break;
             case "pincode":
-                if (!value?.match(/^\d{6}$/))
-                    error = "Enter a valid 6-digit pincode";
+                if (!value) {
+                    error = "Pincode is required";
+                } else if (!/^\d{6}$/.test(value)) {
+                    if (value.length < 6) {
+                        error = "Pincode must be exactly 6 digits";
+                    } else {
+                        error = "Enter a valid 6-digit pincode";
+                    }
+                }
                 break;
             default:
                 break;
