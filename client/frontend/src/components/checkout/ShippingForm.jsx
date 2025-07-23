@@ -9,34 +9,76 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
     const [errors, setErrors] = useState({});
     const [selectedAddressId, setSelectedAddressId] = useState("");
 
-    // Pre-fill from default address or user profile
+    // Auto-select default address and pre-fill form
     useEffect(() => {
         const defaultAddress = getDefaultAddress();
         const hasEmptyAddress = Object.keys(address).every(
             (key) => !address[key]
         );
+        const hasNoSelectedAddress = !selectedAddressId;
 
-        if (defaultAddress && hasEmptyAddress) {
-            // Use default address
-            handleAddressSelect(defaultAddress._id);
-        } else if (!defaultAddress && addresses.length > 0 && hasEmptyAddress) {
+        // Auto-select default address if available and no address is currently selected
+        if (defaultAddress && (hasEmptyAddress || hasNoSelectedAddress)) {
+            setSelectedAddressId(defaultAddress._id);
+            onChange({
+                label: defaultAddress.label || "Home",
+                houseNumber: defaultAddress.houseNumber || "",
+                street: defaultAddress.street || "",
+                landmark: defaultAddress.landmark || "",
+                area: defaultAddress.area || "",
+                city: defaultAddress.city || "",
+                state: defaultAddress.state || "",
+                pincode: defaultAddress.pincode || "",
+                country: defaultAddress.country || "India",
+            });
+        } else if (
+            !defaultAddress &&
+            addresses.length > 0 &&
+            hasEmptyAddress &&
+            hasNoSelectedAddress
+        ) {
             // Use first available address if no default
-            handleAddressSelect(addresses[0]._id);
+            const firstAddress = addresses[0];
+            setSelectedAddressId(firstAddress._id);
+            onChange({
+                label: firstAddress.label || "Home",
+                houseNumber: firstAddress.houseNumber || "",
+                street: firstAddress.street || "",
+                landmark: firstAddress.landmark || "",
+                area: firstAddress.area || "",
+                city: firstAddress.city || "",
+                state: firstAddress.state || "",
+                pincode: firstAddress.pincode || "",
+                country: firstAddress.country || "India",
+            });
         } else if (
             !addresses.length &&
             user?.profile?.address &&
-            hasEmptyAddress
+            hasEmptyAddress &&
+            hasNoSelectedAddress
         ) {
             // Fallback to profile address if no saved addresses
-            onChange(user.profile.address);
+            const profileAddress = {
+                ...user.profile.address,
+                label: "Home",
+            };
+            onChange(profileAddress);
         }
-    }, [addresses, user, address]);
+    }, [addresses, user]);
 
     // Update step when address is complete
     useEffect(() => {
+        const isLabelValid =
+            selectedAddressId === "new"
+                ? address.label &&
+                  ["Home", "Work", "Other"].includes(address.label)
+                : true;
+
         const isComplete =
+            isLabelValid &&
             address.houseNumber &&
             address.street &&
+            address.area &&
             address.city &&
             address.state &&
             address.pincode?.match(/^\d{6}$/);
@@ -45,12 +87,13 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
         } else {
             onStepChange("shipping");
         }
-    }, [address, onStepChange]);
+    }, [address, selectedAddressId, onStepChange]);
 
     const handleAddressSelect = (addressId) => {
         if (addressId === "new") {
             setSelectedAddressId("new");
             onChange({
+                label: "Home", // Default to Home for new addresses
                 houseNumber: "",
                 street: "",
                 landmark: "",
@@ -67,6 +110,7 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
             );
             if (selectedAddress) {
                 onChange({
+                    label: selectedAddress.label || "Home",
                     houseNumber: selectedAddress.houseNumber || "",
                     street: selectedAddress.street || "",
                     landmark: selectedAddress.landmark || "",
@@ -81,21 +125,31 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
     };
 
     const handleInputChange = (field, value) => {
+        let processedValue = value;
+
         // Special handling for pincode - only allow numeric values and max 6 digits
         if (field === "pincode") {
-            // Remove any non-numeric characters
-            const numericValue = value.replace(/[^0-9]/g, "");
-            // Limit to 6 digits
-            const limitedValue = numericValue.slice(0, 6);
-            onChange((prev) => ({ ...prev, [field]: limitedValue }));
-        } else {
-            onChange((prev) => ({ ...prev, [field]: value }));
+            // Remove any non-numeric characters and limit to 6 digits
+            processedValue = value.replace(/[^0-9]/g, "").slice(0, 6);
         }
 
-        // Clear selected address when user manually edits
-        if (selectedAddressId !== "new" && selectedAddressId !== "") {
-            setSelectedAddressId("");
+        // Update the address field
+        const updateData = { [field]: processedValue };
+
+        // Only clear selected address when user manually edits and it's not "new"
+        // This prevents clearing when they're intentionally adding a new address
+        if (selectedAddressId && selectedAddressId !== "new") {
+            setSelectedAddressId("new");
+            // Ensure we maintain a label when switching to "new" mode
+            if (
+                !address.label ||
+                !["Home", "Work", "Other"].includes(address.label)
+            ) {
+                updateData.label = "Home";
+            }
         }
+
+        onChange((prev) => ({ ...prev, ...updateData }));
 
         // Clear error when user starts typing
         if (errors[field]) {
@@ -107,8 +161,14 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
         let error = "";
 
         switch (field) {
+            case "label":
+                if (!value || !["Home", "Work", "Other"].includes(value)) {
+                    error = "Please select a valid address type";
+                }
+                break;
             case "houseNumber":
             case "street":
+            case "area":
             case "city":
             case "state":
                 if (!value?.trim()) error = "This field is required";
@@ -157,7 +217,6 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
                         onChange={(e) => handleAddressSelect(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[#404040] focus:outline-none focus:ring-2 focus:ring-[#C1B086]"
                     >
-                        <option value="">Select an address</option>
                         {addresses.map((addr) => (
                             <option key={addr._id} value={addr._id}>
                                 {addr.houseNumber}, {addr.street}, {addr.city} -{" "}
@@ -175,7 +234,11 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
                 {selectedAddressId && selectedAddressId !== "new" && (
                     <div className="bg-blue-50 border border-blue-200 rounded px-3 py-1 text-xs text-blue-700 flex items-center gap-1">
                         <FaCheck size={10} />
-                        Using saved address
+                        {addresses.find(
+                            (addr) => addr._id === selectedAddressId
+                        )?.isDefault
+                            ? "Using default address"
+                            : "Using saved address"}
                     </div>
                 )}
                 {selectedAddressId === "new" && (
@@ -184,6 +247,14 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
                         New address - will be saved when order is placed
                     </div>
                 )}
+                {!selectedAddressId &&
+                    addresses.length === 0 &&
+                    user?.profile?.address && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded px-3 py-1 text-xs text-yellow-700 flex items-center gap-1">
+                            <FaMapMarkerAlt size={10} />
+                            Using profile address
+                        </div>
+                    )}
             </div>
 
             {/* Pre-fill Notice - Only show if no saved addresses */}
@@ -379,6 +450,40 @@ const ShippingForm = ({ address, onChange, onStepChange }) => {
                         required
                     />
                 </div>
+
+                {/* Address Label - Only show for new addresses */}
+                {selectedAddressId === "new" && (
+                    <div>
+                        <label className="block text-sm font-medium text-[#404040] mb-1">
+                            Address Label *
+                        </label>
+                        <select
+                            value={address.label || "Home"}
+                            onChange={(e) =>
+                                handleInputChange("label", e.target.value)
+                            }
+                            onBlur={(e) => handleBlur("label", e.target.value)}
+                            className={`w-full border rounded-lg px-3 py-2 text-[#404040] focus:outline-none focus:ring-2 focus:ring-[#C1B086] ${
+                                errors.label
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                            }`}
+                            required
+                        >
+                            <option value="Home">Home</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {errors.label && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.label}
+                            </p>
+                        )}
+                        <p className="text-xs text-gray-500 mt-1">
+                            Choose address type for easy identification
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Required Fields Note */}

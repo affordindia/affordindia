@@ -15,6 +15,17 @@ const Checkout = () => {
     const { addresses, addAddress } = useProfile();
     const navigate = useNavigate();
 
+    // Utility function to check if address already exists
+    const isAddressAlreadySaved = (address, savedAddresses) => {
+        return savedAddresses.some(
+            (addr) =>
+                addr.houseNumber === address.houseNumber &&
+                addr.street === address.street &&
+                addr.city === address.city &&
+                addr.pincode === address.pincode
+        );
+    };
+
     // State management
     const [shippingAddress, setShippingAddress] = useState({
         houseNumber: "",
@@ -84,12 +95,9 @@ const Checkout = () => {
             }
 
             // Check if this is a new address and save it
-            const isNewAddress = !addresses.some(
-                (addr) =>
-                    addr.houseNumber === shippingAddress.houseNumber &&
-                    addr.street === shippingAddress.street &&
-                    addr.city === shippingAddress.city &&
-                    addr.pincode === shippingAddress.pincode
+            const isNewAddress = !isAddressAlreadySaved(
+                shippingAddress,
+                addresses
             );
 
             if (
@@ -101,6 +109,7 @@ const Checkout = () => {
                 shippingAddress.pincode?.match(/^\d{6}$/)
             ) {
                 await addAddress({
+                    label: shippingAddress.label || "Home",
                     houseNumber: shippingAddress.houseNumber,
                     street: shippingAddress.street,
                     landmark: shippingAddress.landmark,
