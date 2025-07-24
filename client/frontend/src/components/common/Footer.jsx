@@ -10,7 +10,7 @@ import logo from "../../assets/logo.png"; // Replace with actual path
 
 const Footer = () => {
   return (
-    <footer className="bg-[#ecece8] text-sm text-gray-800 py-10 px-4">
+    <footer className="bg-[#ecece8] text-sm text-gray-800 py-10 px-4 mt-12">
       <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
         {/* QUICK LINKS */}
         <div>
