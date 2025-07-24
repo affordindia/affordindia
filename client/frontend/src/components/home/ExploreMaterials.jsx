@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { getCategories } from "../../api/category";
+import { useAppData } from "../../context/AppDataContext.jsx";
 
 const ExploreMaterials = () => {
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        getCategories()
-            .then((data) => setCategories(data.categories || data))
-            .catch(() => setCategories([]));
-    }, []);
+    const { categories } = useAppData(); // Get categories from context instantly!
 
     return (
         <section className="bg-secondary py-10">

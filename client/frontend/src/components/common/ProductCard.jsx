@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { useWishlist } from "../../context/WishlistContext.jsx";
 
-const ProductCard = ({ product, small }) => {
+const ProductCard = ({ product }) => {
     const { wishlist, addToWishlist, removeFromWishlist, loading } =
         useWishlist();
     const [actionLoading, setActionLoading] = useState(false);
@@ -33,9 +33,7 @@ const ProductCard = ({ product, small }) => {
     return (
         <Link
             to={`/products/id/${product._id}`}
-            className={`bg-[#f9f7f3] rounded-xl shadow-md overflow-hidden relative hover:shadow-lg transition-all flex flex-col group ${
-                small ? "w-[140px] md:w-[160px]" : "w-[250px]"
-            }`}
+            className="bg-[#f9f7f3] rounded-xl shadow-md overflow-hidden relative hover:shadow-lg transition-all flex flex-col group w-full"
         >
             {/* Wishlist Icon */}
             <button
@@ -67,31 +65,15 @@ const ProductCard = ({ product, small }) => {
             </div>
 
             {/* Info */}
-            <div
-                className={`p-3 flex flex-col gap-1 flex-1 min-h-0 ${
-                    small ? "pt-2 pb-2" : ""
-                }`}
-            >
-                <h3
-                    className={`${
-                        small ? "text-sm font-medium" : "text-lg font-medium"
-                    } truncate`}
-                >
+            <div className="p-2 md:p-3 flex flex-col gap-1 flex-1 min-h-0">
+                <h3 className="text-sm md:text-lg font-medium truncate">
                     {product.name}
                 </h3>
                 <div className="flex items-center justify-between w-full">
-                    <div
-                        className={`${
-                            small ? "text-xs" : "text-base"
-                        } text-gray-700 font-semibold`}
-                    >
+                    <div className="text-xs md:text-base text-gray-700 font-semibold">
                         ₹{product.price}
                     </div>
-                    <div
-                        className={`flex items-center ${
-                            small ? "text-xs" : "text-sm"
-                        } text-gray-600`}
-                    >
+                    <div className="flex items-center text-xs md:text-sm text-gray-600">
                         <span className="flex items-center gap-1">
                             {product.rating || "4.5"}
                         </span>

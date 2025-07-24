@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/product.js";
 import { getBanners } from "../api/banner.js";
-import { getCategories } from "../api/category.js";
+import { useAppData } from "../context/AppDataContext.jsx";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Banners from "../components/common/Banners.jsx";
 import ProductFilters from "../components/products/ProductFilters.jsx";
@@ -32,6 +32,7 @@ const Products = () => {
     const { material = "all" } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const { categories } = useAppData();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -99,9 +100,8 @@ const Products = () => {
         setLoading(true);
         setError(null);
 
-        getCategories()
-            .then((catRes) => {
-                const categories = catRes.categories || catRes || [];
+        const fetchProducts = async () => {
+            try {
                 let categoryId = null;
                 if (selectedMaterial !== "all") {
                     const match = categories.find(
@@ -123,9 +123,9 @@ const Products = () => {
                     ...(search && search.trim() !== "" ? { search } : {}),
                     ...(skip > 0 ? { skip } : {}),
                 };
-                return getProducts(productParams);
-            })
-            .then((prodRes) => {
+
+                const prodRes = await getProducts(productParams);
+
                 if (Array.isArray(prodRes)) {
                     setProducts(prodRes);
                     setTotal(0);
@@ -133,13 +133,16 @@ const Products = () => {
                     setProducts(prodRes.products || []);
                     setTotal(prodRes.total || prodRes.totalCount || 0);
                 }
-            })
-            .catch((err) => {
+            } catch (err) {
                 setError(err.message || "Error fetching products");
                 setProducts([]);
-            })
-            .finally(() => setLoading(false));
-    }, [selectedMaterial, search, sort, selectedPrice, page]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [selectedMaterial, search, sort, selectedPrice, page, categories]);
 
     // Handlers
     const updateQueryParams = (newParams) => {

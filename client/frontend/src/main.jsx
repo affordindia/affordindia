@@ -6,18 +6,21 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { ProfileProvider } from "./context/ProfileContext.jsx";
+import { AppDataProvider } from "./context/AppDataContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
-    <AuthProvider>
-        <CartProvider>
-            <WishlistProvider>
-                <ProfileProvider>
-                    <BrowserRouter>
-                        <App />
-                    </BrowserRouter>
-                </ProfileProvider>
-            </WishlistProvider>
-        </CartProvider>
-    </AuthProvider>
+    <AppDataProvider>
+        <AuthProvider>
+            <CartProvider>
+                <WishlistProvider>
+                    <ProfileProvider>
+                        <BrowserRouter>
+                            <App />
+                        </BrowserRouter>
+                    </ProfileProvider>
+                </WishlistProvider>
+            </CartProvider>
+        </AuthProvider>
+    </AppDataProvider>
 );

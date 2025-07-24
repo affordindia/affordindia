@@ -25,14 +25,9 @@ const FeaturedProducts = () => {
                         Featured Products
                     </h2>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     {mobileProducts.map((product) => (
-                        <div
-                            key={product._id}
-                            className="flex justify-center items-center"
-                        >
-                            <ProductCard product={product} />
-                        </div>
+                        <ProductCard key={product._id} product={product} />
                     ))}
                 </div>
             </div>
@@ -41,9 +36,7 @@ const FeaturedProducts = () => {
             <div className="hidden md:grid grid-cols-4 gap-4 mb-8 items-stretch">
                 {/* Left card */}
                 {topRow[0] ? (
-                    <div className="flex justify-center items-center col-span-1">
-                        <ProductCard product={topRow[0]} />
-                    </div>
+                    <ProductCard product={topRow[0]} />
                 ) : (
                     <div className="col-span-1" />
                 )}
@@ -64,9 +57,7 @@ const FeaturedProducts = () => {
                 </div>
                 {/* Right card */}
                 {topRow[1] ? (
-                    <div className="flex justify-center items-center col-span-1">
-                        <ProductCard product={topRow[1]} />
-                    </div>
+                    <ProductCard product={topRow[1]} />
                 ) : (
                     <div className="col-span-1" />
                 )}
@@ -74,12 +65,7 @@ const FeaturedProducts = () => {
 
             <div className="hidden md:grid grid-cols-4 gap-4">
                 {bottomRow.map((product) => (
-                    <div
-                        key={product._id}
-                        className="flex justify-center items-center"
-                    >
-                        <ProductCard product={product} />
-                    </div>
+                    <ProductCard key={product._id} product={product} />
                 ))}
             </div>
         </section>

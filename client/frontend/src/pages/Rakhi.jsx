@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/product.js";
 import ProductCard from "../components/common/ProductCard.jsx";
 import Banners from "../components/common/Banners.jsx";
+import { useAppData } from "../context/AppDataContext.jsx";
 import { FaHeart, FaGift, FaStar } from "react-icons/fa";
 
 const Rakhi = () => {
+    const { allCategories, loading: contextLoading } = useAppData();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,11 +17,42 @@ const Rakhi = () => {
                 setLoading(true);
                 setError(null);
 
-                // Fetch rakhi products using hardcoded category ID
+                // Find Rakhi category dynamically from context
+                const rakhiCategory = allCategories.find(
+                    (category) => category.name?.toLowerCase() === "rakhi"
+                );
+
+                if (!rakhiCategory) {
+                    console.warn("Rakhi category not found in allCategories");
+                    setProducts([]);
+                    return;
+                }
+
+                // Fetch rakhi products using dynamic category ID
                 const productsResponse = await getProducts({
-                    category: "68820738a7347e48e2cc27c4",
+                    category: rakhiCategory._id,
                 });
-                setProducts(productsResponse.products || []);
+
+                const originalProducts = productsResponse.products || [];
+
+                // TEST MODE: Duplicate single product to show 20 products for demo
+                let testProducts = [];
+                if (originalProducts.length > 0) {
+                    const singleProduct = originalProducts[0];
+                    for (let i = 0; i < 20; i++) {
+                        testProducts.push({
+                            ...singleProduct,
+                            _id: `${singleProduct._id}_test_${i}`, // Unique ID for each duplicate
+                            name: `${singleProduct.name} - Design ${i + 1}`, // Unique name
+                            price: singleProduct.price + i * 10, // Vary price slightly
+                        });
+                    }
+                }
+
+                // Use test products if we have them, otherwise use original
+                setProducts(
+                    testProducts.length > 0 ? testProducts : originalProducts
+                );
             } catch (err) {
                 console.error("Error fetching Rakhi data:", err);
                 setError(
@@ -30,10 +63,14 @@ const Rakhi = () => {
             }
         };
 
-        fetchRakhiData();
-    }, []);
+        // Only fetch when context is loaded and categories are available
+        if (!contextLoading && allCategories.length > 0) {
+            fetchRakhiData();
+        }
+    }, [allCategories, contextLoading]);
 
-    if (loading) {
+    // Show loading if context is still loading or products are loading
+    if (contextLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -111,7 +148,7 @@ const Rakhi = () => {
                         </div>
 
                         {/* Products Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
                             {products.map((product) => (
                                 <ProductCard
                                     key={product._id}

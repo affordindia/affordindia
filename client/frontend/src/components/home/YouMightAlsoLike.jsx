@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../../api/product";
-import { getCategories } from "../../api/category";
+import { useAppData } from "../../context/AppDataContext.jsx";
 import ProductCard from "../common/ProductCard";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const YouMightAlsoLike = () => {
+    const { categories } = useAppData();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sliderRef, instanceRef] = useKeenSlider({
@@ -20,10 +21,6 @@ const YouMightAlsoLike = () => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                // Get all categories
-                const catRes = await getCategories();
-                const categories =
-                    (catRes && (catRes.categories || catRes)) || [];
                 // For each category, get 1 random product
                 let prods = [];
                 for (const cat of categories) {
@@ -60,7 +57,7 @@ const YouMightAlsoLike = () => {
             }
         };
         fetchProducts();
-    }, []);
+    }, [categories]);
 
     // Navigation handlers
     const goPrev = () => instanceRef.current && instanceRef.current.prev();
@@ -108,7 +105,7 @@ const YouMightAlsoLike = () => {
                                         maxWidth: 220,
                                     }}
                                 >
-                                    <ProductCard product={product} small />
+                                    <ProductCard product={product} />
                                 </div>
                             ))}
                     </div>

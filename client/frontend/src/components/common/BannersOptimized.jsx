@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { getBanners } from "../../api/banner.js";
+import React, { useState, useEffect } from "react";
 import { useAppData } from "../../context/AppDataContext.jsx";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -37,17 +36,12 @@ function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
     };
 }
 
-const Banners = ({ material = "all" }) => {
-    const [banners, setBanners] = useState([]);
-    const [loading, setLoading] = useState(true);
+const BannersOptimized = ({ material = "all" }) => {
+    const { getBannersByMaterial, bannersLoading, bannersError } = useAppData();
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Get app data context
-    const {
-        getBannersByMaterial,
-        loading: contextLoading,
-        error: contextError,
-    } = useAppData();
+    // Get banners instantly from context (no API call!)
+    const banners = getBannersByMaterial(material);
 
     // Only enable autoplay if more than one banner
     const keenSliderPlugins =
@@ -63,54 +57,32 @@ const Banners = ({ material = "all" }) => {
         keenSliderPlugins
     );
 
-    useEffect(() => {
-        const fetchBanners = async () => {
-            // Try to use context first (instant loading)
-            if (!contextLoading && !contextError) {
-                const contextBanners = getBannersByMaterial(material);
-                setBanners(contextBanners);
-                setLoading(false);
-                return;
-            }
-
-            // Fallback to API if context is not ready
-            setLoading(true);
-            try {
-                const res = await getBanners();
-                let arr = res?.banners || res || [];
-                // Filter by material if not 'all'
-                if (material && material !== "all") {
-                    arr = arr.filter(
-                        (b) =>
-                            b.material?.toLowerCase() === material.toLowerCase()
-                    );
-                }
-                // Sort by 'order' field ascending
-                arr = arr
-                    .slice()
-                    .sort((a, b) => (a.order || 0) - (b.order || 0));
-                setBanners(arr);
-            } catch {
-                setBanners([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchBanners();
-    }, [material, contextLoading, contextError, getBannersByMaterial]);
-
     const goTo = (idx) =>
         instanceRef.current && instanceRef.current.moveToIdx(idx);
 
+    // Debug logging
+    useEffect(() => {
+        console.log(`🎯 BannersOptimized [${material}]:`, {
+            requested: material,
+            found: banners.length,
+            loading: bannersLoading,
+            error: bannersError,
+        });
+    }, [material, banners.length, bannersLoading, bannersError]);
+
     return (
         <section className="relative w-full">
-            {loading ? (
+            {bannersLoading ? (
                 <div className="text-center py-8 text-gray-500">
                     Loading banners...
                 </div>
+            ) : bannersError ? (
+                <div className="text-center py-8 text-red-500">
+                    Error loading banners: {bannersError}
+                </div>
             ) : !banners.length ? (
                 <div className="text-center py-8 text-gray-500">
-                    No banners found.
+                    No banners found for "{material}".
                 </div>
             ) : (
                 <div className="relative w-full">
@@ -161,4 +133,4 @@ const Banners = ({ material = "all" }) => {
     );
 };
 
-export default Banners;
+export default BannersOptimized;

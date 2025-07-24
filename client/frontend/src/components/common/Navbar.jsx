@@ -13,14 +13,14 @@ import { RxCross1 } from "react-icons/rx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useWishlist } from "../../context/WishlistContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { getCategories } from "../../api/category.js";
+import { useAppData } from "../../context/AppDataContext.jsx";
 import NavLogo from "../../assets/NavLogo.png";
 
 const Navbar = () => {
     const { cart } = useCart();
     const { wishlist } = useWishlist();
     const { isAuthenticated, user, logout } = useAuth();
-    const [categories, setCategories] = useState([]);
+    const { categories } = useAppData();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const cartCount = cart?.items?.length || 0;
@@ -29,12 +29,6 @@ const Navbar = () => {
     const [searchValue, setSearchValue] = useState("");
     const [mobileSearchValue, setMobileSearchValue] = useState("");
     const navigate = useNavigate();
-
-    useEffect(() => {
-        getCategories()
-            .then((data) => setCategories(data.categories || data))
-            .catch(() => setCategories([]));
-    }, []);
 
     // Close dropdown when clicking outside
     useEffect(() => {
