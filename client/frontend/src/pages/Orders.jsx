@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getOrders } from "../api/order.js";
+import Loader from "../components/common/Loader.jsx";
 import {
     FaBox,
     FaTruck,
@@ -83,12 +84,7 @@ const Orders = () => {
     };
 
     if (loading) {
-        return (
-            <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#C1B086] border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading your orders...</p>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error) {

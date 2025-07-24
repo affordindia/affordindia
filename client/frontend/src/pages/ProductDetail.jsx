@@ -4,6 +4,7 @@ import { getProductById } from "../api/product.js";
 import { getProductReviews } from "../api/review.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
+import Loader from "../components/common/Loader.jsx";
 import HighlightsSection from "../components/productDetail/HighlightsSection.jsx";
 import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 
@@ -70,7 +71,7 @@ const ProductDetail = () => {
         setTimeout(() => setWishlistMsg(""), 3000);
     };
 
-    if (loading) return <div className="p-8 text-center">Loading...</div>;
+    if (loading) return <Loader fullScreen={true} />;
     if (!product)
         return <div className="p-8 text-center">Product not found</div>;
 

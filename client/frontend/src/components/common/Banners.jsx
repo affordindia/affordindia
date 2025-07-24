@@ -3,7 +3,6 @@ import { getBanners } from "../../api/banner.js";
 import { useAppData } from "../../context/AppDataContext.jsx";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 // Keen-slider autoplay plugin
 function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
@@ -104,15 +103,7 @@ const Banners = ({ material = "all" }) => {
 
     return (
         <section className="relative w-full">
-            {loading ? (
-                <div className="text-center py-8 text-gray-500">
-                    Loading banners...
-                </div>
-            ) : !banners.length ? (
-                <div className="text-center py-8 text-gray-500">
-                    No banners found.
-                </div>
-            ) : (
+            {banners.length > 0 && (
                 <div className="relative w-full">
                     {/* keen-slider carousel */}
                     <div

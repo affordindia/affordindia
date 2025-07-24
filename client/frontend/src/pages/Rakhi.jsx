@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/product.js";
 import ProductCard from "../components/common/ProductCard.jsx";
 import Banners from "../components/common/Banners.jsx";
+import Loader from "../components/common/Loader.jsx";
 import { useAppData } from "../context/AppDataContext.jsx";
 import { FaHeart, FaGift, FaStar } from "react-icons/fa";
 
@@ -52,16 +53,7 @@ const Rakhi = () => {
 
     // Show loading if context is still loading or products are loading
     if (contextLoading || loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C1B086] mx-auto mb-4"></div>
-                    <p className="text-[#404040] text-lg">
-                        Loading Rakhi Collection...
-                    </p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error) {

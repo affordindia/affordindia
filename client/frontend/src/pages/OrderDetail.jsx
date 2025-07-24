@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
+import Loader from "../components/common/Loader.jsx";
 import {
     FaArrowLeft,
     FaBox,
@@ -76,12 +77,7 @@ const OrderDetail = () => {
     };
 
     if (loading) {
-        return (
-            <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#C1B086] border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading order details...</p>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error || !order) {

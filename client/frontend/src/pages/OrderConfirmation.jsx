@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
+import Loader from "../components/common/Loader.jsx";
 import { FaCheckCircle, FaTruck, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 
 const OrderConfirmation = () => {
@@ -29,12 +30,7 @@ const OrderConfirmation = () => {
     }, [orderId]);
 
     if (loading) {
-        return (
-            <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#C1B086] border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading order details...</p>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error || !order) {

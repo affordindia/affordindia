@@ -69,7 +69,7 @@ const Navbar = () => {
                     </Link>
                     {/* Desktop categories */}
                     <div className="hidden md:flex space-x-6 text-lg text-[#363230]">
-                        {categories.length > 0 ? (
+                        {categories.length > 0 &&
                             categories.map((cat) => (
                                 <Link
                                     key={cat._id || cat.name}
@@ -83,10 +83,7 @@ const Navbar = () => {
                                 >
                                     {cat.name}
                                 </Link>
-                            ))
-                        ) : (
-                            <span className="text-gray-400">Loading...</span>
-                        )}
+                            ))}
                     </div>
                 </div>
 
@@ -280,7 +277,7 @@ const Navbar = () => {
                 }`}
                 style={{ position: "absolute", left: 0, right: 0, top: "100%" }}
             >
-                {categories.length > 0 ? (
+                {categories.length > 0 &&
                     categories.map((cat) => (
                         <Link
                             key={cat._id || cat.name}
@@ -292,10 +289,7 @@ const Navbar = () => {
                         >
                             {cat.name}
                         </Link>
-                    ))
-                ) : (
-                    <span className="text-gray-400">Loading...</span>
-                )}
+                    ))}
 
                 {/* Mobile Authentication Options */}
                 <div className="border-t border-gray-300 pt-2 mt-2">

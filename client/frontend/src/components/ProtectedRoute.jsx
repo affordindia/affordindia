@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
+import Loader from "./common/Loader.jsx";
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
@@ -10,22 +11,15 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         if (!loading && !isAuthenticated) {
             // Save the current path so we can redirect back after login
-            navigate('/login', { 
+            navigate("/login", {
                 state: { from: location.pathname },
-                replace: true 
+                replace: true,
             });
         }
     }, [isAuthenticated, loading, navigate, location.pathname]);
 
     if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                    <p>Loading...</p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (!isAuthenticated) {

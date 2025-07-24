@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProducts } from "../../api/product";
 import { useAppData } from "../../context/AppDataContext.jsx";
 import ProductCard from "../common/ProductCard";
+import Loader from "../common/Loader";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -69,7 +70,7 @@ const YouMightAlsoLike = () => {
                 You Might Also Like These Products
             </h2>
             {loading ? (
-                <div className="text-center py-8 text-gray-500">Loading...</div>
+                <Loader />
             ) : !products ||
               !Array.isArray(products) ||
               products.length === 0 ? (

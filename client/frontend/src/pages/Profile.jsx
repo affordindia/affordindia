@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useProfile } from "../context/ProfileContext";
 import { FaPlus, FaTimes } from "react-icons/fa";
+import Loader from "../components/common/Loader";
 import ProfileForm from "../components/profile/ProfileForm";
 import AddressCard from "../components/profile/AddressCard";
 import AddressForm from "../components/profile/AddressForm";
@@ -92,13 +93,7 @@ const Profile = () => {
 
                     {/* Loading State */}
                     {loading && addresses.length === 0 && !showAddressForm && (
-                        <div className="space-y-4">
-                            {[1, 2].map((i) => (
-                                <div key={i} className="animate-pulse">
-                                    <div className="h-32 bg-gray-200 rounded"></div>
-                                </div>
-                            ))}
-                        </div>
+                        <Loader />
                     )}
 
                     {/* Address List */}

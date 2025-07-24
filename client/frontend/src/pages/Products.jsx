@@ -4,6 +4,7 @@ import { getBanners } from "../api/banner.js";
 import { useAppData } from "../context/AppDataContext.jsx";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Banners from "../components/common/Banners.jsx";
+import Loader from "../components/common/Loader.jsx";
 import ProductFilters from "../components/products/ProductFilters.jsx";
 import ProductList from "../components/products/ProductList.jsx";
 import ProductPagination from "../components/products/ProductPagination.jsx";
@@ -252,7 +253,7 @@ const Products = () => {
         });
     };
 
-    if (loading) return <div className="p-8 text-center">Loading...</div>;
+    if (loading) return <Loader fullScreen={true} />;
 
     if (selectedMaterial === "wood") {
         return (

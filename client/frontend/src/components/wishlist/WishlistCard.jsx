@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaShoppingCart, FaTrash } from "react-icons/fa";
 import { useWishlist } from "../../context/WishlistContext.jsx";
 import { useCart } from "../../context/CartContext.jsx";
+import Loader from "../common/Loader.jsx";
 
 const WishlistCard = ({ product }) => {
     const { removeFromWishlist, moveToCartFromWishlist, loading } =
@@ -113,7 +114,7 @@ const WishlistCard = ({ product }) => {
             {/* Loading Overlay */}
             {(loading || actionLoading) && (
                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-20">
-                    <div className="text-sm text-gray-600">Loading...</div>
+                    <Loader size="small" />
                 </div>
             )}
         </div>

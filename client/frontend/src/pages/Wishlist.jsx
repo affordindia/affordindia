@@ -1,12 +1,13 @@
 import React from "react";
 import { useWishlist } from "../context/WishlistContext.jsx";
+import Loader from "../components/common/Loader.jsx";
 import WishlistCard from "../components/wishlist/WishlistCard.jsx";
 
 const Wishlist = () => {
     const { wishlist, loading } = useWishlist();
 
     if (loading) {
-        return <div className="p-8 text-center">Loading wishlist...</div>;
+        return <Loader fullScreen={true} />;
     }
 
     if (!wishlist || !wishlist.items) {
