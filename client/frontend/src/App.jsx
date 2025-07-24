@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/common/Navbar.jsx";
 import Footer from "./components/common/Footer.jsx";
+import PromoStrip from "./components/common/PromoStrip.jsx";
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
@@ -13,12 +14,13 @@ import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import Orders from "./pages/Orders.jsx";
+import Rakhi from "./pages/Rakhi.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
-import ReturnPolicy from "./pages/static/static/ReturnPolicy.jsx.jsx";
-import TermsCondition from "./pages/static/static/TermsCondition.jsx";
-import PrivacyPolicy from "./pages/static/static/PrivacyPolicy.jsx";
-import Shipping from "./pages/static/static/Shipping.jsx";
+import ReturnPolicy from "./pages/static/ReturnPolicy.jsx";
+import TermsCondition from "./pages/static/TermsCondition.jsx";
+import PrivacyPolicy from "./pages/static/PrivacyPolicy.jsx";
+import Shipping from "./pages/static/Shipping.jsx";
 import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
 import AboutUs from "./pages/static/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
@@ -28,6 +30,8 @@ const App = () => {
 
     return (
         <div className="flex flex-col min-h-screen">
+            {/* Promotional Strip */}
+            <PromoStrip />
             <Navbar />
             <main className="flex-1">
                 <Routes>
@@ -38,6 +42,7 @@ const App = () => {
                         path="/products/id/:id"
                         element={<ProductDetail />}
                     />
+                    <Route path="/rakhi" element={<Rakhi />} />
                     <Route
                         path="/login"
                         element={<Signup onAuthSuccess={login} />}
