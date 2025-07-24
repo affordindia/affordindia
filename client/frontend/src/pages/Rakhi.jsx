@@ -33,26 +33,7 @@ const Rakhi = () => {
                     category: rakhiCategory._id,
                 });
 
-                const originalProducts = productsResponse.products || [];
-
-                // TEST MODE: Duplicate single product to show 20 products for demo
-                let testProducts = [];
-                if (originalProducts.length > 0) {
-                    const singleProduct = originalProducts[0];
-                    for (let i = 0; i < 20; i++) {
-                        testProducts.push({
-                            ...singleProduct,
-                            _id: `${singleProduct._id}_test_${i}`, // Unique ID for each duplicate
-                            name: `${singleProduct.name} - Design ${i + 1}`, // Unique name
-                            price: singleProduct.price + i * 10, // Vary price slightly
-                        });
-                    }
-                }
-
-                // Use test products if we have them, otherwise use original
-                setProducts(
-                    testProducts.length > 0 ? testProducts : originalProducts
-                );
+                setProducts(productsResponse.products || []);
             } catch (err) {
                 console.error("Error fetching Rakhi data:", err);
                 setError(
