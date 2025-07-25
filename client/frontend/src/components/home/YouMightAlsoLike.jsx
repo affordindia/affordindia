@@ -8,84 +8,91 @@ import { useKeenSlider } from "keen-slider/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const YouMightAlsoLike = () => {
-    const { categories } = useAppData();
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [sliderRef, instanceRef] = useKeenSlider({
-        mode: "free-snap",
-        slides: {
-            perView: "auto",
-        },
-    });
+  const { categories } = useAppData();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sliderRef, instanceRef] = useKeenSlider({
+    mode: "free-snap",
+    slides: {
+      perView: "auto",
+    },
+  });
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            setLoading(true);
-            try {
-                // For each category, get 1 random product
-                let prods = [];
-                for (const cat of categories) {
-                    const prodRes = await getProducts({
-                        category: cat._id,
-                        limit: 10,
-                    });
-                    const arr =
-                        (prodRes && (prodRes.products || prodRes)) || [];
-                    if (Array.isArray(arr) && arr.length > 0) {
-                        // Pick a random product from this category
-                        prods.push(arr[Math.floor(Math.random() * arr.length)]);
-                    }
-                }
-                // If less than 10, fill with random products
-                if (prods.length < 10) {
-                    const allRes = await getProducts({ limit: 30 });
-                    const all = (allRes && (allRes.products || allRes)) || [];
-                    // Add randoms not already in prods
-                    const used = new Set(prods.map((p) => p._id));
-                    const extras = (Array.isArray(all) ? all : []).filter(
-                        (p) => !used.has(p._id)
-                    );
-                    while (prods.length < 10 && extras.length) {
-                        const idx = Math.floor(Math.random() * extras.length);
-                        prods.push(extras.splice(idx, 1)[0]);
-                    }
-                }
-                setProducts(Array.isArray(prods) ? prods.slice(0, 10) : []);
-            } catch {
-                setProducts([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProducts();
-    }, [categories]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        // For each category, get 1 random product
+        let prods = [];
+        for (const cat of categories) {
+          const prodRes = await getProducts({
+            category: cat._id,
+            limit: 10,
+          });
+          const arr = (prodRes && (prodRes.products || prodRes)) || [];
+          if (Array.isArray(arr) && arr.length > 0) {
+            // Pick a random product from this category
+            prods.push(arr[Math.floor(Math.random() * arr.length)]);
+          }
+        }
+        // If less than 10, fill with random products
+        if (prods.length < 10) {
+          const allRes = await getProducts({ limit: 30 });
+          const all = (allRes && (allRes.products || allRes)) || [];
+          // Add randoms not already in prods
+          const used = new Set(prods.map((p) => p._id));
+          const extras = (Array.isArray(all) ? all : []).filter(
+            (p) => !used.has(p._id)
+          );
+          while (prods.length < 10 && extras.length) {
+            const idx = Math.floor(Math.random() * extras.length);
+            prods.push(extras.splice(idx, 1)[0]);
+          }
+        }
+        setProducts(Array.isArray(prods) ? prods.slice(0, 10) : []);
+      } catch {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [categories]);
 
-    // Navigation handlers
-    const goPrev = () => instanceRef.current && instanceRef.current.prev();
-    const goNext = () => instanceRef.current && instanceRef.current.next();
+  // Navigation handlers
+  const goPrev = () => instanceRef.current && instanceRef.current.prev();
+  const goNext = () => instanceRef.current && instanceRef.current.next();
 
-    return (
-        <section className="py-8 px-2 md:px-8 bg-[#EBEBEB]">
-            {/* Desktop Heading */}
-            <div className="hidden md:flex items-center justify-center mb-9">
+  return (
+    <section className="py-8 px-2 md:px-8 bg-[#EBEBEB]">
+      {/* Desktop Heading */}
+      <div className="hidden md:flex items-center justify-center mb-9">
         <div className="w-16 border-t border-gray-400 mx-4" />
         <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
           Featured Products
         </h2>
         <div className="w-16 border-t border-gray-400 mx-4" />
       </div>
-            {loading ? (
-                <Loader />
-            ) : !products ||
-              !Array.isArray(products) ||
-              products.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                    No products found.
-                </div>
-            ) : (
-                <div className="relative">
-                    {/* Left arrow */}
-                    {/* {products.length > 0 && (
+
+      {/* Mobile Heading */}
+      <div className="block md:hidden mb-6">
+        <div className="flex items-center justify-center">
+          <div className="w-10 border-t border-gray-400 mx-2" />
+          <h2 className="text-center font-serif text-base tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+            Featured Products
+          </h2>
+          <div className="w-10 border-t border-gray-400 mx-2" />
+        </div>
+      </div>
+
+      {loading ? (
+        <Loader />
+      ) : !products || !Array.isArray(products) || products.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">No products found.</div>
+      ) : (
+        <div className="relative">
+          {/* Left arrow */}
+          {/* {products.length > 0 && (
                         <button
                             onClick={goPrev}
                             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
@@ -96,28 +103,28 @@ const YouMightAlsoLike = () => {
                         </button>
                     )} */}
 
-                    {/* keen-slider carousel */}
-                    <div
-                        ref={sliderRef}
-                        className="keen-slider flex gap-x-2 sm:gap-x-4 lg:gap-x-6"
-                    >
-                        {Array.isArray(products) &&
-                            products.map((product) => (
-                                <div
-                                    key={product._id}
-                                    className="keen-slider__slide flex justify-center items-center pb-2"
-                                    style={{
-                                        minWidth: "clamp(160px, 33vw, 220px)",
-                                        maxWidth: 220,
-                                    }}
-                                >
-                                    <ProductCard product={product} />
-                                </div>
-                            ))}
-                    </div>
+          {/* keen-slider carousel */}
+          <div
+            ref={sliderRef}
+            className="keen-slider flex gap-x-2 sm:gap-x-4 lg:gap-x-6"
+          >
+            {Array.isArray(products) &&
+              products.map((product) => (
+                <div
+                  key={product._id}
+                  className="keen-slider__slide flex justify-center items-center pb-2"
+                  style={{
+                    minWidth: "clamp(160px, 33vw, 220px)",
+                    maxWidth: 220,
+                  }}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+          </div>
 
-                    {/* Right arrow */}
-                    {/* {products.length > 0 && (
+          {/* Right arrow */}
+          {/* {products.length > 0 && (
                         <button
                             onClick={goNext}
                             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
@@ -127,10 +134,10 @@ const YouMightAlsoLike = () => {
                             <FaChevronRight className="text-lg text-gray-700 dark:text-gray-200 group-hover:text-[#A89A3D] transition-colors" />
                         </button>
                     )} */}
-                </div>
-            )}
-        </section>
-    );
+        </div>
+      )}
+    </section>
+  );
 };
 
 export default YouMightAlsoLike;
