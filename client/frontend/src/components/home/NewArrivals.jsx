@@ -38,7 +38,7 @@ const NewArrivals = () => {
       </div>
 
       {/* Mobile Grid Layout */}
-      <div className="block md:hidden mt-4">
+      <div className="block md:hidden mt-4 ">
         <div className="grid grid-cols-2 gap-2">
           {mobileProducts.map((product) => (
             <div key={product._id} className="flex justify-center items-center">
@@ -49,17 +49,18 @@ const NewArrivals = () => {
       </div>
 
       {/* Desktop Scroll Layout */}
-      <div className="hidden md:block overflow-x-auto scrollbar-hide mt-4">
-        <div className="flex gap-4">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="min-w-[250px] max-w-[250px] flex-shrink-0"
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+   {/* Desktop Scroll Layout */}
+<div className="hidden md:block overflow-x-auto scrollbar-hide mt-4 mb-6">
+  <div className="flex gap-4">
+    {products.map((product) => (
+      <div
+        key={product._id}
+        className="min-w-[250px] max-w-[250px] flex-shrink-0 p-2"
+      >
+        <ProductCard product={product} />
+      </div>
+    ))}
+  </div>
       </div>
 
       {/* View Collection Button (Hidden on Mobile) */}
