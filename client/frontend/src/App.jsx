@@ -22,6 +22,7 @@ import TermsCondition from "./pages/static/TermsCondition.jsx";
 import PrivacyPolicy from "./pages/static/PrivacyPolicy.jsx";
 import Shipping from "./pages/static/Shipping.jsx";
 import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
+import Faq from "./pages/static/Faq.jsx";
 import AboutUs from "./pages/static/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 
@@ -114,6 +115,7 @@ const App = () => {
                     <Route path="/cancel" element={<CancelationPolicy />} />
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/about" element={<AboutUs />} />
+                    <Route path="/faqs" element={<Faq />} />
                 </Routes>
             </main>
             <Footer />

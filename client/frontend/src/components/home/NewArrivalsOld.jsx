@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getNewProducts } from "../../api/product.js";
-import ProductCard from "../common/ProductCard";
+import ProductCard from "../common/ProductCard.jsx";
 import { Link } from "react-router-dom";
 
 const NewArrivals = () => {

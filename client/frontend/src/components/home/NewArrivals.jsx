@@ -15,7 +15,7 @@ const NewArrivals = () => {
   const mobileProducts = products.slice(0, 4); // 2x2 on mobile
 
   return (
-    <section className="bg-[#ECECE8] py-8 md:py-12 px-4 md:px-8 ">
+    <section className="bg-[#ECECE8] py-8 md:py-12 px-4 md:px-8 font-[Playfair_Display]">
       {/* Desktop Heading */}
       <div className="hidden md:flex items-center justify-center mb-9">
         <div className="w-16 border-t border-gray-400 mx-4" />
@@ -25,13 +25,16 @@ const NewArrivals = () => {
         <div className="w-16 border-t border-gray-400 mx-4" />
       </div>
 
-      {/* Mobile Heading */}
+      {/* Mobile Heading (Clickable) */}
       <div className="block md:hidden mb-4">
-        <div className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px]">
+        <Link
+          to="/products"
+          className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px] cursor-pointer"
+        >
           <h2 className="text-white text-2xl font-serif font-bold text-center">
             New Arrivals
           </h2>
-        </div>
+        </Link>
       </div>
 
       {/* Mobile Grid Layout */}
@@ -59,8 +62,8 @@ const NewArrivals = () => {
         </div>
       </div>
 
-      {/* View Collection Button */}
-      <div className="flex justify-center mt-6">
+      {/* View Collection Button (Hidden on Mobile) */}
+      <div className="hidden md:flex justify-center mt-6">
         <Link
           to="/products"
           className="inline-block bg-[#B76E79] text-white font-semibold px-6 py-2 rounded shadow hover:shadow-md transition text-base"

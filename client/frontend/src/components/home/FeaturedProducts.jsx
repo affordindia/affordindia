@@ -7,66 +7,49 @@ const FeaturedProducts = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        getFeaturedProducts({ limit: 6 })
+        getFeaturedProducts({ limit: 8 }) // Adjusted to fetch 8 products like in image
             .then((data) => setProducts(data.products || data))
             .catch(() => setProducts([]));
     }, []);
 
-    const topRow = products.slice(0, 2);
-    const bottomRow = products.slice(2, 6);
-    const mobileProducts = products.slice(0, 4);
-
     return (
-        <section className="py-8 md:py-12 px-2 md:px-8">
-            {/* Mobile: minimal card-style header and 2x2 grid */}
-            <div className="block md:hidden mb-4">
-                <div className="flex flex-col justify-center items-center bg-gradient-to-t from-[#17171d] to-[#363452] rounded-xl shadow-md px-0 py-4 min-h-[80px] mb-4">
-                    <h2 className="text-2xl font-serif font-bold text-white text-center">
-                        Featured Products
-                    </h2>
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {mobileProducts.map((product) => (
-                        <ProductCard key={product._id} product={product} />
-                    ))}
-                </div>
-            </div>
+        <section className="py-8 px-4 md:px-12">
+            {/* Desktop Heading */}
+                 <div className="hidden md:flex items-center justify-center mb-9">
+                   <div className="w-16 border-t border-gray-400 mx-4" />
+                   <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+                     Featured Products
+                   </h2>
+                   <div className="w-16 border-t border-gray-400 mx-4" />
+                 </div>
+           
+                 {/* Mobile Heading (Clickable) */}
+                 <div className="block md:hidden mb-4">
+                   <Link
+                     to="/products"
+                     className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px] cursor-pointer"
+                   >
+                     <h2 className="text-white text-2xl font-serif font-bold text-center">
+                       Featured Products
+                     </h2>
+                   </Link>
+                 </div>
 
-            {/* Desktop: original layout */}
-            <div className="hidden md:grid grid-cols-4 gap-4 mb-8 items-stretch">
-                {/* Left card */}
-                {topRow[0] ? (
-                    <ProductCard product={topRow[0]} />
-                ) : (
-                    <div className="col-span-1" />
-                )}
-                {/* Header card in center, spans 2 columns */}
-                <div className="flex flex-col justify-center items-center bg-gradient-to-t from-[#17171d] to-[#363452] rounded-xl shadow-md px-0 py-8 min-h-[300px] col-span-2">
-                    <h2 className="text-4xl font-serif font-bold text-white py-2 text-center">
-                        Featured Products
-                    </h2>
-                    <p className="mt-2 text-gray-200 font-medium text-center text-base">
-                        Handpicked favorites just for you
-                    </p>
-                    <Link
-                        to="/products/featured"
-                        className="inline-block mt-4 bg-[#fff3e0] text-black font-semibold px-6 py-2 rounded shadow hover:shadow-md transition text-base"
-                    >
-                        View Collection
-                    </Link>
-                </div>
-                {/* Right card */}
-                {topRow[1] ? (
-                    <ProductCard product={topRow[1]} />
-                ) : (
-                    <div className="col-span-1" />
-                )}
-            </div>
-
-            <div className="hidden md:grid grid-cols-4 gap-4">
-                {bottomRow.map((product) => (
+            {/* Products Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {products.map((product) => (
                     <ProductCard key={product._id} product={product} />
                 ))}
+            </div>
+
+            {/* View Collection Button */}
+            <div className="hidden md:flex justify-center mt-6">
+                <Link
+                    to="/products/featured"
+                    className="bg-[#d49ea3] text-white font-semibold px-6 py-2 rounded hover:bg-[#c8848a] transition"
+                >
+                    View Collection
+                </Link>
             </div>
         </section>
     );
