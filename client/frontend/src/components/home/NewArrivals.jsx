@@ -25,17 +25,18 @@ const NewArrivals = () => {
         <div className="w-16 border-t border-gray-400 mx-4" />
       </div>
 
-      {/* Mobile Heading (Clickable) */}
-      <div className="block md:hidden mb-4">
-        <Link
-          to="/products"
-          className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px] cursor-pointer"
-        >
-          <h2 className="text-white text-2xl font-serif font-bold text-center">
-            New Arrivals
-          </h2>
-        </Link>
-      </div>
+  {/* Mobile Heading (Clickable) */}
+<div className="block md:hidden mb-4">
+  <Link
+    to="/products"
+    className="w-fit mx-auto flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-4 py-2 min-h-[50px] cursor-pointer"
+  >
+    <h2 className="text-white text-lg font-serif font-semibold text-center">
+      New Arrivals
+    </h2>
+  </Link>
+</div>
+
 
       {/* Mobile Grid Layout */}
       <div className="block md:hidden mt-4">
@@ -64,10 +65,10 @@ const NewArrivals = () => {
 
       {/* View Collection Button (Hidden on Mobile) */}
       <div className="hidden md:flex justify-center mt-6">
-  <Link to="/products" className="button">
-    <span className="button-content">View Collection</span>
-  </Link>
-</div>
+        <Link to="/products" className="button">
+          <span className="button-content">View Collection</span>
+        </Link>
+      </div>
     </section>
   );
 };

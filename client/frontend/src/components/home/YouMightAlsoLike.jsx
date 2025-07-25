@@ -66,10 +66,14 @@ const YouMightAlsoLike = () => {
 
     return (
         <section className="py-8 px-2 md:px-8 bg-[#EBEBEB]">
-            {/*  Heading */}
-            <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase mb-9">
-                Similar Products
-            </h2>
+            {/* Desktop Heading */}
+            <div className="hidden md:flex items-center justify-center mb-9">
+        <div className="w-16 border-t border-gray-400 mx-4" />
+        <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+          Featured Products
+        </h2>
+        <div className="w-16 border-t border-gray-400 mx-4" />
+      </div>
             {loading ? (
                 <Loader />
             ) : !products ||
