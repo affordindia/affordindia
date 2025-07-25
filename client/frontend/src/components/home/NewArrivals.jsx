@@ -1,76 +1,78 @@
 import React, { useEffect, useState } from "react";
 import { getNewProducts } from "../../api/product.js";
-import ProductCard from "../common/ProductCard";
+import ProductCard from "../common/ProductCard.jsx";
 import { Link } from "react-router-dom";
 
 const NewArrivals = () => {
-    const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
 
-    useEffect(() => {
-        getNewProducts({ limit: 6 })
-            .then((data) => setProducts(data.products || data))
-            .catch(() => setProducts([]));
-    }, []);
+  useEffect(() => {
+    getNewProducts({ limit: 6 })
+      .then((data) => setProducts(data.products || data))
+      .catch(() => setProducts([]));
+  }, []);
 
-    const topRow = products.slice(0, 2);
-    const bottomRow = products.slice(2, 6);
-    const mobileProducts = products.slice(0, 4);
+  const mobileProducts = products.slice(0, 4); // 2x2 on mobile
 
-    return (
-        <section className="bg-primary py-8 md:py-12 px-2 md:px-8">
-            {/* Mobile: minimal card-style header and 2x2 grid */}
-            <div className="block md:hidden mb-4">
-                <div className="flex flex-col justify-center items-center bg-gradient-to-t from-[#17171d] to-[#363452] rounded-xl shadow-md px-0 py-4 min-h-[80px] mb-4">
-                    <h2 className="text-2xl font-serif font-bold text-white text-center">
-                        New Arrivals
-                    </h2>
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {mobileProducts.map((product) => (
-                        <ProductCard key={product._id} product={product} />
-                    ))}
-                </div>
+  return (
+    <section className="bg-[#ECECE8] py-8 md:py-12 px-4 md:px-8 font-[Playfair_Display]">
+      {/* Desktop Heading */}
+      <div className="hidden md:flex items-center justify-center mb-9">
+        <div className="w-16 border-t border-gray-400 mx-4" />
+        <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+          New Arrivals
+        </h2>
+        <div className="w-16 border-t border-gray-400 mx-4" />
+      </div>
+
+      {/* Mobile Heading (Clickable) */}
+      <div className="block md:hidden mb-4">
+        <Link
+          to="/products"
+          className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px] cursor-pointer"
+        >
+          <h2 className="text-white text-2xl font-serif font-bold text-center">
+            New Arrivals
+          </h2>
+        </Link>
+      </div>
+
+      {/* Mobile Grid Layout */}
+      <div className="block md:hidden mt-4">
+        <div className="grid grid-cols-2 gap-2">
+          {mobileProducts.map((product) => (
+            <div key={product._id} className="flex justify-center items-center">
+              <ProductCard product={product} />
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Desktop: original layout */}
-            <div className="hidden md:grid grid-cols-4 gap-4 mb-8 items-stretch">
-                {/* Left card */}
-                {topRow[0] ? (
-                    <ProductCard product={topRow[0]} />
-                ) : (
-                    <div className="col-span-1" />
-                )}
-                {/* Header card in center, spans 2 columns */}
-                <div className="flex flex-col justify-center items-center bg-gradient-to-t from-[#17171d] to-[#363452] rounded-xl shadow-md px-0 py-8 min-h-[300px] col-span-2">
-                    <h2 className="text-4xl font-serif font-bold text-white py-2 text-center">
-                        New Arrivals
-                    </h2>
-                    <p className="mt-2 text-gray-200 font-medium text-center text-base">
-                        Discover our latest jewelry pieces, crafted with
-                        excellence
-                    </p>
-                    <Link
-                        to="/products"
-                        className="inline-block mt-4 bg-[#fff3e0] text-black font-semibold px-6 py-2 rounded shadow hover:shadow-md transition text-base"
-                    >
-                        View Collection
-                    </Link>
-                </div>
-                {/* Right card */}
-                {topRow[1] ? (
-                    <ProductCard product={topRow[1]} />
-                ) : (
-                    <div className="col-span-1" />
-                )}
+      {/* Desktop Scroll Layout */}
+      <div className="hidden md:block overflow-x-auto scrollbar-hide mt-4">
+        <div className="flex gap-4">
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className="min-w-[250px] max-w-[250px] flex-shrink-0"
+            >
+              <ProductCard product={product} />
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="hidden md:grid grid-cols-4 gap-4">
-                {bottomRow.map((product) => (
-                    <ProductCard key={product._id} product={product} />
-                ))}
-            </div>
-        </section>
-    );
+      {/* View Collection Button (Hidden on Mobile) */}
+      <div className="hidden md:flex justify-center mt-6">
+        <Link
+          to="/products"
+          className="inline-block bg-[#B76E79] text-white font-semibold px-6 py-2 rounded shadow hover:shadow-md transition text-base"
+        >
+          View Collection
+        </Link>
+      </div>
+    </section>
+  );
 };
 
 export default NewArrivals;

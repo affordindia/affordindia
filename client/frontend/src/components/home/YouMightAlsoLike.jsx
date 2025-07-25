@@ -65,9 +65,10 @@ const YouMightAlsoLike = () => {
     const goNext = () => instanceRef.current && instanceRef.current.next();
 
     return (
-        <section className="py-8 px-2 md:px-8 bg-secondary">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-center mb-6">
-                You Might Also Like These Products
+        <section className="py-8 px-2 md:px-8 bg-[#EBEBEB]">
+            {/*  Heading */}
+            <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase mb-9">
+                Similar Products
             </h2>
             {loading ? (
                 <Loader />

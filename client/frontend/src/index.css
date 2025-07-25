@@ -4,6 +4,18 @@
     font-family: "Montserrat", sans-serif;
 }
 
+
+/* hide scrollbar for new arrivals sec */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+
+
 @theme {
     --color-primary: #fff;
     --color-secondary: #f6f2eb;

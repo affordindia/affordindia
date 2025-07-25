@@ -74,7 +74,7 @@ const Navbar = () => {
                                 <Link
                                     key={cat._id || cat.name}
                                     to={`/products/${cat.name.toLowerCase()}`}
-                                    className="hover:text-black capitalize"
+                                    className="relative capitalize hover:text-black transition-all duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 hover:after:w-full after:bg-black after:transition-all after:duration-300"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         // Always clear search param when switching material
