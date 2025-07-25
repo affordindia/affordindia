@@ -124,14 +124,7 @@ const YouMightAlsoLike = () => {
               ))}
           </div>
 
-         {/* view collection button*/} 
-
-          <div className="hidden md:flex justify-center mt-6">
-            <Link to="/products" className="button">
-              <span className="button-content">View Collection</span>
-            </Link>
-          </div>
-
+         
           {/* Right arrow */}
           {/* {products.length > 0 && (
                         <button
