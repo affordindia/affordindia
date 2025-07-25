@@ -6,6 +6,7 @@ import Loader from "../common/Loader";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const YouMightAlsoLike = () => {
   const { categories } = useAppData();
