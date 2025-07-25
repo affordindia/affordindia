@@ -29,9 +29,9 @@ const NewArrivals = () => {
             <div className="block md:hidden mb-4">
                 <Link
                     to="/products"
-                    className="flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-0 py-4 min-h-[80px] cursor-pointer"
+                    className="w-fit mx-auto flex flex-col justify-center items-center bg-[#af4c5c] rounded-xl shadow-md px-4 py-2 min-h-[50px] cursor-pointer"
                 >
-                    <h2 className="text-white text-2xl font-serif font-bold text-center">
+                    <h2 className="text-white text-lg font-serif font-semibold text-center">
                         New Arrivals
                     </h2>
                 </Link>
