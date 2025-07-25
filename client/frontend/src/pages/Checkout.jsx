@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
@@ -13,6 +14,7 @@ const Checkout = () => {
     const { user } = useAuth();
     const { cart, clearCart } = useCart();
     const { addresses, addAddress } = useProfile();
+    const [userName, setUserName] = useState(user?.name || "");
     const navigate = useNavigate();
 
     // Utility function to check if address already exists
@@ -42,6 +44,11 @@ const Checkout = () => {
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");
     const [orderProcessing, setOrderProcessing] = useState(false);
+    // Receiver info state
+    const [isOrderingForSomeoneElse, setIsOrderingForSomeoneElse] =
+        useState(false);
+    const [receiverName, setReceiverName] = useState("");
+    const [receiverPhone, setReceiverPhone] = useState("");
 
     // Redirect if cart is empty (but not during order processing)
     useEffect(() => {
@@ -89,6 +96,11 @@ const Checkout = () => {
                 );
             }
 
+            // Validate user name
+            if (!userName.trim()) {
+                throw new Error("Please enter your name");
+            }
+
             // Validate cart
             if (!cart?.items || cart.items.length === 0) {
                 throw new Error("Cart is empty");
@@ -126,6 +138,13 @@ const Checkout = () => {
                 shippingAddress,
                 paymentMethod,
                 paymentInfo: {},
+                userName,
+                receiverName: isOrderingForSomeoneElse
+                    ? receiverName
+                    : undefined,
+                receiverPhone: isOrderingForSomeoneElse
+                    ? receiverPhone
+                    : undefined,
             };
 
             const order = await createOrder(orderData);
@@ -194,6 +213,99 @@ const Checkout = () => {
                         onStepChange={setStep}
                     />
 
+                    {/* Your Details Section */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <h3 className="text-base font-semibold text-blue-800 mb-2">
+                            Your Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-blue-800 mb-1">
+                                    Your Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={userName}
+                                    onChange={(e) =>
+                                        setUserName(e.target.value)
+                                    }
+                                    placeholder="Enter your name"
+                                    className="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-blue-800 mb-1">
+                                    Your Phone
+                                </label>
+                                <input
+                                    type="text"
+                                    value={user?.phone || ""}
+                                    disabled
+                                    className="w-full border border-blue-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-700"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Ordering for someone else section */}
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={isOrderingForSomeoneElse}
+                                onChange={(e) =>
+                                    setIsOrderingForSomeoneElse(
+                                        e.target.checked
+                                    )
+                                }
+                            />
+                            <span className="font-medium text-yellow-800">
+                                Ordering for someone else?
+                            </span>
+                        </label>
+                        {isOrderingForSomeoneElse && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                                        Receiver Name *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={receiverName}
+                                        onChange={(e) =>
+                                            setReceiverName(e.target.value)
+                                        }
+                                        placeholder="Enter receiver's name"
+                                        className="w-full border border-yellow-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                                        Receiver Phone *
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value={receiverPhone}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            const cleaned = val
+                                                .replace(/[^0-9]/g, "")
+                                                .slice(0, 10);
+                                            setReceiverPhone(cleaned);
+                                        }}
+                                        placeholder="Enter receiver's phone number"
+                                        className="w-full border border-yellow-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                                        pattern="[0-9]{10}"
+                                        maxLength={10}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <PaymentMethod
                         selected={paymentMethod}
                         onChange={setPaymentMethod}
@@ -211,7 +323,12 @@ const Checkout = () => {
                         onPlaceOrder={handlePlaceOrder}
                         loading={loading}
                         disabled={
-                            !shippingAddress.city || !shippingAddress.pincode
+                            !shippingAddress.city ||
+                            !shippingAddress.pincode ||
+                            !userName.trim() ||
+                            (isOrderingForSomeoneElse &&
+                                (!receiverName.trim() ||
+                                    !validatePhoneNumber(receiverPhone)))
                         }
                     />
                 </div>

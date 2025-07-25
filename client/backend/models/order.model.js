@@ -28,6 +28,8 @@ const orderSchema = new mongoose.Schema(
             pincode: { type: String },
             country: { type: String, default: "India" },
         },
+        receiverName: { type: String },
+        receiverPhone: { type: String },
         paymentMethod: { type: String },
         paymentStatus: {
             type: String,
@@ -48,8 +50,8 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
         subtotal: { type: Number },
-        shippingFee: { type: Number },
         discount: { type: Number },
+        shippingFee: { type: Number },
         total: { type: Number },
         trackingNumber: { type: String },
         deliveredAt: { type: Date },
