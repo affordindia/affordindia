@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/product.js";
-import { getBanners } from "../api/banner.js";
 import { useAppData } from "../context/AppDataContext.jsx";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Banners from "../components/common/Banners.jsx";
@@ -37,7 +36,6 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [banners, setBanners] = useState([]);
 
     const params = new URLSearchParams(location.search);
     const urlSearch = params.get("search") || "";
@@ -79,15 +77,6 @@ const Products = () => {
             setSelectedPrice(null);
         }
     }, [urlSearch, urlSort, urlMinPrice, urlMaxPrice, urlPage, material]);
-
-    // Load banners
-    useEffect(() => {
-        getBanners()
-            .then((bannerRes) => {
-                setBanners(bannerRes.banners || bannerRes || []);
-            })
-            .catch((err) => console.error("Error loading banners:", err));
-    }, []);
 
     // Fetch products
     useEffect(() => {
@@ -258,7 +247,7 @@ const Products = () => {
     if (selectedMaterial === "wood") {
         return (
             <div className="min-h-screen bg-white">
-                <Banners banners={banners} />
+                <Banners material={selectedMaterial} />
                 <div className="p-8 text-center">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
                         Wood Products Coming Soon
@@ -274,7 +263,7 @@ const Products = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            <Banners banners={banners} />
+            <Banners material={selectedMaterial} />
 
             {/* Search Results Info */}
             {search && search.trim() !== "" && (
