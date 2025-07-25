@@ -4,6 +4,15 @@ import { Link } from "react-router-dom";
 const Faq = () => {
   const [selectedCategory, setSelectedCategory] = useState("ordering");
 
+  // Map category keys to display names
+  const categoryTitles = {
+    ordering: "Ordering & Payment",
+    shipping: "Shipping & Returns",
+    product: "Product Care",
+    materials: "Materials & Craftsmanship",
+    custom: "Custom Orders",
+  };
+
   return (
     <div className="bg-[#f7f7f5] min-h-screen py-10 px-6 md:px-24 flex flex-col md:flex-row gap-10 justify-center items-start">
       {/* Left Box (Categories) */}
@@ -21,7 +30,7 @@ const Faq = () => {
           <li>
             <button
               onClick={() => setSelectedCategory("shipping")}
-              className="text-left w-full hover:underline"
+              className="text-left w-full hover:text-[#B76E79]"
             >
               Shipping & Returns
             </button>
@@ -29,7 +38,7 @@ const Faq = () => {
           <li>
             <button
               onClick={() => setSelectedCategory("product")}
-              className="text-left w-full hover:underline"
+              className="text-left w-full hover:text-[#B76E79]"
             >
               Product Care
             </button>
@@ -37,7 +46,7 @@ const Faq = () => {
           <li>
             <button
               onClick={() => setSelectedCategory("materials")}
-              className="text-left w-full hover:underline"
+              className="text-left w-full hover:text-[#B76E79]"
             >
               Materials & Craftsmanship
             </button>
@@ -45,7 +54,7 @@ const Faq = () => {
           <li>
             <button
               onClick={() => setSelectedCategory("custom")}
-              className="text-left w-full hover:underline"
+              className="text-left w-full hover:text-[#B76E79]"
             >
               Custom Orders
             </button>
@@ -55,9 +64,14 @@ const Faq = () => {
 
       {/* Right Box (FAQ Content) */}
       <div className="bg-white w-full md:w-3/4 p-6 rounded shadow">
-        <h1 className="text-center text-xl font-semibold text-gray-800 mb-6">
+        <h1 className="text-center text-xl font-semibold text-gray-800 mb-2">
           — FREQUENTLY ASKED QUESTIONS —
         </h1>
+
+        {/* 🆕 Selected Category Title */}
+        <h2 className="text-center text-lg font-bold text-gray-700 mb-6">
+          {categoryTitles[selectedCategory]}
+        </h2>
 
         <div className="space-y-6">
           {selectedCategory === "ordering" && (
