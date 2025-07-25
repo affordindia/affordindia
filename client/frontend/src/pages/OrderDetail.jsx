@@ -162,19 +162,31 @@ const OrderDetail = () => {
                             <div className="p-4">
                                 <div className="space-y-1 text-sm">
                                     <div>
-                                        <span className="font-medium">Your Name:</span> {order.userName || order.user?.name}
+                                        <span className="font-medium">
+                                            Your Name:
+                                        </span>{" "}
+                                        {order.userName || order.user?.name}
                                     </div>
                                     <div>
-                                        <span className="font-medium">Your Phone:</span> {order.userPhone || order.user?.phone}
+                                        <span className="font-medium">
+                                            Your Phone:
+                                        </span>{" "}
+                                        {order.userPhone || order.user?.phone}
                                     </div>
                                     {order.receiverName && (
                                         <div>
-                                            <span className="font-medium">Receiver Name:</span> {order.receiverName}
+                                            <span className="font-medium">
+                                                Receiver Name:
+                                            </span>{" "}
+                                            {order.receiverName}
                                         </div>
                                     )}
                                     {order.receiverPhone && (
                                         <div>
-                                            <span className="font-medium">Receiver Phone:</span> {order.receiverPhone}
+                                            <span className="font-medium">
+                                                Receiver Phone:
+                                            </span>{" "}
+                                            {order.receiverPhone}
                                         </div>
                                     )}
                                 </div>
