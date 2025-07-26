@@ -9,12 +9,20 @@ import { body, param } from "express-validator";
 
 export const createOrder = async (req, res, next) => {
     try {
-        const { shippingAddress, paymentMethod, paymentInfo } = req.body;
+        const {
+            shippingAddress,
+            paymentMethod,
+            paymentInfo,
+            receiverName,
+            receiverPhone,
+        } = req.body;
         const order = await placeOrder(
             req.user._id,
             shippingAddress,
             paymentMethod,
-            paymentInfo
+            paymentInfo,
+            receiverName,
+            receiverPhone
         );
         res.status(201).json(order);
     } catch (err) {

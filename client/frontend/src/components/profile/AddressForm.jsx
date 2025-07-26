@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { validatePhoneNumber } from "../../utils/validatePhoneNumber";
 import { useProfile } from "../../context/ProfileContext.jsx";
 
 const AddressForm = ({ editingAddress = null, onClose, inline = false }) => {
@@ -68,12 +69,11 @@ const AddressForm = ({ editingAddress = null, onClose, inline = false }) => {
         }
         // For phone, only allow 10 digit numbers
         else if (name === "phone") {
-            const numericValue = value.replace(/[^0-9]/g, "");
-            // Limit to 10 digits
-            const limitedValue = numericValue.slice(0, 10);
+            // Only allow numeric and max 10 digits
+            const cleaned = value.replace(/[^0-9]/g, "").slice(0, 10);
             setFormData((prev) => ({
                 ...prev,
-                [name]: limitedValue,
+                [name]: cleaned,
             }));
         } else {
             setFormData((prev) => ({
@@ -104,7 +104,7 @@ const AddressForm = ({ editingAddress = null, onClose, inline = false }) => {
         }
 
         if (formData.phone && formData.phone.length > 0) {
-            if (!/^\d{10}$/.test(formData.phone)) {
+            if (!validatePhoneNumber(formData.phone)) {
                 newErrors.phone = "Phone must be 10 digits";
             }
         }

@@ -152,6 +152,47 @@ const OrderDetail = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-4">
+                        {/* User & Receiver Info */}
+                        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                                <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
+                                    Contact Information
+                                </h2>
+                            </div>
+                            <div className="p-4">
+                                <div className="space-y-1 text-sm">
+                                    <div>
+                                        <span className="font-medium">
+                                            Your Name:
+                                        </span>{" "}
+                                        {order.userName || order.user?.name}
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">
+                                            Your Phone:
+                                        </span>{" "}
+                                        {order.userPhone || order.user?.phone}
+                                    </div>
+                                    {order.receiverName && (
+                                        <div>
+                                            <span className="font-medium">
+                                                Receiver Name:
+                                            </span>{" "}
+                                            {order.receiverName}
+                                        </div>
+                                    )}
+                                    {order.receiverPhone && (
+                                        <div>
+                                            <span className="font-medium">
+                                                Receiver Phone:
+                                            </span>{" "}
+                                            {order.receiverPhone}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Order Items */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#F7F4EF] px-4 py-3 border-b">
@@ -220,15 +261,15 @@ const OrderDetail = () => {
                             <div className="p-4">
                                 <div className="bg-gray-50 p-3 rounded-lg">
                                     <p className="text-[#404040] text-sm leading-relaxed">
-                                        {order.shippingAddress?.houseNumber},{" "}
+                                        {order.shippingAddress?.houseNumber}," "
                                         {order.shippingAddress?.street}
                                         {order.shippingAddress?.landmark &&
                                             `, ${order.shippingAddress.landmark}`}
                                         <br />
-                                        {order.shippingAddress?.area},{" "}
+                                        {order.shippingAddress?.area}," "
                                         {order.shippingAddress?.city}
                                         <br />
-                                        {order.shippingAddress?.state} -{" "}
+                                        {order.shippingAddress?.state} -" "
                                         {order.shippingAddress?.pincode}
                                         <br />
                                         {order.shippingAddress?.country}

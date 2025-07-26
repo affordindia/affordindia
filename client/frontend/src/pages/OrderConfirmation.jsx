@@ -103,6 +103,38 @@ const OrderConfirmation = () => {
                     </div>
                 </div>
 
+                {/* User & Receiver Info */}
+                <div className="px-6 py-4 border-b">
+                    <h3 className="font-semibold text-[#404040] mb-2">
+                        Contact Information
+                    </h3>
+                    <div className="space-y-1 text-sm">
+                        <div>
+                            <span className="font-medium">Your Name:</span>{" "}
+                            {order.userName || order.user?.name}
+                        </div>
+                        <div>
+                            <span className="font-medium">Your Phone:</span>{" "}
+                            {order.userPhone || order.user?.phone}
+                        </div>
+                        {order.receiverName && (
+                            <div>
+                                <span className="font-medium">
+                                    Receiver Name:
+                                </span>{" "}
+                                {order.receiverName}
+                            </div>
+                        )}
+                        {order.receiverPhone && (
+                            <div>
+                                <span className="font-medium">
+                                    Receiver Phone:
+                                </span>{" "}
+                                {order.receiverPhone}
+                            </div>
+                        )}
+                    </div>
+                </div>
                 {/* Order Items */}
                 <div className="px-6 py-4">
                     <h3 className="font-semibold text-[#404040] mb-3 flex items-center gap-2">

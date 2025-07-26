@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import "../index.css";
 import bgImg from "../assets/otp-bg.png";
 import { auth } from "../../firebase";
@@ -39,22 +40,24 @@ const Signup = ({ onAuthSuccess }) => {
                     callback: (response) => {
                         // reCAPTCHA verification successful
                     },
-                    'expired-callback': () => {
+                    "expired-callback": () => {
                         // Clear and recreate verifier on expiry
                         window.recaptchaVerifier.clear();
                         window.recaptchaVerifier = null;
                         setupRecaptcha();
                     },
-                    'error-callback': (error) => {
-                        setError("reCAPTCHA verification failed. Please try again.");
-                    }
+                    "error-callback": (error) => {
+                        setError(
+                            "reCAPTCHA verification failed. Please try again."
+                        );
+                    },
                 }
             );
         }
     };
 
     const handleSendOtp = async () => {
-        if (phone.length !== 10) {
+        if (!validatePhoneNumber(phone)) {
             setError("Enter a valid 10-digit phone number");
             return;
         }

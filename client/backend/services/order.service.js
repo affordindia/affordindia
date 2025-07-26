@@ -7,7 +7,9 @@ export const placeOrder = async (
     userId,
     shippingAddress,
     paymentMethod,
-    paymentInfo = {}
+    paymentInfo = {},
+    receiverName = undefined,
+    receiverPhone = undefined
 ) => {
     // Get user's cart
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
@@ -65,6 +67,8 @@ export const placeOrder = async (
         shippingFee,
         discount,
         total,
+        receiverName,
+        receiverPhone,
     });
 
     // Clear cart
@@ -80,14 +84,23 @@ export const getUserOrders = async (userId) => {
             path: "items.product",
             select: "name price images description",
         })
+        .populate({
+            path: "user",
+            select: "name phone",
+        })
         .sort("-createdAt");
 };
 
 export const getOrderById = async (userId, orderId) => {
-    const order = await Order.findOne({ _id: orderId, user: userId }).populate({
-        path: "items.product",
-        select: "name price images description",
-    });
+    const order = await Order.findOne({ _id: orderId, user: userId })
+        .populate({
+            path: "items.product",
+            select: "name price images description",
+        })
+        .populate({
+            path: "user",
+            select: "name phone",
+        });
     if (!order) throw new Error("Order not found");
     return order;
 };
