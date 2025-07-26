@@ -17,24 +17,42 @@ const features = [
 
 const WhyChooseOurProducts = () => {
     return (
-        <div className="bg-white py-12 px-4 md:px-12">
-            <h2 className="text-3xl font-semibold text-center mb-10">
-                Why Choose Silver Rakhis
-            </h2>
-            <div className="max-w-5xl mx-auto grid gap-6 md:grid-cols-3">
-                {features.map((feature, index) => (
-                    <div
-                        key={index}
-                        className="bg-[#2C2C2C] text-white rounded-md p-5 text-sm shadow-md"
-                    >
-                        <h4 className="font-semibold mb-2 text-base">
-                            {feature.title}
-                        </h4>
-                        <p className="text-gray-300">{feature.desc}</p>
-                    </div>
-                ))}
+        <div className="bg-white py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#404040] mb-10">
+            Why Choose Silver Rakhis
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="bg-[#F5F4EF] p-6 rounded shadow text-center">
+              <h3 className="text-lg font-semibold text-[#404040] mb-2">
+                Lasting Symbol
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Unlike thread rakhis, silver rakhis are durable and can be
+                preserved as a lasting symbol of your bond.
+              </p>
             </div>
+            <div className="bg-[#F5F4EF] p-6 rounded shadow text-center">
+              <h3 className="text-lg font-semibold text-[#404040] mb-2">
+                Artisan Crafted
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Each piece is meticulously handcrafted by skilled artisans using
+                traditional techniques passed down through generations.
+              </p>
+            </div>
+            <div className="bg-[#F5F4EF] p-6 rounded shadow text-center">
+              <h3 className="text-lg font-semibold text-[#404040] mb-2">
+                Premium Gift
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Silver rakhis make for an elegant and premium gift that your
+                brother will cherish for years to come.
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
     );
 };
 

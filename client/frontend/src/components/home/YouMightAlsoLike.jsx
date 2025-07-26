@@ -70,7 +70,7 @@ const YouMightAlsoLike = () => {
       <div className="hidden md:flex items-center justify-center mb-9">
         <div className="w-16 border-t border-gray-400 mx-4" />
         <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
-          Featured Products
+          Similar Products
         </h2>
         <div className="w-16 border-t border-gray-400 mx-4" />
       </div>
@@ -80,7 +80,7 @@ const YouMightAlsoLike = () => {
         <div className="flex items-center justify-center">
           <div className="w-10 border-t border-gray-400 mx-2" />
           <h2 className="text-center font-serif text-base tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
-            Featured Products
+            Similar Products
           </h2>
           <div className="w-10 border-t border-gray-400 mx-2" />
         </div>
@@ -124,14 +124,7 @@ const YouMightAlsoLike = () => {
               ))}
           </div>
 
-         {/* view collection button*/} 
-
-          <div className="hidden md:flex justify-center mt-6">
-            <Link to="/products" className="button">
-              <span className="button-content">View Collection</span>
-            </Link>
-          </div>
-
+         
           {/* Right arrow */}
           {/* {products.length > 0 && (
                         <button

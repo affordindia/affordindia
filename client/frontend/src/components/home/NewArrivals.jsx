@@ -37,43 +37,37 @@ const NewArrivals = () => {
                 </Link>
             </div>
 
-            {/* Mobile Grid Layout */}
-            <div className="block md:hidden mt-4">
-                <div className="grid grid-cols-2 gap-2">
-                    {mobileProducts.map((product) => (
-                        <div
-                            key={product._id}
-                            className="flex justify-center items-center"
-                        >
-                            <ProductCard product={product} />
-                        </div>
-                    ))}
-                </div>
+      {/* Mobile Grid Layout */}
+      <div className="block md:hidden mt-4">
+        <div className="grid grid-cols-2 gap-2">
+          {mobileProducts.map((product) => (
+            <div key={product._id} className="flex justify-center items-center">
+              <ProductCard product={product} />
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Desktop Scroll Layout */}
-            <div className="hidden md:block overflow-x-auto scrollbar-hide mt-4">
-                <div className="flex gap-4">
-                    {products.map((product) => (
-                        <div
-                            key={product._id}
-                            className="min-w-[250px] max-w-[250px] flex-shrink-0"
-                        >
-                            <ProductCard product={product} />
-                        </div>
-                    ))}
-                </div>
-            </div>
+      {/* Desktop Scroll Layout */}
+      <div className="hidden md:block overflow-x-auto scrollbar-hide mt-4 pb-4">
+  <div className="flex gap-4">
+    {products.map((product) => (
+      <div
+        key={product._id}
+        className="min-w-[250px] max-w-[250px] flex-shrink-0"
+      >
+        <ProductCard product={product} />
+      </div>
+    ))}
+  </div>
+      </div>
 
             {/* View Collection Button (Hidden on Mobile) */}
             <div className="hidden md:flex justify-center mt-6">
-                <Link
-                    to="/products"
-                    className="inline-block bg-[#B76E79] text-white font-semibold px-6 py-2 rounded shadow hover:shadow-md transition text-base"
-                >
-                    View Collection
-                </Link>
-            </div>
+                    <Link to="/products" className="button">
+                      <span className="button-content">View Collection</span>
+                    </Link>
+                  </div>
         </section>
     );
 };
