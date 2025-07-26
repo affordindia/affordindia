@@ -49,18 +49,17 @@ const NewArrivals = () => {
       </div>
 
       {/* Desktop Scroll Layout */}
-   {/* Desktop Scroll Layout */}
-<div className="hidden md:block overflow-x-auto scrollbar-hide mt-4 mb-6">
-  <div className="flex gap-4">
-    {products.map((product) => (
-      <div
-        key={product._id}
-        className="min-w-[250px] max-w-[250px] flex-shrink-0 p-2"
-      >
-        <ProductCard product={product} />
-      </div>
-    ))}
-  </div>
+      <div className="hidden md:block overflow-x-auto scrollbar-hide mt-4 mb-6">
+        <div className="flex gap-4">
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className="min-w-[250px] max-w-[250px] flex-shrink-0 p-2"
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* View Collection Button (Hidden on Mobile) */}
