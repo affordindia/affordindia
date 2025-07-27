@@ -35,9 +35,10 @@ export const listProducts = async (req, res, next) => {
         // Calculate discounted price for each product
         const productsWithDiscount = products.map((product) => {
             const discount = product.discount || 0;
-            const discountedPrice = discount > 0
-                ? Math.round(product.price * (1 - discount / 100))
-                : product.price;
+            const discountedPrice =
+                discount > 0
+                    ? Math.round(product.price * (1 - discount / 100))
+                    : product.price;
             return { ...product, discountedPrice };
         });
 
@@ -46,17 +47,23 @@ export const listProducts = async (req, res, next) => {
         if (req.query.minPrice || req.query.maxPrice) {
             filteredProducts = filteredProducts.filter((product) => {
                 const price = product.discountedPrice;
-                if (req.query.minPrice && price < Number(req.query.minPrice)) return false;
-                if (req.query.maxPrice && price > Number(req.query.maxPrice)) return false;
+                if (req.query.minPrice && price < Number(req.query.minPrice))
+                    return false;
+                if (req.query.maxPrice && price > Number(req.query.maxPrice))
+                    return false;
                 return true;
             });
         }
 
         // Sort by discounted price if requested
         if (req.query.sort === "price") {
-            filteredProducts = filteredProducts.sort((a, b) => a.discountedPrice - b.discountedPrice);
+            filteredProducts = filteredProducts.sort(
+                (a, b) => a.discountedPrice - b.discountedPrice
+            );
         } else if (req.query.sort === "-price") {
-            filteredProducts = filteredProducts.sort((a, b) => b.discountedPrice - a.discountedPrice);
+            filteredProducts = filteredProducts.sort(
+                (a, b) => b.discountedPrice - a.discountedPrice
+            );
         }
 
         res.json({

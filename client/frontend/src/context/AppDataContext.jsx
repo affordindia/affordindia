@@ -55,7 +55,10 @@ export const AppDataProvider = ({ children }) => {
     // Smart banner filtering function
     const getBannersByMaterial = (material = "all") => {
         if (material === "all" || !material) {
-            return banners;
+            // Exclude wood banners when material is 'all'
+            return banners.filter(
+                (banner) => banner.material?.toLowerCase() !== "wood"
+            );
         }
 
         return banners.filter(
