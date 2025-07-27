@@ -14,6 +14,12 @@ const productSchema = new mongoose.Schema(
         isFeatured: { type: Boolean, default: false },
         views: { type: Number, default: 0 },
         salesCount: { type: Number, default: 0 },
+        discount: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
     },
     { timestamps: true }
 );

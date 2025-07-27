@@ -10,6 +10,22 @@ const OrderSummary = ({
     loading,
     disabled,
 }) => {
+    // Calculate discount details
+    const { discountedSubtotal, totalDiscount, originalSubtotal } =
+        items.reduce(
+            (acc, { product, quantity }) => {
+                const hasDiscount = product.discount && product.discount > 0;
+                const discountedPrice = hasDiscount
+                    ? Math.round(product.price * (1 - product.discount / 100))
+                    : product.price;
+                acc.originalSubtotal += product.price * quantity;
+                acc.discountedSubtotal += discountedPrice * quantity;
+                acc.totalDiscount +=
+                    (product.price - discountedPrice) * quantity;
+                return acc;
+            },
+            { discountedSubtotal: 0, totalDiscount: 0, originalSubtotal: 0 }
+        );
     return (
         <div className="bg-[#F7F4EF] p-6 rounded-lg border border-gray-300">
             {/* Header */}
@@ -22,36 +38,62 @@ const OrderSummary = ({
 
             {/* Cart Items */}
             <div className="space-y-3 mb-4">
-                {items.map(({ product, quantity }) => (
-                    <div
-                        key={product._id}
-                        className="flex items-center gap-3 p-2 bg-white rounded border"
-                    >
-                        <img
-                            src={product.images?.[0] || "/placeholder.png"}
-                            alt={product.name}
-                            className="w-12 h-12 object-cover rounded"
-                        />
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[#404040] truncate">
-                                {product.name}
-                            </p>
-                            <p className="text-xs text-gray-600">
-                                Qty: {quantity}
-                            </p>
+                {items.map(({ product, quantity }) => {
+                    const hasDiscount =
+                        product.discount && product.discount > 0;
+                    const discountedPrice = hasDiscount
+                        ? Math.round(
+                              product.price * (1 - product.discount / 100)
+                          )
+                        : product.price;
+                    return (
+                        <div
+                            key={product._id}
+                            className="flex items-center gap-3 p-2 bg-white rounded border"
+                        >
+                            <img
+                                src={product.images?.[0] || "/placeholder.png"}
+                                alt={product.name}
+                                className="w-12 h-12 object-cover rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-[#404040] truncate">
+                                    {product.name}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                    Qty: {quantity}
+                                </p>
+                            </div>
+                            <span className="text-sm font-medium text-[#404040]">
+                                {hasDiscount ? (
+                                    <div className="flex flex-col items-center">
+                                        <span className="line-through text-gray-400 text-xs">
+                                            ₹{product.price * quantity}
+                                        </span>
+                                        <span className="font-bold">
+                                            ₹{discountedPrice * quantity}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <>₹{product.price * quantity}</>
+                                )}
+                            </span>
                         </div>
-                        <span className="text-sm font-medium text-[#404040]">
-                            ₹{(product.price * quantity).toLocaleString()}
-                        </span>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Price Breakdown */}
             <div className="border-t border-gray-300 pt-4 space-y-2">
                 <div className="flex justify-between text-sm text-[#404040]">
                     <span>Subtotal ({items.length} items)</span>
-                    <span>₹{subtotal.toLocaleString()}</span>
+                    <span>₹{originalSubtotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm text-[#404040]">
+                    <span>Discount</span>
+                    <span className="text-green-600">
+                        -₹{totalDiscount.toLocaleString()}
+                    </span>
                 </div>
                 <div className="flex justify-between text-sm text-[#404040]">
                     <span>Shipping Fee</span>
@@ -65,15 +107,17 @@ const OrderSummary = ({
                         {shippingFee === 0 ? "Free" : `₹${shippingFee}`}
                     </span>
                 </div>
-                {subtotal < 500 && (
+                {originalSubtotal < 500 && (
                     <div className="text-xs text-gray-600 italic">
-                        Add ₹{(500 - subtotal).toLocaleString()} more for free
-                        shipping
+                        Add ₹{(500 - originalSubtotal).toLocaleString()} more
+                        for free shipping
                     </div>
                 )}
                 <div className="flex justify-between font-semibold text-lg text-[#404040] border-t border-gray-300 pt-2">
-                    <span>Total</span>
-                    <span>₹{total.toLocaleString()}</span>
+                    <span>Grand Total</span>
+                    <span>
+                        ₹{(discountedSubtotal + shippingFee).toLocaleString()}
+                    </span>
                 </div>
             </div>
 
@@ -89,7 +133,9 @@ const OrderSummary = ({
                         Placing Order...
                     </div>
                 ) : (
-                    `Place Order - ₹${total.toLocaleString()}`
+                    `Place Order - ₹${(
+                        discountedSubtotal + shippingFee
+                    ).toLocaleString()}`
                 )}
             </button>
 

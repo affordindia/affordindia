@@ -11,6 +11,7 @@ const transformCartItems = (items) => {
             images: item.product.images,
             stock: item.product.stock,
             price: item.product.price,
+            discount: item.product.discount ?? 0,
         },
         quantity: item.quantity,
         priceAtAdd: item.priceAtAdd,
@@ -26,7 +27,7 @@ export const getUserCart = async (userId) => {
             { upsert: true, new: true }
         ).populate({
             path: "items.product",
-            select: "name price images stock",
+            select: "name price images stock discount",
         });
 
         return {

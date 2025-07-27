@@ -213,7 +213,15 @@ const OrderConfirmation = () => {
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-gray-600">Subtotal:</span>
                         <span className="text-sm text-[#404040]">
-                            ₹{order.subtotal?.toLocaleString()}
+                            ₹
+                            {order.originalSubtotal?.toLocaleString?.() ||
+                                order.subtotal?.toLocaleString?.()}
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">Discount:</span>
+                        <span className="text-sm text-green-600">
+                            -₹{order.totalDiscount?.toLocaleString?.() || 0}
                         </span>
                     </div>
                     <div className="flex justify-between items-center mb-2">
@@ -226,10 +234,10 @@ const OrderConfirmation = () => {
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t">
                         <span className="font-semibold text-[#404040]">
-                            Total:
+                            Grand Total:
                         </span>
                         <span className="font-semibold text-lg text-[#404040]">
-                            ₹{order.total?.toLocaleString()}
+                            ₹{order.total?.toLocaleString?.()}
                         </span>
                     </div>
                 </div>

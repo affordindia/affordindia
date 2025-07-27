@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema(
                 },
                 quantity: { type: Number, required: true },
                 price: { type: Number, required: true },
+                discountedPrice: { type: Number, required: true }, // price after discount
             },
         ],
         shippingAddress: {
@@ -50,7 +51,7 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
         subtotal: { type: Number },
-        discount: { type: Number },
+        totalDiscount: { type: Number, default: 0 }, // sum of all product discounts
         shippingFee: { type: Number },
         total: { type: Number },
         trackingNumber: { type: String },

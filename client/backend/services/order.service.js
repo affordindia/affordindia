@@ -17,26 +17,34 @@ export const placeOrder = async (
 
     // Validate stock and calculate totals
     let subtotal = 0;
+    let totalDiscount = 0;
     const orderItems = [];
     for (const item of cart.items) {
         const product = item.product;
         if (!product) throw new Error("Product not found in cart");
         if (product.stock < item.quantity)
             throw new Error(`Insufficient stock for ${product.name}`);
+        const discount = product.discount || 0;
+        const discountedPrice = Math.round(
+            product.price * (1 - discount / 100)
+        );
+        const productDiscount =
+            (product.price - discountedPrice) * item.quantity;
         subtotal += product.price * item.quantity;
+        totalDiscount += productDiscount;
         orderItems.push({
             product: product._id,
             quantity: item.quantity,
             price: product.price,
+            discountedPrice,
         });
     }
-    // Use config for shipping and discount
+    // Use config for shipping
     const shippingFee =
         subtotal < config.shipping.minOrderForFree
             ? config.shipping.shippingFee
             : 0;
-    const discount = config.shipping.discount;
-    const total = subtotal + shippingFee - discount;
+    const total = subtotal - totalDiscount + shippingFee;
 
     // Deduct stock
     for (const item of cart.items) {
@@ -64,8 +72,8 @@ export const placeOrder = async (
         paymentInfo,
         status: "pending",
         subtotal,
+        totalDiscount,
         shippingFee,
-        discount,
         total,
         receiverName,
         receiverPhone,
@@ -75,34 +83,65 @@ export const placeOrder = async (
     cart.items = [];
     await cart.save();
 
-    return order;
+    // Format response with totalDiscount and discountedPrice per item
+    return {
+        ...order.toObject(),
+        totalDiscount: order.totalDiscount,
+        items: order.items.map((item) => ({
+            ...item,
+            discountedPrice: item.discountedPrice,
+        })),
+    };
 };
 
 export const getUserOrders = async (userId) => {
-    return Order.find({ user: userId })
+    const orders = await Order.find({ user: userId })
         .populate({
             path: "items.product",
-            select: "name price images description",
+            select: "name price images description stock discount",
         })
         .populate({
             path: "user",
             select: "name phone",
         })
         .sort("-createdAt");
+    // Format each order for API consistency
+    return orders.map((order) => ({
+        ...order.toObject(),
+        totalDiscount: order.totalDiscount,
+        items: order.items.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+            price: item.price,
+            discountedPrice: item.discountedPrice,
+            _id: item._id,
+        })),
+    }));
 };
 
 export const getOrderById = async (userId, orderId) => {
     const order = await Order.findOne({ _id: orderId, user: userId })
         .populate({
             path: "items.product",
-            select: "name price images description",
+            select: "name price images description stock discount",
         })
         .populate({
             path: "user",
             select: "name phone",
         });
     if (!order) throw new Error("Order not found");
-    return order;
+    // Format for API consistency
+    return {
+        ...order.toObject(),
+        totalDiscount: order.totalDiscount,
+        items: order.items.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+            price: item.price,
+            discountedPrice: item.discountedPrice,
+            _id: item._id,
+        })),
+    };
 };
 
 export const cancelOrder = async (userId, orderId) => {

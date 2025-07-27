@@ -199,7 +199,7 @@ const Orders = () => {
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="font-semibold text-[#404040]">
-                                            ₹{order.total?.toLocaleString()}
+                                            ₹{order.total?.toLocaleString?.()}
                                         </p>
                                         <p className="text-sm text-gray-600">
                                             {order.items?.length || 0} item

@@ -146,7 +146,22 @@ const ProductDetail = () => {
                         {product.numReviews || "122"} Ratings)
                     </div>
                     <div className="text-2xl font-semibold">
-                        ₹{product.price}
+                        {product.discount && product.discount > 0 ? (
+                            <>
+                                <span className="line-through text-gray-400 text-base">
+                                    ₹{product.price}
+                                </span>{" "}
+                                <span className="font-bold text-2xl">
+                                    ₹
+                                    {Math.round(
+                                        product.price *
+                                            (1 - product.discount / 100)
+                                    )}
+                                </span>
+                            </>
+                        ) : (
+                            <>₹{product.price}</>
+                        )}
                     </div>
                     {stockStatus}
 

@@ -203,49 +203,76 @@ const OrderDetail = () => {
                             </div>
                             <div className="p-4">
                                 <div className="space-y-3">
-                                    {order.items?.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                                        >
-                                            <img
-                                                src={
-                                                    item.product?.images?.[0] ||
-                                                    "/placeholder.png"
-                                                }
-                                                alt={
-                                                    item.product?.name ||
-                                                    "Product"
-                                                }
-                                                className="w-14 h-14 object-cover rounded border"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-medium text-[#404040] text-sm truncate">
-                                                    {item.product?.name ||
-                                                        "Product"}
-                                                </h3>
-                                                <div className="flex flex-wrap gap-2 mt-1">
-                                                    <p className="text-xs text-gray-600">
-                                                        Qty: {item.quantity}
-                                                    </p>
-                                                    <p className="text-xs text-gray-600">
-                                                        ₹
-                                                        {item.price?.toLocaleString()}{" "}
-                                                        each
-                                                    </p>
+                                    {order.items?.map((item, index) => {
+                                        const hasDiscount =
+                                            item.product?.discount &&
+                                            item.product.discount > 0;
+                                        const discountedPrice = hasDiscount
+                                            ? Math.round(
+                                                  item.product.price *
+                                                      (1 -
+                                                          item.product
+                                                              .discount /
+                                                              100)
+                                              )
+                                            : item.product.price;
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                                            >
+                                                <img
+                                                    src={
+                                                        item.product
+                                                            ?.images?.[0] ||
+                                                        "/placeholder.png"
+                                                    }
+                                                    alt={
+                                                        item.product?.name ||
+                                                        "Product"
+                                                    }
+                                                    className="w-14 h-14 object-cover rounded border"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-medium text-[#404040] text-sm truncate">
+                                                        {item.product?.name ||
+                                                            "Product"}
+                                                    </h3>
+                                                    <div className="flex flex-wrap gap-2 mt-1">
+                                                        <p className="text-xs text-gray-600">
+                                                            Qty: {item.quantity}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-semibold text-[#404040] text-sm">
+                                                        {hasDiscount ? (
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="line-through text-gray-400 text-xs">
+                                                                    ₹
+                                                                    {item
+                                                                        .product
+                                                                        .price *
+                                                                        item.quantity}
+                                                                </span>
+                                                                <span className="font-bold">
+                                                                    ₹
+                                                                    {discountedPrice *
+                                                                        item.quantity}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                ₹
+                                                                {item.price *
+                                                                    item.quantity}
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="font-semibold text-[#404040] text-sm">
-                                                    ₹
-                                                    {(
-                                                        item.price *
-                                                        item.quantity
-                                                    )?.toLocaleString()}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -330,9 +357,22 @@ const OrderDetail = () => {
                                             Subtotal:
                                         </span>
                                         <span className="text-[#404040]">
-                                            ₹{order.subtotal?.toLocaleString()}
+                                            ₹
+                                            {order.originalSubtotal?.toLocaleString?.() ||
+                                                order.subtotal?.toLocaleString?.()}
                                         </span>
                                     </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">
+                                            Discount
+                                        </span>
+                                        <span className="text-green-600">
+                                            -₹
+                                            {order.totalDiscount?.toLocaleString?.() ||
+                                                0}
+                                        </span>
+                                    </div>
+
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">
                                             Shipping:
@@ -346,10 +386,11 @@ const OrderDetail = () => {
                                     <div className="border-t pt-2">
                                         <div className="flex justify-between font-semibold">
                                             <span className="text-[#404040]">
-                                                Total:
+                                                Grand Total:
                                             </span>
                                             <span className="text-lg text-[#404040]">
-                                                ₹{order.total?.toLocaleString()}
+                                                ₹
+                                                {order.total?.toLocaleString?.()}
                                             </span>
                                         </div>
                                     </div>

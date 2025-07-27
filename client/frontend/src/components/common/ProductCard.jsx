@@ -30,6 +30,12 @@ const ProductCard = ({ product }) => {
             setActionLoading(false);
         }
     };
+    // Calculate discounted price if discount is present
+    const hasDiscount = product.discount && product.discount > 0;
+    const discountedPrice = hasDiscount
+        ? Math.round(product.price * (1 - product.discount / 100))
+        : product.price;
+
     return (
         <Link
             to={`/products/id/${product._id}`}
@@ -71,7 +77,18 @@ const ProductCard = ({ product }) => {
                 </h3>
                 <div className="flex items-center justify-between w-full">
                     <div className="text-xs md:text-base text-gray-700 font-semibold">
-                        ₹{product.price}
+                        {hasDiscount ? (
+                            <>
+                                <span className="line-through text-gray-400 mr-2 text-xs">
+                                    ₹{product.price}
+                                </span>
+                                <span className="font-bold">
+                                    ₹{discountedPrice}
+                                </span>
+                            </>
+                        ) : (
+                            <>₹{product.price}</>
+                        )}
                     </div>
                     <div className="flex items-center text-xs md:text-sm text-gray-600">
                         <span className="flex items-center gap-1">

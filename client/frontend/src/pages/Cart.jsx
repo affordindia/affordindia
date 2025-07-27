@@ -8,11 +8,23 @@ const Cart = () => {
     const items = cart?.items || [];
 
     const deliveryFee = items.length ? 50 : 0;
-    const subtotal = items.reduce(
-        (acc, { product, quantity }) => acc + product.price * quantity,
-        0
-    );
-    const total = subtotal + deliveryFee;
+    // Calculate discounted subtotal and total discount
+    const { discountedSubtotal, totalDiscount, originalSubtotal } =
+        items.reduce(
+            (acc, { product, quantity }) => {
+                const hasDiscount = product.discount && product.discount > 0;
+                const discountedPrice = hasDiscount
+                    ? Math.round(product.price * (1 - product.discount / 100))
+                    : product.price;
+                acc.originalSubtotal += product.price * quantity;
+                acc.discountedSubtotal += discountedPrice * quantity;
+                acc.totalDiscount +=
+                    (product.price - discountedPrice) * quantity;
+                return acc;
+            },
+            { discountedSubtotal: 0, totalDiscount: 0, originalSubtotal: 0 }
+        );
+    const total = discountedSubtotal + deliveryFee;
 
     if (!items.length) {
         return (
@@ -55,7 +67,22 @@ const Cart = () => {
                         {/* Price */}
                         <div className="flex-1 flex md:justify-center items-center">
                             <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
-                                ₹{product.price}
+                                {product.discount && product.discount > 0 ? (
+                                    <>
+                                        <span className="line-through text-gray-400 mr-1 text-xs">
+                                            ₹{product.price}
+                                        </span>
+                                        <span className="">
+                                            ₹
+                                            {Math.round(
+                                                product.price *
+                                                    (1 - product.discount / 100)
+                                            )}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>₹{product.price}</>
+                                )}
                             </div>
                         </div>
 
@@ -93,7 +120,19 @@ const Cart = () => {
                         {/* Subtotal */}
                         <div className="flex-1 flex md:justify-center items-center">
                             <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
-                                ₹{product.price * quantity}
+                                {product.discount && product.discount > 0 ? (
+                                    <>
+                                        <span className="">
+                                            ₹
+                                            {Math.round(
+                                                product.price *
+                                                    (1 - product.discount / 100)
+                                            ) * quantity}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>₹{product.price * quantity}</>
+                                )}
                             </div>
                         </div>
 
@@ -130,7 +169,13 @@ const Cart = () => {
                     <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
                         <div className="flex justify-between mb-2">
                             <span>Subtotal</span>
-                            <span>₹{subtotal}</span>
+                            <span>₹{originalSubtotal}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                            <span>Discount</span>
+                            <span className="text-green-600">
+                                -₹{totalDiscount}
+                            </span>
                         </div>
                         <div className="flex justify-between mb-2">
                             <span>Delivery Charge</span>
