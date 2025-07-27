@@ -24,24 +24,47 @@ export const listProducts = async (req, res, next) => {
             filter.name = { $regex: req.query.search, $options: "i" };
         if (req.query.brand) filter.brand = req.query.brand;
         if (req.query.inStock === "true") filter.stock = { $gt: 0 };
-        if (req.query.minPrice || req.query.maxPrice) {
-            filter.price = {};
-            if (req.query.minPrice)
-                filter.price.$gte = Number(req.query.minPrice);
-            if (req.query.maxPrice)
-                filter.price.$lte = Number(req.query.maxPrice);
-        }
+
+        // We'll filter by discounted price in-memory after fetching products
         const { products, totalCount } = await getProducts(filter, {
             skip,
             limit,
             sort,
         });
+
+        // Calculate discounted price for each product
+        const productsWithDiscount = products.map((product) => {
+            const discount = product.discount || 0;
+            const discountedPrice = discount > 0
+                ? Math.round(product.price * (1 - discount / 100))
+                : product.price;
+            return { ...product, discountedPrice };
+        });
+
+        // Filter by discounted price if requested
+        let filteredProducts = productsWithDiscount;
+        if (req.query.minPrice || req.query.maxPrice) {
+            filteredProducts = filteredProducts.filter((product) => {
+                const price = product.discountedPrice;
+                if (req.query.minPrice && price < Number(req.query.minPrice)) return false;
+                if (req.query.maxPrice && price > Number(req.query.maxPrice)) return false;
+                return true;
+            });
+        }
+
+        // Sort by discounted price if requested
+        if (req.query.sort === "price") {
+            filteredProducts = filteredProducts.sort((a, b) => a.discountedPrice - b.discountedPrice);
+        } else if (req.query.sort === "-price") {
+            filteredProducts = filteredProducts.sort((a, b) => b.discountedPrice - a.discountedPrice);
+        }
+
         res.json({
             page,
             limit,
-            count: products.length,
+            count: filteredProducts.length,
             totalCount,
-            products,
+            products: filteredProducts,
         });
     } catch (err) {
         next(err);
