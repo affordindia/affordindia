@@ -46,7 +46,8 @@ const Navbar = () => {
   }, [profileDropdownOpen]);
 
   return (
-    <nav className="bg-[#EBEBE9] text-black sticky top-0 z-50">
+    <nav className="bg-[#EBEBE9]/80 md:bg-[#EBEBE9]/60 text-black sticky top-0 z-50 backdrop-blur-md">
+
       <div className="max-w-7xl mx-auto px-2 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-4 md:space-x-8">
           <button

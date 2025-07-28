@@ -52,7 +52,8 @@ const ProductCard = ({ product }) => {
                     isInWishlist ? "Remove from wishlist" : "Add to wishlist"
                 }
             >
-                <FaHeart className={isInWishlist ? "fill-current" : ""} />
+                <FaHeart className={`text-2xl ${isInWishlist ? "fill-current" : ""}`} />
+
             </button>
 
             {/* Image - always square, info below, scales on hover */}
