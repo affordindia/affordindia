@@ -221,13 +221,20 @@ const OrderDetail = () => {
                                                 key={index}
                                                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                                             >
-                                                <Link to={`/products/id/${item.product?._id}`}> 
+                                                <Link
+                                                    to={`/products/id/${item.product?._id}`}
+                                                >
                                                     <img
                                                         src={
-                                                            item.product?.images?.[0] ||
+                                                            item.product
+                                                                ?.images?.[0] ||
                                                             "/placeholder.png"
                                                         }
-                                                        alt={item.product?.name || "Product"}
+                                                        alt={
+                                                            item.product
+                                                                ?.name ||
+                                                            "Product"
+                                                        }
                                                         className="w-14 h-14 object-cover rounded border cursor-pointer hover:opacity-90 transition"
                                                     />
                                                 </Link>

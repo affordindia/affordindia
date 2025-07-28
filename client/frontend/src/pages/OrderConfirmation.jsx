@@ -147,7 +147,7 @@ const OrderConfirmation = () => {
                                 key={index}
                                 className="flex items-center gap-4 p-3 bg-gray-50 rounded"
                             >
-                                <Link to={`/products/id/${item.product?._id}`}> 
+                                <Link to={`/products/id/${item.product?._id}`}>
                                     <img
                                         src={
                                             item.product?.images?.[0] ||
