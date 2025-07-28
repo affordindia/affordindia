@@ -1,10 +1,11 @@
 import React from "react";
+import Loader from "../components/common/Loader.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-    const { cart, updateCartItem, removeFromCart } = useCart();
+    const { cart, updateCartItem, removeFromCart, loading } = useCart();
     const items = cart?.items || [];
 
     const deliveryFee = items.length ? 50 : 0;
@@ -26,6 +27,9 @@ const Cart = () => {
         );
     const total = discountedSubtotal + deliveryFee;
 
+    if (loading) {
+        return <Loader fullScreen={true} />;
+    }
     if (!items.length) {
         return (
             <div className="p-6 text-center text-xl text-gray-600">

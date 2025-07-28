@@ -15,6 +15,7 @@ const Checkout = () => {
     const { cart, clearCart } = useCart();
     const { addresses, addAddress } = useProfile();
     const [userName, setUserName] = useState(user?.name || "");
+    const [userNameError, setUserNameError] = useState("");
     const navigate = useNavigate();
 
     // Utility function to check if address already exists
@@ -48,7 +49,23 @@ const Checkout = () => {
     const [isOrderingForSomeoneElse, setIsOrderingForSomeoneElse] =
         useState(false);
     const [receiverName, setReceiverName] = useState("");
+    const [receiverNameError, setReceiverNameError] = useState("");
     const [receiverPhone, setReceiverPhone] = useState("");
+    const [receiverPhoneError, setReceiverPhoneError] = useState("");
+    // Validation for user and receiver fields
+    const validateUserName = (value) => {
+        if (!value.trim()) return "Please enter your name";
+        return "";
+    };
+    const validateReceiverName = (value) => {
+        if (!value.trim()) return "Please enter receiver's name";
+        return "";
+    };
+    const validateReceiverPhone = (value) => {
+        if (!validatePhoneNumber(value))
+            return "Enter valid 10-digit phone number";
+        return "";
+    };
 
     // Redirect if cart is empty (but not during order processing)
     useEffect(() => {
@@ -97,8 +114,20 @@ const Checkout = () => {
             }
 
             // Validate user name
-            if (!userName.trim()) {
-                throw new Error("Please enter your name");
+            const userNameErr = validateUserName(userName);
+            setUserNameError(userNameErr);
+            if (userNameErr) {
+                throw new Error(userNameErr);
+            }
+
+            // Validate receiver fields if ordering for someone else
+            if (isOrderingForSomeoneElse) {
+                const receiverNameErr = validateReceiverName(receiverName);
+                setReceiverNameError(receiverNameErr);
+                if (receiverNameErr) throw new Error(receiverNameErr);
+                const receiverPhoneErr = validateReceiverPhone(receiverPhone);
+                setReceiverPhoneError(receiverPhoneErr);
+                if (receiverPhoneErr) throw new Error(receiverPhoneErr);
             }
 
             // Validate cart
@@ -226,13 +255,28 @@ const Checkout = () => {
                                 <input
                                     type="text"
                                     value={userName}
-                                    onChange={(e) =>
-                                        setUserName(e.target.value)
+                                    onChange={(e) => {
+                                        setUserName(e.target.value);
+                                        if (userNameError) setUserNameError("");
+                                    }}
+                                    onBlur={(e) =>
+                                        setUserNameError(
+                                            validateUserName(e.target.value)
+                                        )
                                     }
                                     placeholder="Enter your name"
-                                    className="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                    className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                                        userNameError
+                                            ? "border-red-500"
+                                            : "border-blue-300"
+                                    }`}
                                     required
                                 />
+                                {userNameError && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {userNameError}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-blue-800 mb-1">
@@ -273,13 +317,31 @@ const Checkout = () => {
                                     <input
                                         type="text"
                                         value={receiverName}
-                                        onChange={(e) =>
-                                            setReceiverName(e.target.value)
+                                        onChange={(e) => {
+                                            setReceiverName(e.target.value);
+                                            if (receiverNameError)
+                                                setReceiverNameError("");
+                                        }}
+                                        onBlur={(e) =>
+                                            setReceiverNameError(
+                                                validateReceiverName(
+                                                    e.target.value
+                                                )
+                                            )
                                         }
                                         placeholder="Enter receiver's name"
-                                        className="w-full border border-yellow-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                                        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200 ${
+                                            receiverNameError
+                                                ? "border-red-500"
+                                                : "border-yellow-300"
+                                        }`}
                                         required
                                     />
+                                    {receiverNameError && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                            {receiverNameError}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-yellow-800 mb-1">
@@ -294,13 +356,31 @@ const Checkout = () => {
                                                 .replace(/[^0-9]/g, "")
                                                 .slice(0, 10);
                                             setReceiverPhone(cleaned);
+                                            if (receiverPhoneError)
+                                                setReceiverPhoneError("");
                                         }}
+                                        onBlur={(e) =>
+                                            setReceiverPhoneError(
+                                                validateReceiverPhone(
+                                                    e.target.value
+                                                )
+                                            )
+                                        }
                                         placeholder="Enter receiver's phone number"
-                                        className="w-full border border-yellow-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                                        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200 ${
+                                            receiverPhoneError
+                                                ? "border-red-500"
+                                                : "border-yellow-300"
+                                        }`}
                                         pattern="[0-9]{10}"
                                         maxLength={10}
                                         required
                                     />
+                                    {receiverPhoneError && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                            {receiverPhoneError}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
