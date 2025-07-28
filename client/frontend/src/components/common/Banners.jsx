@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppData } from "../../context/AppDataContext.jsx";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -74,7 +75,29 @@ const Banners = ({ material = "all" }) => {
                                     key={banner._id}
                                     className="keen-slider__slide flex bg-gray-100 w-full"
                                 >
-                                    {banner.image ? (
+                                    {banner.link ? (
+                                        <Link
+                                            to={banner.link}
+                                            style={{
+                                                width: "100%",
+                                                display: "block",
+                                            }}
+                                        >
+                                            {banner.image ? (
+                                                <img
+                                                    src={banner.image}
+                                                    alt={
+                                                        banner.title || "Banner"
+                                                    }
+                                                    className="w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full flex items-center justify-center text-gray-400 bg-gray-200">
+                                                    No Image
+                                                </div>
+                                            )}
+                                        </Link>
+                                    ) : banner.image ? (
                                         <img
                                             src={banner.image}
                                             alt={banner.title || "Banner"}
