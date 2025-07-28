@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../api/product.js";
 import { getProductReviews } from "../api/review.js";
@@ -15,7 +16,7 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { addToCart } = useCart();
+    const { cart, addToCart } = useCart();
     const {
         wishlist,
         addToWishlist,
@@ -167,13 +168,30 @@ const ProductDetail = () => {
 
                     {/* Buttons */}
                     <div className="flex gap-4 mt-4 flex-wrap">
-                        <button
-                            onClick={handleAddToCart}
-                            className="bg-[#A89A3D] text-white px-6 py-2 rounded-sm font-semibold transition-all duration-200 hover:bg-[#968632] hover:scale-105 active:scale-95 focus:outline-none"
-                            disabled={!stock}
-                        >
-                            Add to Cart
-                        </button>
+                        {cart?.items?.some(
+                            (item) => item.product._id === product._id
+                        ) ? (
+                            <Link
+                                to="/cart"
+                                className="px-6 py-2 rounded-sm font-semibold focus:outline-none transition-all duration-200 text-white bg-[#A89A3D] hover:bg-[#968632] hover:scale-105 active:scale-95"
+                            >
+                                Go to Cart
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={!stock}
+                                className={`px-6 py-2 rounded-sm font-semibold focus:outline-none transition-all duration-200 text-white
+                                    ${
+                                        !stock
+                                            ? "bg-gray-300 cursor-not-allowed"
+                                            : "bg-[#A89A3D] hover:bg-[#968632] hover:scale-105 active:scale-95"
+                                    }
+                                `}
+                            >
+                                Add to Cart
+                            </button>
+                        )}
                         <button
                             onClick={handleAddToWishlist}
                             disabled={wishlistLoading}
