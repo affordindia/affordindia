@@ -221,18 +221,16 @@ const OrderDetail = () => {
                                                 key={index}
                                                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                                             >
-                                                <img
-                                                    src={
-                                                        item.product
-                                                            ?.images?.[0] ||
-                                                        "/placeholder.png"
-                                                    }
-                                                    alt={
-                                                        item.product?.name ||
-                                                        "Product"
-                                                    }
-                                                    className="w-14 h-14 object-cover rounded border"
-                                                />
+                                                <Link to={`/products/id/${item.product?._id}`}> 
+                                                    <img
+                                                        src={
+                                                            item.product?.images?.[0] ||
+                                                            "/placeholder.png"
+                                                        }
+                                                        alt={item.product?.name || "Product"}
+                                                        className="w-14 h-14 object-cover rounded border cursor-pointer hover:opacity-90 transition"
+                                                    />
+                                                </Link>
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className="font-medium text-[#404040] text-sm truncate">
                                                         {item.product?.name ||

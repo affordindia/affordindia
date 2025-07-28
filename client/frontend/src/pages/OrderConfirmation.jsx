@@ -147,14 +147,16 @@ const OrderConfirmation = () => {
                                 key={index}
                                 className="flex items-center gap-4 p-3 bg-gray-50 rounded"
                             >
-                                <img
-                                    src={
-                                        item.product?.images?.[0] ||
-                                        "/placeholder.png"
-                                    }
-                                    alt={item.product?.name || "Product"}
-                                    className="w-12 h-12 object-cover rounded"
-                                />
+                                <Link to={`/products/id/${item.product?._id}`}> 
+                                    <img
+                                        src={
+                                            item.product?.images?.[0] ||
+                                            "/placeholder.png"
+                                        }
+                                        alt={item.product?.name || "Product"}
+                                        className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-90 transition"
+                                    />
+                                </Link>
                                 <div className="flex-1">
                                     <p className="font-medium text-[#404040]">
                                         {item.product?.name || "Product"}

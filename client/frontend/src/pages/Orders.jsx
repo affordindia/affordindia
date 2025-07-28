@@ -227,16 +227,16 @@ const Orders = () => {
                                         key={index}
                                         className="flex items-center gap-3"
                                     >
-                                        <img
-                                            src={
-                                                item.product?.images?.[0] ||
-                                                "/placeholder.png"
-                                            }
-                                            alt={
-                                                item.product?.name || "Product"
-                                            }
-                                            className="w-12 h-12 object-cover rounded border"
-                                        />
+                                        <Link to={`/products/id/${item.product?._id}`}> 
+                                            <img
+                                                src={
+                                                    item.product?.images?.[0] ||
+                                                    "/placeholder.png"
+                                                }
+                                                alt={item.product?.name || "Product"}
+                                                className="w-12 h-12 object-cover rounded border cursor-pointer hover:opacity-90 transition"
+                                            />
+                                        </Link>
                                         <div>
                                             <p className="font-medium text-sm text-[#404040] line-clamp-1">
                                                 {item.product?.name ||

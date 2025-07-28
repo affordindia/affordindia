@@ -60,11 +60,16 @@ const Cart = () => {
                     >
                         {/* Product Info */}
                         <div className="flex items-center gap-4 flex-[2]">
-                            <img
-                                src={product.images?.[0] || "/placeholder.png"}
-                                alt={product.name}
-                                className="w-20 h-20 object-cover rounded-sm border border-[#626262]"
-                            />
+                            <Link to={`/products/id/${product._id}`}>
+                                <img
+                                    src={
+                                        product.images?.[0] ||
+                                        "/placeholder.png"
+                                    }
+                                    alt={product.name}
+                                    className="w-20 h-20 object-cover rounded-sm border border-[#626262] cursor-pointer hover:opacity-90 transition"
+                                />
+                            </Link>
                             <div className="text-sm">{product.name}</div>
                         </div>
 
