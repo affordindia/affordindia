@@ -46,7 +46,8 @@ const Navbar = () => {
   }, [profileDropdownOpen]);
 
   return (
-    <nav className="bg-[#EBEBE9] text-black sticky top-0 z-50">
+    <nav className="bg-[#EBEBE9]/80 md:bg-[#EBEBE9]/60 text-black sticky top-0 z-50 backdrop-blur-md">
+
       <div className="max-w-7xl mx-auto px-2 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-4 md:space-x-8">
           <button
@@ -95,7 +96,9 @@ const Navbar = () => {
             onSubmit={(e) => {
               e.preventDefault();
               if (searchValue.trim()) {
-                navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
+                navigate(
+                  `/products?search=${encodeURIComponent(searchValue.trim())}`
+                );
               }
             }}
           >
@@ -170,19 +173,31 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
-                      <Link to="/cart" className="block py-2 hover:bg-gray-100 px-4">
+                      <Link
+                        to="/cart"
+                        className="block py-2 hover:bg-gray-100 px-4"
+                      >
                         <FaShoppingCart className="inline-block mr-2" />
                         Cart
                       </Link>
-                      <Link to="/wishlist" className="block py-2 hover:bg-gray-100 px-4">
+                      <Link
+                        to="/wishlist"
+                        className="block py-2 hover:bg-gray-100 px-4"
+                      >
                         <FaHeart className="inline-block mr-2" />
                         Wishlist
                       </Link>
-                      <Link to="/orders" className="block py-2 hover:bg-gray-100 px-4">
+                      <Link
+                        to="/orders"
+                        className="block py-2 hover:bg-gray-100 px-4"
+                      >
                         <FaClipboardList className="inline-block mr-2" />
                         Orders
                       </Link>
-                      <Link to="/profile" className="block py-2 hover:bg-gray-100 px-4">
+                      <Link
+                        to="/profile"
+                        className="block py-2 hover:bg-gray-100 px-4"
+                      >
                         <FaUser className="inline-block mr-2" />
                         Profile
                       </Link>
@@ -209,7 +224,9 @@ const Navbar = () => {
       {/* SLIDE-IN MOBILE MENU */}
       <div
         className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 ${
-          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          mobileMenuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setMobileMenuOpen(false)}
       >
@@ -219,17 +236,17 @@ const Navbar = () => {
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-         <div className="relative px-4 py-3 border-b border-gray-300 bg-[#e3dfd7]">
-  <div className="flex justify-center">
-    <img src={NavLogo} alt="Logo" className="h-6" />
-  </div>
-  <button
-    onClick={() => setMobileMenuOpen(false)}
-    className="absolute right-4 top-1/2 -translate-y-1/2"
-  >
-    <RxCross1 className="text-xl text-gray-700" />
-  </button>
-</div>
+          <div className="relative px-4 py-3 border-b border-gray-300 bg-[#e3dfd7]">
+            <div className="flex justify-center">
+              <img src={NavLogo} alt="Logo" className="h-6" />
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+            >
+              <RxCross1 className="text-xl text-gray-700" />
+            </button>
+          </div>
 
           <div className="p-4 space-y-4">
             <h2 className="text-lg font-bold">WELCOME</h2>
@@ -278,23 +295,27 @@ const Navbar = () => {
               </div>
             )}
 
-            <div className="mt-6 text-sm">
-              <p className="mb-2">To access account and manage orders</p>
+            <div className="mt-12 text-sm">
+              {!isAuthenticated && (
+                <p className="mb-2">To access account and manage orders</p>
+              )}
               {isAuthenticated ? (
                 <button
                   onClick={() => {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full border border-gray-600 text-gray-800 py-2 rounded hover:bg-gray-200"
+                  className="flex items-center gap-2 text-xl font-bold text-red-600 py-2 rounded hover:bg-gray-200"
                 >
-                  Logout
+                   Logout
+                  <FaSignOutAlt className="text-lg" />
+                 
                 </button>
               ) : (
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-center border border-gray-600 text-gray-800 py-2 rounded hover:bg-gray-200"
+                  className="inline-block text-xl font-bold text-[#66333B] px-4 py-1 border border-gray-600 rounded hover:bg-gray-200"
                 >
                   LOGIN / SIGNUP
                 </Link>
@@ -313,7 +334,11 @@ const Navbar = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (mobileSearchValue.trim()) {
-                  navigate(`/products?search=${encodeURIComponent(mobileSearchValue.trim())}`);
+                  navigate(
+                    `/products?search=${encodeURIComponent(
+                      mobileSearchValue.trim()
+                    )}`
+                  );
                   setMobileSearchOpen(false);
                 }
               }}
@@ -339,10 +364,17 @@ const Navbar = () => {
                   <RxCross1 />
                 </button>
               )}
-              <button type="submit" className="p-2 text-black hover:text-primary">
+              <button
+                type="submit"
+                className="p-2 text-black hover:text-primary"
+              >
                 <FaSearch className="text-lg" />
               </button>
-              <button type="button" className="p-2 text-black" onClick={() => setMobileSearchOpen(false)}>
+              <button
+                type="button"
+                className="p-2 text-black"
+                onClick={() => setMobileSearchOpen(false)}
+              >
                 &#10005;
               </button>
             </form>
