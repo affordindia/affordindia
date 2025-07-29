@@ -58,8 +58,9 @@ const ProductCard = ({ product }) => {
                     isInWishlist ? "Remove from wishlist" : "Add to wishlist"
                 }
             >
-                <FaHeart className={`text-2xl ${isInWishlist ? "fill-current" : ""}`} />
-
+                <FaHeart
+                    className={`text-2xl ${isInWishlist ? "fill-current" : ""}`}
+                />
             </button>
 
             {/* Image - always square, info below, scales on hover */}
@@ -78,7 +79,18 @@ const ProductCard = ({ product }) => {
                 </h3>
                 <div className="flex items-center justify-between w-full">
                     <div className="text-xs md:text-base text-gray-700 font-semibold">
-                        ₹{product.price}
+                        {hasDiscount ? (
+                            <>
+                                <span className="line-through text-gray-400 mr-2 text-xs">
+                                    ₹{product.price}
+                                </span>
+                                <span className="font-bold">
+                                    ₹{discountedPrice}
+                                </span>
+                            </>
+                        ) : (
+                            <>₹{product.price}</>
+                        )}
                     </div>
                     <div className="flex items-center text-xs md:text-sm text-gray-600">
                         <span className="flex items-center gap-1 ">
