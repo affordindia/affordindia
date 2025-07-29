@@ -373,9 +373,11 @@ const Products = () => {
                 handleSort={handleSort}
             />
 
-            {/* Additional Sections */}
+            {/* Additional Sections 
             <DesignJourney />
             <Craftsmanship />
+            */}
+            
             <WhyChooseOurProducts />
         </div>
     );
