@@ -29,7 +29,7 @@ router.get("/:reviewId", getProductReview);
 router.post(
     "/",
     authMiddleware,
-    upload.array('images', 5),
+    upload.array("images", 5),
     validateImageUpload,
     validateCreateReview,
     handleValidationErrors,
@@ -39,13 +39,17 @@ router.get("/user/my-review", authMiddleware, getUserProductReview);
 router.put(
     "/:reviewId",
     authMiddleware,
-    upload.array('images', 5),
+    upload.array("images", 5),
     validateImageUpload,
     validateUpdateReview,
     handleValidationErrors,
     updateProductReview
 );
 router.delete("/:reviewId", authMiddleware, deleteProductReview);
-router.delete("/:reviewId/images", authMiddleware, deleteReviewImagesController);
+router.delete(
+    "/:reviewId/images",
+    authMiddleware,
+    deleteReviewImagesController
+);
 
 export default router;

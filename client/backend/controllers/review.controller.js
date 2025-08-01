@@ -12,8 +12,13 @@ export const createProductReview = async (req, res, next) => {
     try {
         const { productId } = req.params;
         const files = req.files || [];
-        
-        const review = await createReview(productId, req.user._id, req.body, files);
+
+        const review = await createReview(
+            productId,
+            req.user._id,
+            req.body,
+            files
+        );
 
         res.status(201).json({
             success: true,
@@ -64,7 +69,7 @@ export const updateProductReview = async (req, res, next) => {
     try {
         const { productId, reviewId } = req.params;
         const files = req.files || [];
-        
+
         const review = await updateReview(
             productId,
             reviewId,
@@ -134,16 +139,20 @@ export const deleteReviewImagesController = async (req, res, next) => {
         if (!imagePublicIds || !Array.isArray(imagePublicIds)) {
             return res.status(400).json({
                 success: false,
-                message: "imagePublicIds array is required"
+                message: "imagePublicIds array is required",
             });
         }
 
-        const updatedImages = await deleteReviewImages(reviewId, req.user._id, imagePublicIds);
+        const updatedImages = await deleteReviewImages(
+            reviewId,
+            req.user._id,
+            imagePublicIds
+        );
 
         res.json({
             success: true,
             message: "Images deleted successfully",
-            images: updatedImages
+            images: updatedImages,
         });
     } catch (err) {
         next(err);
