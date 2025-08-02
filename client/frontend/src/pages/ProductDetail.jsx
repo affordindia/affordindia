@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../api/product.js";
-import { getProductReviews } from "../api/review.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import Loader from "../components/common/Loader.jsx";
+import ReviewsList from "../components/review/ReviewsList";
 import HighlightsSection from "../components/productDetail/HighlightsSection.jsx";
 import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 
@@ -14,7 +15,6 @@ import { FaRegHeart } from "react-icons/fa";
 const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
-    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const { cart, addToCart } = useCart();
     const {
@@ -23,6 +23,7 @@ const ProductDetail = () => {
         removeFromWishlist,
         loading: wishlistLoading,
     } = useWishlist();
+    const { user } = useAuth();
     const [wishlistMsg, setWishlistMsg] = useState("");
     const [selectedImage, setSelectedImage] = useState("");
 
@@ -31,11 +32,10 @@ const ProductDetail = () => {
         window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
         setLoading(true);
-        Promise.all([getProductById(id), getProductReviews(id)])
-            .then(([p, r]) => {
+        getProductById(id)
+            .then((p) => {
                 const prod = p.product || p;
                 setProduct(prod);
-                setReviews(r.reviews || r);
                 if (prod.images && prod.images.length > 0) {
                     setSelectedImage(prod.images[0]);
                 }
@@ -142,10 +142,14 @@ const ProductDetail = () => {
                     <h1 className="text-4xl font-semibold break-words">
                         {product.name}
                     </h1>
-                    <div className="text-lg">
-                        ★ {product.rating || "4.5"} (
-                        {product.numReviews || "122"} Ratings)
-                    </div>
+                    {/* Only show ratings if there are actual reviews */}
+                    {product.reviewsCount > 0 && (
+                        <div className="text-lg">
+                            ★ {product.ratings?.toFixed(1) || "0.0"} (
+                            {product.reviewsCount} review
+                            {product.reviewsCount !== 1 ? "s" : ""})
+                        </div>
+                    )}
                     <div className="text-2xl font-semibold">
                         {product.discount && product.discount > 0 ? (
                             <>
@@ -247,6 +251,17 @@ const ProductDetail = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div
+                id="reviews-section"
+                className="max-w-7xl mx-auto px-4 md:px-4 py-8"
+            >
+                <ReviewsList
+                    productId={id}
+                    currentUserId={user?._id || user?.id}
+                />
             </div>
 
             <HighlightsSection />

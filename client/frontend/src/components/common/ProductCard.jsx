@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaHeart, FaStar } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { useWishlist } from "../../context/WishlistContext.jsx";
 
 const ProductCard = ({ product }) => {
@@ -92,14 +92,17 @@ const ProductCard = ({ product }) => {
                             <>₹{product.price}</>
                         )}
                     </div>
-                    <div className="flex items-center text-xs md:text-sm text-gray-600">
-                        <span className="flex items-center gap-1 ">
-                            {product.rating || "4.5"}
-                        </span>
-                        <span className="ml-1">★</span>
-                        <span className="ml-2">|</span>
-                        <span className="ml-2">{product.reviews || 120}</span>
-                    </div>
+                    {/* Only show ratings if there are actual reviews */}
+                    {product.reviewsCount > 0 && (
+                        <div className="flex items-center text-xs md:text-sm text-gray-600">
+                            <span className="flex items-center gap-1">
+                                {product.ratings?.toFixed(1) || "0.0"}
+                            </span>
+                            <span className="ml-1">★</span>
+                            <span className="ml-2">|</span>
+                            <span className="ml-2">{product.reviewsCount}</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </Link>
