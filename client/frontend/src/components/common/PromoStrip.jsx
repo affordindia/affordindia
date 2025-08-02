@@ -8,12 +8,11 @@ const PromoStrip = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-sm md:text-base">
                 <FaGift className="text-[#C1B086]" />
                 <span className="font-medium">
-                    Raksha Bandhan Sale is LIVE! Special offers on handcrafted
-                    Rakhis
+                    Raksha Bandhan Sale is LIVE!
                 </span>
                 <Link
                     to="/rakhi"
-                    className="bg-[#C1B086] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#B5A578] transition-colors text-xs md:text-sm ml-2"
+                    className="bg-[#C1B086] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#B5A578] transition-colors text-xs md:text-sm ml-2 text-center"
                 >
                     Shop Now
                 </Link>
