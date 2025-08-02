@@ -364,7 +364,9 @@ const ReviewsList = ({ productId, currentUserId, className = "" }) => {
                             }`}
                         >
                             <span className="hidden sm:inline">{label}</span>
-                            <span className="sm:hidden">{mobileLabel || label}</span>
+                            <span className="sm:hidden">
+                                {mobileLabel || label}
+                            </span>
                             {key !== "all" && (
                                 <span className="ml-1 hidden sm:inline">
                                     Stars (
