@@ -253,6 +253,8 @@ const ProductDetail = () => {
                 </div>
             </div>
 
+            <HighlightsSection />
+
             {/* Reviews Section */}
             <div
                 id="reviews-section"
@@ -263,8 +265,6 @@ const ProductDetail = () => {
                     currentUserId={user?._id || user?.id}
                 />
             </div>
-
-            <HighlightsSection />
 
             <YouMightAlsoLike />
         </>
