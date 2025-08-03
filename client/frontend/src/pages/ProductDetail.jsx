@@ -256,10 +256,7 @@ const ProductDetail = () => {
             <HighlightsSection />
 
             {/* Reviews Section */}
-            <div
-                id="reviews-section"
-                className="max-w-7xl mx-auto px-4 md:px-4 py-8"
-            >
+            <div className="max-w-7xl mx-auto px-4 md:px-4 py-8">
                 <ReviewsList
                     productId={id}
                     currentUserId={user?._id || user?.id}
