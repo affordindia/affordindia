@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
 
         {/* FOLLOW US + Logo */}
-        <div className="flex flex-col items-start md:items-end">
+        <div className="flex flex-col items-start ">
           <h4 className="font-semibold mb-3">FOLLOW US</h4>
           <div className="flex space-x-3 text-lg mb-4">
             <FaFacebookF />

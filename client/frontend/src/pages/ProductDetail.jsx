@@ -189,7 +189,7 @@ const ProductDetail = () => {
                                     ${
                                         !stock
                                             ? "bg-gray-300 cursor-not-allowed"
-                                            : "bg-[#A89A3D] hover:bg-[#968632] hover:scale-105 active:scale-95"
+                                            : "bg-[#B76E79] hover:bg-[#ce7784] hover:scale-105 active:scale-95"
                                     }
                                 `}
                             >

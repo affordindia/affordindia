@@ -92,7 +92,7 @@ const WishlistCard = ({ product }) => {
                 <button
                     onClick={handleMoveToCart}
                     disabled={loading || actionLoading || product.stock < 1}
-                    className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                    className="flex-1 bg-[#B76E79] text-white py-2 px-3 rounded-lg hover:bg-[#B76E79] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                     title="Move to cart and remove from wishlist"
                 >
                     <FaShoppingCart size={14} />
@@ -100,15 +100,15 @@ const WishlistCard = ({ product }) => {
                     <span className="xs:hidden">Move</span>
                 </button>
 
-                <button
-                    onClick={handleRemoveFromWishlist}
-                    disabled={loading || actionLoading}
-                    className="sm:w-auto w-full bg-red-600 text-white py-2 px-3 rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    title="Remove from wishlist"
-                >
-                    <FaTrash size={14} />
-                    <span className="sm:hidden">Remove</span>
-                </button>
+              <button
+    onClick={handleRemoveFromWishlist}
+    disabled={loading || actionLoading}
+    className="sm:w-auto w-full bg-[#f5f1f1] border border-black text-white py-2 px-3 rounded-lg hover:bg-[#B76E79] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+    title="Remove from wishlist"
+>
+    <FaTrash size={14} className="text-red-500" />
+    <span className="sm:hidden">Remove</span>
+</button>
             </div>
 
             {/* Loading Overlay */}

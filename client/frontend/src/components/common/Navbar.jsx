@@ -130,15 +130,15 @@ const Navbar = () => {
             </button>
           </form>
           <Link to="/wishlist" className="relative">
-            <FaHeart className="text-xl hover:text-black" />
+            <FaHeart className="text-xl hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-3 -right-3 bg-[#d11431] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
             )}
           </Link>
           <Link to="/cart" className="relative">
-            <FaShoppingCart className="text-xl hover:text-black" />
+            <FaShoppingCart className="text-xl hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
             {cartCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
@@ -152,7 +152,7 @@ const Navbar = () => {
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               className="relative p-2 hover:bg-gray-100 rounded-full"
             >
-              <FaUser className="text-xl hover:text-black" />
+              <FaUser className="text-xl hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
             </button>
 
             {profileDropdownOpen && (
