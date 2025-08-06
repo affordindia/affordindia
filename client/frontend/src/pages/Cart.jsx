@@ -53,7 +53,9 @@ const Cart = () => {
                         0,
                         discountedSubtotal - couponDiscount
                     );
-                    const shipping = await calculateShipping(orderAmountAfterCoupon);
+                    const shipping = await calculateShipping(
+                        orderAmountAfterCoupon
+                    );
                     setShippingInfo(shipping);
                 } catch (error) {
                     console.error("Error calculating shipping:", error);
@@ -66,7 +68,8 @@ const Cart = () => {
     }, [discountedSubtotal, couponDiscount]);
 
     // Calculate final total (matching checkout logic)
-    const total = discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
+    const total =
+        discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
 
     const handleCartUpdate = async () => {
         // Refresh cart to get updated totals and coupon calculations
@@ -284,15 +287,18 @@ const Cart = () => {
                         <div className="flex justify-between mb-2">
                             <span>Delivery Charge</span>
                             <span>
-                                {shippingInfo.isFreeShipping ? "FREE" : `₹${shippingInfo.shippingFee}`}
+                                {shippingInfo.isFreeShipping
+                                    ? "FREE"
+                                    : `₹${shippingInfo.shippingFee}`}
                             </span>
                         </div>
-                        {!shippingInfo.isFreeShipping && shippingInfo.remainingForFreeShipping > 0 && (
-                            <div className="text-xs text-gray-600 mb-2">
-                                Add ₹{shippingInfo.remainingForFreeShipping} more for free
-                                shipping
-                            </div>
-                        )}
+                        {!shippingInfo.isFreeShipping &&
+                            shippingInfo.remainingForFreeShipping > 0 && (
+                                <div className="text-xs text-gray-600 mb-2">
+                                    Add ₹{shippingInfo.remainingForFreeShipping}{" "}
+                                    more for free shipping
+                                </div>
+                            )}
                         <div className="flex justify-between font-bold text-base mt-4">
                             <span>Grand Total</span>
                             <span>₹{total}</span>
