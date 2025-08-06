@@ -3,29 +3,16 @@ import { FaShoppingBag } from "react-icons/fa";
 
 const OrderSummary = ({
     items,
-    subtotal,
+    originalSubtotal,
+    totalProductDiscount,
+    couponDiscount,
     shippingFee,
+    shippingInfo,
     total,
     onPlaceOrder,
     loading,
     disabled,
 }) => {
-    // Calculate discount details
-    const { discountedSubtotal, totalDiscount, originalSubtotal } =
-        items.reduce(
-            (acc, { product, quantity }) => {
-                const hasDiscount = product.discount && product.discount > 0;
-                const discountedPrice = hasDiscount
-                    ? Math.round(product.price * (1 - product.discount / 100))
-                    : product.price;
-                acc.originalSubtotal += product.price * quantity;
-                acc.discountedSubtotal += discountedPrice * quantity;
-                acc.totalDiscount +=
-                    (product.price - discountedPrice) * quantity;
-                return acc;
-            },
-            { discountedSubtotal: 0, totalDiscount: 0, originalSubtotal: 0 }
-        );
     return (
         <div className="bg-[#F7F4EF] p-6 rounded-lg border border-gray-300">
             {/* Header */}
@@ -89,12 +76,25 @@ const OrderSummary = ({
                     <span>Subtotal ({items.length} items)</span>
                     <span>₹{originalSubtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm text-[#404040]">
-                    <span>Discount</span>
-                    <span className="text-green-600">
-                        -₹{totalDiscount.toLocaleString()}
-                    </span>
-                </div>
+
+                {totalProductDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-[#404040]">
+                        <span>Product Discount</span>
+                        <span className="text-green-600">
+                            -₹{totalProductDiscount.toLocaleString()}
+                        </span>
+                    </div>
+                )}
+
+                {couponDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-[#404040]">
+                        <span>Coupon Discount</span>
+                        <span className="text-green-600">
+                            -₹{couponDiscount.toLocaleString()}
+                        </span>
+                    </div>
+                )}
+
                 <div className="flex justify-between text-sm text-[#404040]">
                     <span>Shipping Fee</span>
                     <span
@@ -107,17 +107,18 @@ const OrderSummary = ({
                         {shippingFee === 0 ? "Free" : `₹${shippingFee}`}
                     </span>
                 </div>
-                {originalSubtotal < 500 && (
-                    <div className="text-xs text-gray-600 italic">
-                        Add ₹{(500 - originalSubtotal).toLocaleString()} more
-                        for free shipping
-                    </div>
-                )}
+                {shippingInfo &&
+                    !shippingInfo.isFreeShipping &&
+                    shippingInfo.remainingForFreeShipping > 0 && (
+                        <div className="text-xs text-gray-600 italic">
+                            Add ₹
+                            {shippingInfo.remainingForFreeShipping.toLocaleString()}{" "}
+                            more for free shipping
+                        </div>
+                    )}
                 <div className="flex justify-between font-semibold text-lg text-[#404040] border-t border-gray-300 pt-2">
                     <span>Grand Total</span>
-                    <span>
-                        ₹{(discountedSubtotal + shippingFee).toLocaleString()}
-                    </span>
+                    <span>₹{total.toLocaleString()}</span>
                 </div>
             </div>
 
@@ -133,9 +134,7 @@ const OrderSummary = ({
                         Placing Order...
                     </div>
                 ) : (
-                    `Place Order - ₹${(
-                        discountedSubtotal + shippingFee
-                    ).toLocaleString()}`
+                    `Place Order - ₹${total.toLocaleString()}`
                 )}
             </button>
 

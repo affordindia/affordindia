@@ -367,16 +367,30 @@ const OrderDetail = () => {
                                                 order.subtotal?.toLocaleString?.()}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-600">
-                                            Discount
-                                        </span>
-                                        <span className="text-green-600">
-                                            -₹
-                                            {order.totalDiscount?.toLocaleString?.() ||
-                                                0}
-                                        </span>
-                                    </div>
+
+                                    {order.totalDiscount > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">
+                                                Product Discount:
+                                            </span>
+                                            <span className="text-green-600">
+                                                -₹
+                                                {order.totalDiscount?.toLocaleString?.()}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {order.couponDiscount > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">
+                                                Coupon Discount:
+                                            </span>
+                                            <span className="text-green-600">
+                                                -₹
+                                                {order.couponDiscount?.toLocaleString?.()}
+                                            </span>
+                                        </div>
+                                    )}
 
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">

@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { useProfile } from "../context/ProfileContext.jsx";
 import { createOrder } from "../api/order.js";
+import { calculateShipping } from "../api/shipping.js";
 import OrderSummary from "../components/checkout/OrderSummary.jsx";
 import ShippingForm from "../components/checkout/ShippingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
@@ -45,6 +46,12 @@ const Checkout = () => {
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");
     const [orderProcessing, setOrderProcessing] = useState(false);
+    const [shippingInfo, setShippingInfo] = useState({
+        shippingFee: 50,
+        isFreeShipping: false,
+        minOrderForFree: 1000,
+        remainingForFreeShipping: 1000,
+    });
     // Receiver info state
     const [isOrderingForSomeoneElse, setIsOrderingForSomeoneElse] =
         useState(false);
@@ -74,14 +81,60 @@ const Checkout = () => {
         }
     }, [cart, navigate, orderProcessing]);
 
-    // Order calculations
+    // Order calculations - matching cart logic
     const items = cart?.items || [];
-    const subtotal = items.reduce(
-        (sum, item) => sum + item.product.price * item.quantity,
-        0
-    );
-    const shippingFee = subtotal >= 500 ? 0 : 50; // Free shipping above ₹500
-    const total = subtotal + shippingFee;
+
+    // Calculate product-level discounts (same as cart)
+    const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
+        items.reduce(
+            (acc, { product, quantity }) => {
+                const hasDiscount = product.discount && product.discount > 0;
+                const discountedPrice = hasDiscount
+                    ? Math.round(product.price * (1 - product.discount / 100))
+                    : product.price;
+
+                acc.originalSubtotal += product.price * quantity;
+                acc.discountedSubtotal += discountedPrice * quantity;
+                acc.totalProductDiscount +=
+                    (product.price - discountedPrice) * quantity;
+                return acc;
+            },
+            {
+                totalProductDiscount: 0,
+                originalSubtotal: 0,
+                discountedSubtotal: 0,
+            }
+        );
+
+    // Get coupon discount from cart
+    const couponDiscount = cart?.couponDiscount || 0;
+
+    // Calculate shipping using API
+    useEffect(() => {
+        const fetchShipping = async () => {
+            if (discountedSubtotal > 0) {
+                try {
+                    const orderAmountAfterCoupon = Math.max(
+                        0,
+                        discountedSubtotal - couponDiscount
+                    );
+                    const shipping = await calculateShipping(
+                        orderAmountAfterCoupon
+                    );
+                    setShippingInfo(shipping);
+                } catch (error) {
+                    console.error("Error calculating shipping:", error);
+                    // Keep fallback values in state
+                }
+            }
+        };
+
+        fetchShipping();
+    }, [discountedSubtotal, couponDiscount]);
+
+    // Calculate final total
+    const total =
+        discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
 
     // Validation
     const validateAddress = (address) => {
@@ -397,8 +450,11 @@ const Checkout = () => {
                 <div className="lg:col-span-1">
                     <OrderSummary
                         items={items}
-                        subtotal={subtotal}
-                        shippingFee={shippingFee}
+                        originalSubtotal={originalSubtotal}
+                        totalProductDiscount={totalProductDiscount}
+                        couponDiscount={couponDiscount}
+                        shippingFee={shippingInfo.shippingFee}
+                        shippingInfo={shippingInfo}
                         total={total}
                         onPlaceOrder={handlePlaceOrder}
                         loading={loading}

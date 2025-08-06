@@ -220,12 +220,28 @@ const OrderConfirmation = () => {
                                 order.subtotal?.toLocaleString?.()}
                         </span>
                     </div>
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Discount:</span>
-                        <span className="text-sm text-green-600">
-                            -₹{order.totalDiscount?.toLocaleString?.() || 0}
-                        </span>
-                    </div>
+
+                    {order.totalDiscount > 0 && (
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-gray-600">
+                                Product Discount:
+                            </span>
+                            <span className="text-sm text-green-600">
+                                -₹{order.totalDiscount?.toLocaleString?.()}
+                            </span>
+                        </div>
+                    )}
+
+                    {order.couponDiscount > 0 && (
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-gray-600">
+                                Coupon Discount:
+                            </span>
+                            <span className="text-sm text-green-600">
+                                -₹{order.couponDiscount?.toLocaleString?.()}
+                            </span>
+                        </div>
+                    )}
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-gray-600">Shipping:</span>
                         <span className="text-sm text-[#404040]">

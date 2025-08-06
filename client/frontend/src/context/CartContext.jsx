@@ -103,14 +103,24 @@ export const CartProvider = ({ children }) => {
             const dbCart = await cartApi.getCart();
             setCart(dbCart);
         } else {
-            setCart((prev) => ({
-                ...prev,
-                items: prev.items.map((item) =>
-                    item.product._id === productId
-                        ? { ...item, quantity }
-                        : item
-                ),
-            }));
+            if (quantity <= 0) {
+                // Remove item if quantity is 0 or less
+                setCart((prev) => ({
+                    ...prev,
+                    items: prev.items.filter(
+                        (item) => item.product._id !== productId
+                    ),
+                }));
+            } else {
+                setCart((prev) => ({
+                    ...prev,
+                    items: prev.items.map((item) =>
+                        item.product._id === productId
+                            ? { ...item, quantity }
+                            : item
+                    ),
+                }));
+            }
         }
     };
 

@@ -52,13 +52,20 @@ const orderSchema = new mongoose.Schema(
         },
         subtotal: { type: Number },
         totalDiscount: { type: Number, default: 0 }, // sum of all product discounts
+        couponDiscount: { type: Number, default: 0 }, // coupon discount amount
         shippingFee: { type: Number },
         total: { type: Number },
         trackingNumber: { type: String },
         deliveredAt: { type: Date },
         cancelledAt: { type: Date },
         returnedAt: { type: Date },
-        coupon: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
+        coupon: {
+            couponId: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
+            code: String,
+            discountAmount: Number,
+            discountType: String,
+            discountValue: Number,
+        },
         notes: { type: String },
     },
     { timestamps: true }

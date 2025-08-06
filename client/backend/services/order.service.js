@@ -1,7 +1,8 @@
 import Order from "../models/order.model.js";
 import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
-import config from "../config/server.config.js";
+import { calculateShipping } from "./shipping.service.js";
+import { recordCouponUsage } from "./coupon.service.js";
 
 export const placeOrder = async (
     userId,
@@ -39,12 +40,25 @@ export const placeOrder = async (
             discountedPrice,
         });
     }
-    // Use config for shipping
-    const shippingFee =
-        subtotal < config.shipping.minOrderForFree
-            ? config.shipping.shippingFee
-            : 0;
-    const total = subtotal - totalDiscount + shippingFee;
+
+    // Get coupon discount from cart if applied
+    const couponDiscount = cart.appliedCoupon?.discountAmount || 0;
+
+    // Convert Mongoose subdocument to plain object for proper property access
+    const appliedCoupon =
+        cart.appliedCoupon && cart.appliedCoupon.code
+            ? cart.appliedCoupon.toObject
+                ? cart.appliedCoupon.toObject()
+                : cart.appliedCoupon
+            : null;
+
+    // Use shipping service for consistent calculation
+    const { shippingFee } = calculateShipping(
+        subtotal - totalDiscount - couponDiscount
+    );
+
+    // Calculate final total: subtotal - product discounts - coupon discount + shipping
+    const total = subtotal - totalDiscount - couponDiscount + shippingFee;
 
     // Deduct stock
     for (const item of cart.items) {
@@ -73,15 +87,38 @@ export const placeOrder = async (
         status: "pending",
         subtotal,
         totalDiscount,
+        couponDiscount,
         shippingFee,
         total,
         receiverName,
         receiverPhone,
+        coupon: appliedCoupon,
     });
 
-    // Clear cart
+    // Clear cart including applied coupon
     cart.items = [];
+    cart.appliedCoupon = undefined;
     await cart.save();
+
+    // Record coupon usage if a coupon was applied
+    if (appliedCoupon && appliedCoupon.couponId) {
+        try {
+            const usageRecord = await recordCouponUsage(
+                appliedCoupon.couponId,
+                userId,
+                order._id,
+                couponDiscount,
+                subtotal
+            );
+            console.log(
+                "✅ Coupon usage recorded successfully:",
+                usageRecord._id
+            );
+        } catch (error) {
+            console.error("❌ Failed to record coupon usage:", error);
+            // Don't fail the order if coupon usage recording fails
+        }
+    }
 
     // Format response with totalDiscount and discountedPrice per item
     return {
