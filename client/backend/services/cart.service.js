@@ -24,11 +24,23 @@ const transformCartItems = (items) => {
 // Helper function to calculate cart totals including coupon discount and shipping
 const calculateCartTotals = (items, appliedCoupon = null) => {
     let subtotal = 0;
+    let discountedSubtotal = 0;
     let totalItems = 0;
 
     for (const item of items) {
+        // Original subtotal (using priceAtAdd)
         const itemTotal = item.priceAtAdd * item.quantity;
         subtotal += itemTotal;
+        
+        // Calculate discounted subtotal (for shipping calculation)
+        const currentPrice = item.product?.price || item.priceAtAdd;
+        const discount = item.product?.discount || 0;
+        const discountedPrice = discount > 0 
+            ? Math.round(currentPrice * (1 - discount / 100))
+            : currentPrice;
+        const discountedItemTotal = discountedPrice * item.quantity;
+        discountedSubtotal += discountedItemTotal;
+        
         totalItems += item.quantity;
     }
 
@@ -37,11 +49,13 @@ const calculateCartTotals = (items, appliedCoupon = null) => {
         couponDiscount = appliedCoupon.discountAmount;
     }
 
-    // Calculate shipping based on subtotal after coupon discount
-    const discountedSubtotal = Math.max(0, subtotal - couponDiscount);
-    const shippingInfo = calculateShipping(discountedSubtotal);
+    // Calculate shipping based on discounted subtotal after coupon discount (matches frontend logic)
+    const orderAmountForShipping = Math.max(0, discountedSubtotal - couponDiscount);
+    const shippingInfo = calculateShipping(orderAmountForShipping);
 
-    const total = discountedSubtotal + shippingInfo.shippingFee;
+    // Total calculation depends on whether we use original or discounted subtotal
+    // For backend compatibility, keep original subtotal logic
+    const total = subtotal - couponDiscount + shippingInfo.shippingFee;
 
     return {
         subtotal: Math.round(subtotal * 100) / 100,

@@ -1,44 +1,72 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Loader from "../components/common/Loader.jsx";
 import CouponSection from "../components/cart/CouponSection.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { calculateShipping } from "../api/shipping.js";
 
 const Cart = () => {
     const { cart, updateCartItem, removeFromCart, loading, refreshCart } =
         useCart();
     const items = cart?.items || [];
 
-    // Use shipping data from backend cart response
-    const shippingFee = cart?.shippingFee || 0;
-    const isFreeShipping = cart?.isFreeShipping || false;
-    const minOrderForFree = cart?.minOrderForFree || 1000;
-    const remainingForFreeShipping = cart?.remainingForFreeShipping || 0;
+    // Shipping state (same as checkout page)
+    const [shippingInfo, setShippingInfo] = useState({
+        shippingFee: 50,
+        isFreeShipping: false,
+        minOrderForFree: 1000,
+        remainingForFreeShipping: 1000,
+    });
 
-    // Use backend calculated totals instead of recalculating manually
-    const subtotal = cart?.subtotal || 0;
+    // Calculate product-level discounts (same logic as checkout page)
+    const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
+        items.reduce(
+            (acc, { product, quantity }) => {
+                const hasDiscount = product.discount && product.discount > 0;
+                const discountedPrice = hasDiscount
+                    ? Math.round(product.price * (1 - product.discount / 100))
+                    : product.price;
+
+                acc.originalSubtotal += product.price * quantity;
+                acc.discountedSubtotal += discountedPrice * quantity;
+                acc.totalProductDiscount +=
+                    (product.price - discountedPrice) * quantity;
+                return acc;
+            },
+            {
+                totalProductDiscount: 0,
+                originalSubtotal: 0,
+                discountedSubtotal: 0,
+            }
+        );
+
+    // Get coupon discount from backend cart response
     const couponDiscount = cart?.couponDiscount || 0;
-    const total = cart?.total || 0;
 
-    // For display purposes, also show product-level discount breakdown
-    const { totalProductDiscount, originalSubtotal } = items.reduce(
-        (acc, { product, quantity }) => {
-            const hasDiscount = product.discount && product.discount > 0;
-            const discountedPrice = hasDiscount
-                ? Math.round(product.price * (1 - product.discount / 100))
-                : product.price;
+    // Calculate shipping using API (same logic as checkout page)
+    useEffect(() => {
+        const fetchShipping = async () => {
+            if (discountedSubtotal > 0) {
+                try {
+                    const orderAmountAfterCoupon = Math.max(
+                        0,
+                        discountedSubtotal - couponDiscount
+                    );
+                    const shipping = await calculateShipping(orderAmountAfterCoupon);
+                    setShippingInfo(shipping);
+                } catch (error) {
+                    console.error("Error calculating shipping:", error);
+                    // Keep fallback values in state
+                }
+            }
+        };
 
-            acc.originalSubtotal += product.price * quantity;
-            acc.totalProductDiscount +=
-                (product.price - discountedPrice) * quantity;
-            return acc;
-        },
-        {
-            totalProductDiscount: 0,
-            originalSubtotal: 0,
-        }
-    );
+        fetchShipping();
+    }, [discountedSubtotal, couponDiscount]);
+
+    // Calculate final total (matching checkout logic)
+    const total = discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
 
     const handleCartUpdate = async () => {
         // Refresh cart to get updated totals and coupon calculations
@@ -256,12 +284,12 @@ const Cart = () => {
                         <div className="flex justify-between mb-2">
                             <span>Delivery Charge</span>
                             <span>
-                                {isFreeShipping ? "FREE" : `₹${shippingFee}`}
+                                {shippingInfo.isFreeShipping ? "FREE" : `₹${shippingInfo.shippingFee}`}
                             </span>
                         </div>
-                        {!isFreeShipping && remainingForFreeShipping > 0 && (
+                        {!shippingInfo.isFreeShipping && shippingInfo.remainingForFreeShipping > 0 && (
                             <div className="text-xs text-gray-600 mb-2">
-                                Add ₹{remainingForFreeShipping} more for free
+                                Add ₹{shippingInfo.remainingForFreeShipping} more for free
                                 shipping
                             </div>
                         )}
