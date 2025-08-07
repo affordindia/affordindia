@@ -87,20 +87,19 @@ const WishlistCard = ({ product }) => {
           <span className="text-sm md:text-base">Move to Cart</span>
         </button>
 
+        
         {/* Delete Button - Narrower */}
-        {/* Delete Button - Narrower */}
-       <button
-  onClick={handleRemoveFromWishlist}
-  disabled={loading || actionLoading}
-  className="flex-[1] bg-white border border-[#8C8C8C] py-2 px-2 sm:px-3 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-200 group hover:bg-[#E35151]"
-  title="Remove from wishlist"
->
-  <FaTrash
-    size={14}
-    className="text-[#E35151] hover:text-white transition-colors duration-200"
-  />
-</button>
-
+        <button
+          onClick={handleRemoveFromWishlist}
+          disabled={loading || actionLoading}
+          className="flex-[1] bg-white border border-[#8C8C8C] py-2 px-2 sm:px-3 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-200 hover:bg-[#E35151] group/delete"
+          title="Remove from wishlist"
+        >
+          <FaTrash
+            size={14}
+            className="text-[#E35151] group-hover/delete:text-white transition-colors duration-200"
+          />
+        </button>
       </div>
 
       {/* Loading Overlay */}
