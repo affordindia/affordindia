@@ -23,7 +23,8 @@ const Wishlist = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-4">
+        <div className="max-w-6xl mx-auto bg-[#f5f5f5] p-4 md:p-6">
+
             <h2 className="text-2xl font-bold mb-6">
                 Your Wishlist ({wishlist.items.length} items)
             </h2>

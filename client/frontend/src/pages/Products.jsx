@@ -246,7 +246,7 @@ const Products = () => {
 
     if (selectedMaterial === "wood") {
         return (
-            <div className="min-h-screen bg-white">
+            <div className="min-h-screen ">
                 <Banners material={selectedMaterial} />
                 <div className="p-8 text-center">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
@@ -262,7 +262,7 @@ const Products = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen ">
             <Banners material={selectedMaterial} />
 
             {/* Search Results Info */}
@@ -282,7 +282,7 @@ const Products = () => {
 
             {/* Main Content */}
             <div className="px-4 py-4">
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-9xl mx-auto">
                     {/* Top Controls (PC only) */}
                     <div className="hidden md:flex flex-row justify-between items-center mb-6 gap-4">
                         {/* Search Results Info for Desktop */}
@@ -299,21 +299,16 @@ const Products = () => {
                         </div>
 
                         {/* Sort Dropdown */}
-                        <div className="bg-[#F7F4EF]">
-                            <select
-                                className="px-3 py-2 rounded-md text-sm bg-[#F7F4EF]"
-                                value={sort}
-                                onChange={handleSort}
-                            >
-                                <option value="">Sort by</option>
-                                <option value="price">
-                                    Price (Low to High)
-                                </option>
-                                <option value="-price">
-                                    Price (High to Low)
-                                </option>
-                            </select>
-                        </div>
+                        <select
+  className="px-3 py-2 rounded-md text-sm outline-none focus:ring-0 focus:outline-none border-none"
+  value={sort}
+  onChange={handleSort}
+>
+  <option value="">Sort by</option>
+  <option value="price">Price (Low to High)</option>
+  <option value="-price">Price (High to Low)</option>
+</select>
+
                     </div>
 
                     <div className="flex gap-8 items-start">
@@ -376,9 +371,10 @@ const Products = () => {
             {/* Additional Sections 
             <DesignJourney />
             <Craftsmanship />
+            <WhyChooseOurProducts />
             */}
             
-            <WhyChooseOurProducts />
+            
         </div>
     );
 };

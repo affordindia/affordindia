@@ -130,9 +130,9 @@ const Navbar = () => {
             </button>
           </form>
           <Link to="/wishlist" className="relative">
-            <FaHeart className="text-xl hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
+            <FaHeart className="text-xl text-[#404040] hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-3 -right-3 bg-[#d11431] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-3 -right-3 bg-[#E74C3C] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
             )}
@@ -140,7 +140,7 @@ const Navbar = () => {
           <Link to="/cart" className="relative">
             <FaShoppingCart className="text-xl hover:text-[#B76E79] transition-transform duration-300 transform hover:scale-125" />
             {cartCount > 0 && (
-              <span className="absolute -top-3 -right-3 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-3 -right-3 bg-[#404040] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}

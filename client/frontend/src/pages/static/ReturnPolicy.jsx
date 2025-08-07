@@ -5,7 +5,7 @@ const ReturnPolicy = () => {
     <div className="max-w-5xl mx-auto px-6 py-12 text-[#1F1F1F]">
       {/* Title Section */}
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold border-b-4 border-[#C1B086] inline-block pb-1">
+        <h1 className="text-3xl font-bold border-b-4 border-[#B76E79] inline-block pb-1">
           Return & Refund Policy
         </h1>
       </div>

@@ -5,7 +5,7 @@ const Shipping = () => {
     <div className="max-w-5xl mx-auto px-6 py-12 text-[#1F1F1F]">
       {/* Title Section */}
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold border-b-4 border-[#C1B086] inline-block pb-1">
+        <h1 className="text-3xl font-bold border-b-4 border-[#B76E79] inline-block pb-1">
           Shipping Policy
         </h1>
       </div>
@@ -23,7 +23,7 @@ const Shipping = () => {
 
           {/* 2 */}
           <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">2. Processing Time</h2>
+            <h2 className="font-semibold text-lg mb-2 text-[#B76E79]">2. Processing Time</h2>
             <p className="text-sm leading-relaxed">
               All orders are processed within 1–3 business days. Orders are not shipped or delivered on weekends or holidays.
             </p>

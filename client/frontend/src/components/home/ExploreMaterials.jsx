@@ -3,58 +3,56 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../context/AppDataContext.jsx";
 
 const ExploreMaterials = () => {
-    const { categories } = useAppData();
-    const navigate = useNavigate();
-    const [activeIndex, setActiveIndex] = useState(null);
+  const { categories } = useAppData();
+  const navigate = useNavigate();
+  const [activeIndex, setActiveIndex] = useState(null);
 
-    const handleClick = (category, index) => {
-        setActiveIndex(index);
+  const handleClick = (category, index) => {
+    setActiveIndex(index);
+    setTimeout(() => {
+      navigate(`/products/${category.name.toLowerCase()}`);
+    }, 200);
+  };
 
-        // Delay navigation to let animation play
-        setTimeout(() => {
-            navigate(`/products/${category.name.toLowerCase()}`);
-        }, 200); // 200ms to match animation
-    };
+  return (
+    <section className="bg-[#F5F5F5] py-10">
+      {/* Section Header - visible on all devices */}
+    <div className="flex items-center justify-center mb-9 px-4">
+  <div className="w-8 border-t border-gray-400 mx-2 md:mx-4" />
+  <h2 className="text-center text-xl md:text-3xl font-semibold text-gray-800 uppercase whitespace-nowrap font-[playfair-display]">
+    EXPLORE OUR MATERIAL
+  </h2>
+  <div className="w-8 border-t border-gray-400 mx-2 md:mx-4" />
+</div>
 
-    return (
-        <section className="bg-secondary py-10">
-            <h2 className="text-3xl font-bold text-center text-[#262738] mb-8">
-                <span>EXPLORE OUR MATERIALS</span>
-            </h2>
 
-            <div className="flex flex-row flex-wrap gap-4 px-4 justify-center">
-                {categories.map((category, index) => (
-                    <div
-                        key={category._id}
-                        onClick={() => handleClick(category, index)}
-                        className={`relative overflow-hidden rounded-lg shadow-md flex-shrink-0 h-[160px] min-w-16 w-16 md:h-[300px] md:min-w-[160px] md:w-[150px] cursor-pointer transform transition-transform duration-200 ease-in-out
-                        ${activeIndex === index ? "scale-90" : "hover:scale-105"}`}
-                    >
-                        <img
-                            src={category.image || "/placeholder.jpg"}
-                            alt={category.name}
-                            className="w-full h-full object-cover blur-xs"
-                        />
-
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <span
-                                className="text-white text-sm md:text-2xl font-extrabold"
-                                style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%) rotate(-90deg)",
-                                    whiteSpace: "nowrap",
-                                }}
-                            >
-                                {category.name.toUpperCase()}
-                            </span>
-                        </div>
-                    </div>
-                ))}
+      {/* Category Cards Container */}
+      <div className="flex flex-row md:flex-wrap gap-4 md:gap-8 px-4 justify-center md:justify-center overflow-x-auto md:overflow-visible no-scrollbar">
+        {categories.map((category, index) => (
+          <div
+            key={category._id}
+            onClick={() => handleClick(category, index)}
+            className={`relative overflow-hidden rounded-lg shadow-md flex-shrink-0 
+              h-[120px] w-[110px] 
+              md:h-[300px] md:w-[200px] 
+              cursor-pointer transform transition-transform duration-200 ease-in-out 
+              ${activeIndex === index ? "scale-90" : "hover:scale-105"}`}
+          >
+            <img
+              src={category.image || "/placeholder.jpg"}
+              alt={category.name}
+              className="w-full h-full object-cover blur-sm"
+            />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="text-white text-center text-sm md:text-3xl font-black montserrat-global">
+                {category.name.toUpperCase()}
+              </span>
             </div>
-        </section>
-    );
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 };
 
 export default ExploreMaterials;
