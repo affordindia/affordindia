@@ -177,23 +177,25 @@ const ProductDetail = () => {
                         ) ? (
                             <Link
                                 to="/cart"
-                                className="px-6 py-2 rounded-sm font-semibold focus:outline-none transition-all duration-200 text-white bg-[#A89A3D] hover:bg-[#968632] hover:scale-105 active:scale-95"
+                                className="button !bg-[#A89A3D]"
                             >
-                                Go to Cart
+                                <span className="button-content montserrat-global">
+                                    Go to Cart
+                                </span>
                             </Link>
                         ) : (
                             <button
                                 onClick={handleAddToCart}
                                 disabled={!stock}
-                                className={`px-6 py-2 rounded-sm font-semibold focus:outline-none transition-all duration-200 text-white
-                                    ${
-                                        !stock
-                                            ? "bg-gray-300 cursor-not-allowed"
-                                            : "bg-[#A89A3D] hover:bg-[#968632] hover:scale-105 active:scale-95"
-                                    }
-                                `}
+                                className={`button ${
+                                    !stock
+                                        ? "!bg-gray-300 cursor-not-allowed opacity-50"
+                                        : ""
+                                }`}
                             >
-                                Add to Cart
+                                <span className="button-content montserrat-global">
+                                    Add to Cart
+                                </span>
                             </button>
                         )}
                         <button
@@ -203,8 +205,8 @@ const ProductDetail = () => {
                                 wishlist?.items?.some(
                                     (item) => item._id === product._id
                                 )
-                                    ? "bg-red-500 hover:bg-red-600"
-                                    : "bg-[#272727] hover:bg-[#1a1a1a]"
+                                    ? "bg-red-600 hover:bg-red-500"
+                                    : "bg-red-500 hover:bg-red-400"
                             } ${
                                 wishlistLoading
                                     ? "opacity-50 cursor-not-allowed"

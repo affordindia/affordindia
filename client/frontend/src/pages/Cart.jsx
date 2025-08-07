@@ -81,6 +81,7 @@ const Cart = () => {
     if (loading) {
         return <Loader fullScreen={true} />;
     }
+
     if (!items.length) {
         return (
             <div className="p-6 text-center text-xl text-gray-600">
@@ -107,7 +108,7 @@ const Cart = () => {
                 {items.map(({ product, quantity }) => (
                     <div
                         key={product._id}
-                        className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#F7F4EF] text-[#404040] rounded-md w-full border border-gray-300"
+                        className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#F7F4EF] text-[#404040] rounded-md w-full shadow-md"
                     >
                         {/* Product Info */}
                         <div className="flex items-center gap-4 flex-[2]">
@@ -118,7 +119,7 @@ const Cart = () => {
                                         "/placeholder.png"
                                     }
                                     alt={product.name}
-                                    className="w-20 h-20 object-cover rounded-sm border border-[#626262] cursor-pointer hover:opacity-90 transition"
+                                    className="w-20 h-20 object-cover rounded-sm  cursor-pointer hover:opacity-90 transition"
                                 />
                             </Link>
                             <div className="text-sm">{product.name}</div>
@@ -126,13 +127,13 @@ const Cart = () => {
 
                         {/* Price */}
                         <div className="flex-1 flex md:justify-center items-center">
-                            <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
+                            <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
                                         <span className="line-through text-gray-400 mr-1 text-xs">
                                             ₹{product.price}
                                         </span>
-                                        <span className="">
+                                        <span>
                                             ₹
                                             {Math.round(
                                                 product.price *
@@ -148,7 +149,7 @@ const Cart = () => {
 
                         {/* Quantity */}
                         <div className="flex-1 flex md:justify-center items-center">
-                            <div className="flex items-center bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10">
+                            <div className="flex items-center bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10">
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
                                     onClick={async () => {
@@ -197,7 +198,7 @@ const Cart = () => {
 
                         {/* Subtotal */}
                         <div className="flex-1 flex md:justify-center items-center">
-                            <div className="bg-[#FAFAFA] border border-[#626262] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
+                            <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
                                         <span className="">
@@ -238,16 +239,16 @@ const Cart = () => {
                 ))}
             </div>
 
-            {/* Actions & Order Summary (side by side on PC) */}
+            {/* Actions & Order Summary */}
             <div className="flex flex-col md:flex-row md:items-start gap-8 mt-6">
                 {/* Actions */}
                 <div className="w-full md:max-w-xs">
                     <div className="flex flex-row md:flex-col gap-4">
                         <Link
                             to="/wishlist"
-                            className="bg-[#f7f2e9] px-4 py-2 rounded border border-gray-300 text-sm hover:bg-[#f0ebe1] w-full text-center transition-colors"
+                            className="bg-[#A86565] text-white px-4 py-2 rounded text-sm text-center hover:opacity-90 transition-colors w-full"
                         >
-                            Add More From Wishlist
+                            Add More from Wishlist
                         </Link>
                     </div>
                 </div>
@@ -262,7 +263,7 @@ const Cart = () => {
 
                     <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
                         <div className="flex justify-between mb-2">
-                            <span>Subtotal</span>
+                            <span>Total MRP</span>
                             <span>₹{originalSubtotal}</span>
                         </div>
 
@@ -300,12 +301,12 @@ const Cart = () => {
                                 </div>
                             )}
                         <div className="flex justify-between font-bold text-base mt-4">
-                            <span>Grand Total</span>
+                            <span>Total Amount</span>
                             <span>₹{total}</span>
                         </div>
                         <Link
                             to="/checkout"
-                            className="mt-6 w-full bg-black text-white py-2 rounded hover:opacity-90 transition block text-center"
+                            className="mt-6 w-full bg-[#A86565] text-white py-2 rounded hover:opacity-90 transition block text-center"
                         >
                             Proceed to Checkout
                         </Link>

@@ -8,7 +8,7 @@ const Loader = ({ size = "medium", fullScreen = false }) => {
 
     return (
         <div className={containerClasses}>
-            <ThreeDot variant="bounce" color="#C1B086" size={size} />
+            <ThreeDot variant="bounce" color="#B76E79" size={size} />
         </div>
     );
 };

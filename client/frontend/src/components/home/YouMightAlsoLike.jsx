@@ -3,27 +3,18 @@ import { getProducts } from "../../api/product";
 import { useAppData } from "../../context/AppDataContext.jsx";
 import ProductCard from "../common/ProductCard";
 import Loader from "../common/Loader";
-import "keen-slider/keen-slider.min.css";
-import { useKeenSlider } from "keen-slider/react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react"; // Swiper only, no navigation
+import "swiper/css";
 
 const YouMightAlsoLike = () => {
   const { categories } = useAppData();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sliderRef, instanceRef] = useKeenSlider({
-    mode: "free-snap",
-    slides: {
-      perView: "auto",
-    },
-  });
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // For each category, get 1 random product
         let prods = [];
         for (const cat of categories) {
           const prodRes = await getProducts({
@@ -32,15 +23,12 @@ const YouMightAlsoLike = () => {
           });
           const arr = (prodRes && (prodRes.products || prodRes)) || [];
           if (Array.isArray(arr) && arr.length > 0) {
-            // Pick a random product from this category
             prods.push(arr[Math.floor(Math.random() * arr.length)]);
           }
         }
-        // If less than 10, fill with random products
         if (prods.length < 10) {
           const allRes = await getProducts({ limit: 30 });
           const all = (allRes && (allRes.products || allRes)) || [];
-          // Add randoms not already in prods
           const used = new Set(prods.map((p) => p._id));
           const extras = (Array.isArray(all) ? all : []).filter(
             (p) => !used.has(p._id)
@@ -57,22 +45,19 @@ const YouMightAlsoLike = () => {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, [categories]);
-
-  // Navigation handlers
-  const goPrev = () => instanceRef.current && instanceRef.current.prev();
-  const goNext = () => instanceRef.current && instanceRef.current.next();
 
   return (
     <section className="py-8 px-2 md:px-8 bg-[#EBEBEB]">
       {/* Desktop Heading */}
       <div className="hidden md:flex items-center justify-center mb-9">
-        <div className="w-16 border-t border-gray-400 mx-4" />
-        <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+        <div className="w-8 border-t border-gray-400 mx-4" />
+        <h2 className="text-center text-3xl font-semibold text-gray-800 uppercase whitespace-nowrap font-[playfair-display]">
           Similar Products
         </h2>
-        <div className="w-16 border-t border-gray-400 mx-4" />
+        <div className="w-8 border-t border-gray-400 mx-4" />
       </div>
 
       {/* Mobile Heading */}
@@ -91,52 +76,52 @@ const YouMightAlsoLike = () => {
       ) : !products || !Array.isArray(products) || products.length === 0 ? (
         <div className="text-center py-8 text-gray-500">No products found.</div>
       ) : (
-        <div className="relative">
-          {/* Left arrow */}
-          {/* {products.length > 0 && (
-                        <button
-                            onClick={goPrev}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                            aria-label="Previous"
-                            style={{ marginLeft: "-1.5rem" }}
-                        >
-                            <FaChevronLeft className="text-lg text-gray-700 dark:text-gray-200 group-hover:text-[#A89A3D] transition-colors" />
-                        </button>
-                    )} */}
-
-          {/* keen-slider carousel */}
-          <div
-            ref={sliderRef}
-            className="keen-slider flex gap-x-2 sm:gap-x-4 lg:gap-x-6"
-          >
-            {Array.isArray(products) &&
-              products.map((product) => (
+        <Swiper
+          breakpoints={{
+            0: {
+              slidesPerView: 2.1,
+              spaceBetween: 6,
+            },
+            480: {
+              slidesPerView: 2.3,
+              spaceBetween: 8,
+            },
+            640: {
+              slidesPerView: 3,
+              spaceBetween: 10,
+            },
+            768: {
+              slidesPerView: 3.2,
+              spaceBetween: 12,
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 18, // ✅ More gap on desktop
+            },
+            1280: {
+              slidesPerView: 5,
+              spaceBetween: 24, // ✅ Even more on large desktop
+            },
+          }}
+        >
+          {products.map((product) => (
+            <SwiperSlide key={product._id}>
+              <div className="flex justify-center items-center pb-2 ">
                 <div
-                  key={product._id}
-                  className="keen-slider__slide flex justify-center items-center pb-2"
-                  style={{
-                    minWidth: "clamp(160px, 33vw, 220px)",
-                    maxWidth: 220,
-                  }}
+                  className="w-full 
+  max-w-[200px] 
+  sm:max-w-[220px] 
+  md:max-w-[260px] 
+  lg:max-w-[320px] 
+  xl:max-w-[360px] 
+  2xl:max-w-[400px]"
                 >
                   <ProductCard product={product} />
                 </div>
-              ))}
-          </div>
-
-         
-          {/* Right arrow */}
-          {/* {products.length > 0 && (
-                        <button
-                            onClick={goNext}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                            aria-label="Next"
-                            style={{ marginRight: "-1.5rem" }}
-                        >
-                            <FaChevronRight className="text-lg text-gray-700 dark:text-gray-200 group-hover:text-[#A89A3D] transition-colors" />
-                        </button>
-                    )} */}
-        </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       )}
     </section>
   );

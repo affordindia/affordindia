@@ -120,7 +120,7 @@ const Banners = ({ material = "all" }) => {
                                     onClick={() => goTo(idx)}
                                     className={`w-2.5 h-2.5 rounded-full border border-gray-400 transition-all duration-200 focus:outline-none ${
                                         currentSlide === idx
-                                            ? "bg-[#A89A3D] border-[#A89A3D] scale-110 shadow"
+                                            ? "bg-[#B76E79] scale-110 shadow"
                                             : "bg-gray-200"
                                     }`}
                                     aria-label={`Go to slide ${idx + 1}`}

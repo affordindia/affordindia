@@ -15,14 +15,14 @@ const NewArrivals = () => {
     const mobileProducts = products.slice(0, 4); // 2x2 on mobile
 
     return (
-        <section className="bg-[#ECECE8] py-8 md:py-12 px-4 md:px-8 font-[Playfair_Display]">
+        <section className="bg-[#ECECE8] py-8 md:py-12 px-4 md:px-8 font-[montserrat-global]">
             {/* Desktop Heading */}
             <div className="hidden md:flex items-center justify-center mb-9">
-                <div className="w-16 border-t border-gray-400 mx-4" />
-                <h2 className="text-center font-serif text-xl tracking-widest font-semibold text-gray-800 uppercase whitespace-nowrap">
+                <div className="w-8 border-t border-gray-400 mx-4" />
+                <h2 className="text-center  text-3xl  font-semibold text-gray-800 uppercase whitespace-nowrap font-[playfair-display]">
                     New Arrivals
                 </h2>
-                <div className="w-16 border-t border-gray-400 mx-4" />
+                <div className="w-8 border-t border-gray-400 mx-4" />
             </div>
 
             {/* Mobile Heading (Clickable) */}
@@ -54,7 +54,7 @@ const NewArrivals = () => {
     {products.map((product) => (
       <div
         key={product._id}
-        className="min-w-[250px] max-w-[250px] flex-shrink-0"
+        className="min-w-[300px] max-w-[300px] flex-shrink-0"
       >
         <ProductCard product={product} />
       </div>
@@ -65,7 +65,7 @@ const NewArrivals = () => {
             {/* View Collection Button (Hidden on Mobile) */}
             <div className="hidden md:flex justify-center mt-6">
                     <Link to="/products" className="button">
-                      <span className="button-content">View Collection</span>
+                      <span className="button-content montserrat-global text-2xl">View Collection</span>
                     </Link>
                   </div>
         </section>
