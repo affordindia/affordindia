@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import Loader from "../components/common/Loader.jsx";
-import ReviewsList from "../components/review/ReviewsList";
+import ReviewsPreview from "../components/review/ReviewsPreview";
 import HighlightsSection from "../components/productDetail/HighlightsSection.jsx";
 import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 
@@ -259,7 +259,7 @@ const ProductDetail = () => {
 
             {/* Reviews Section */}
             <div className="max-w-7xl mx-auto px-4 md:px-4 py-8">
-                <ReviewsList
+                <ReviewsPreview
                     productId={id}
                     currentUserId={user?._id || user?.id}
                 />

@@ -1,32 +1,82 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Loader from "../components/common/Loader.jsx";
+import CouponSection from "../components/cart/CouponSection.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { calculateShipping } from "../api/shipping.js";
 
 const Cart = () => {
-    const { cart, updateCartItem, removeFromCart, loading } = useCart();
+    const { cart, updateCartItem, removeFromCart, loading, refreshCart } =
+        useCart();
     const items = cart?.items || [];
 
-    const deliveryFee = items.length ? 700 : 0;
+    // Shipping state (same as checkout page)
+    const [shippingInfo, setShippingInfo] = useState({
+        shippingFee: 50,
+        isFreeShipping: false,
+        minOrderForFree: 1000,
+        remainingForFreeShipping: 1000,
+    });
 
-    const { discountedSubtotal, totalDiscount, originalSubtotal } =
+    // Calculate product-level discounts (same logic as checkout page)
+    const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
         items.reduce(
             (acc, { product, quantity }) => {
                 const hasDiscount = product.discount && product.discount > 0;
                 const discountedPrice = hasDiscount
                     ? Math.round(product.price * (1 - product.discount / 100))
                     : product.price;
+
                 acc.originalSubtotal += product.price * quantity;
                 acc.discountedSubtotal += discountedPrice * quantity;
-                acc.totalDiscount +=
+                acc.totalProductDiscount +=
                     (product.price - discountedPrice) * quantity;
                 return acc;
             },
-            { discountedSubtotal: 0, totalDiscount: 0, originalSubtotal: 0 }
+            {
+                totalProductDiscount: 0,
+                originalSubtotal: 0,
+                discountedSubtotal: 0,
+            }
         );
 
-    const total = discountedSubtotal + deliveryFee;
+    // Get coupon discount from backend cart response
+    const couponDiscount = cart?.couponDiscount || 0;
+
+    // Calculate shipping using API (same logic as checkout page)
+    useEffect(() => {
+        const fetchShipping = async () => {
+            if (discountedSubtotal > 0) {
+                try {
+                    const orderAmountAfterCoupon = Math.max(
+                        0,
+                        discountedSubtotal - couponDiscount
+                    );
+                    const shipping = await calculateShipping(
+                        orderAmountAfterCoupon
+                    );
+                    setShippingInfo(shipping);
+                } catch (error) {
+                    console.error("Error calculating shipping:", error);
+                    // Keep fallback values in state
+                }
+            }
+        };
+
+        fetchShipping();
+    }, [discountedSubtotal, couponDiscount]);
+
+    // Calculate final total (matching checkout logic)
+    const total =
+        discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
+
+    const handleCartUpdate = async () => {
+        // Refresh cart to get updated totals and coupon calculations
+        await refreshCart();
+        // Dispatch event for coupon section to refresh
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+    };
 
     if (loading) {
         return <Loader fullScreen={true} />;
@@ -87,9 +137,7 @@ const Cart = () => {
                                             ₹
                                             {Math.round(
                                                 product.price *
-                                                    (1 -
-                                                        product.discount /
-                                                            100)
+                                                    (1 - product.discount / 100)
                                             )}
                                         </span>
                                     </>
@@ -104,12 +152,21 @@ const Cart = () => {
                             <div className="flex items-center bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10">
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
-                                    onClick={() =>
-                                        updateCartItem(
-                                            product._id,
-                                            Math.max(1, quantity - 1)
-                                        )
-                                    }
+                                    onClick={async () => {
+                                        try {
+                                            await updateCartItem(
+                                                product._id,
+                                                quantity - 1
+                                            );
+                                            await handleCartUpdate();
+                                        } catch (error) {
+                                            // Handle error (e.g., show toast)
+                                            console.error(
+                                                "Failed to update cart:",
+                                                error
+                                            );
+                                        }
+                                    }}
                                 >
                                     –
                                 </button>
@@ -118,12 +175,21 @@ const Cart = () => {
                                 </div>
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
-                                    onClick={() =>
-                                        updateCartItem(
-                                            product._id,
-                                            quantity + 1
-                                        )
-                                    }
+                                    onClick={async () => {
+                                        try {
+                                            await updateCartItem(
+                                                product._id,
+                                                quantity + 1
+                                            );
+                                            await handleCartUpdate();
+                                        } catch (error) {
+                                            // Handle error (e.g., show toast)
+                                            console.error(
+                                                "Failed to update cart:",
+                                                error
+                                            );
+                                        }
+                                    }}
                                 >
                                     +
                                 </button>
@@ -135,12 +201,13 @@ const Cart = () => {
                             <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
-                                        ₹
-                                        {Math.round(
-                                            product.price *
-                                                (1 -
-                                                    product.discount / 100)
-                                        ) * quantity}
+                                        <span className="">
+                                            ₹
+                                            {Math.round(
+                                                product.price *
+                                                    (1 - product.discount / 100)
+                                            ) * quantity}
+                                        </span>
                                     </>
                                 ) : (
                                     <>₹{product.price * quantity}</>
@@ -151,7 +218,17 @@ const Cart = () => {
                         {/* Delete */}
                         <div className="flex-1 flex md:justify-center items-center">
                             <button
-                                onClick={() => removeFromCart(product._id)}
+                                onClick={async () => {
+                                    try {
+                                        await removeFromCart(product._id);
+                                        await handleCartUpdate();
+                                    } catch (error) {
+                                        console.error(
+                                            "Failed to remove from cart:",
+                                            error
+                                        );
+                                    }
+                                }}
                                 className="text-[#404040] hover:text-black text-lg"
                                 aria-label="Remove item"
                             >
@@ -178,15 +255,51 @@ const Cart = () => {
 
                 {/* Order Summary */}
                 <div className="w-full md:max-w-md md:ml-auto">
-                    <div className="p-6  rounded-md bg-[#F7F4EF] text-sm">
+                    {/* Coupon Section */}
+                    <CouponSection
+                        cart={cart}
+                        onCartUpdate={handleCartUpdate}
+                    />
+
+                    <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
                         <div className="flex justify-between mb-2">
                             <span>Total MRP</span>
                             <span>₹{originalSubtotal}</span>
                         </div>
+
+                        {totalProductDiscount > 0 && (
+                            <div className="flex justify-between mb-2">
+                                <span>Product Discount</span>
+                                <span className="text-green-600">
+                                    -₹{totalProductDiscount}
+                                </span>
+                            </div>
+                        )}
+
+                        {couponDiscount > 0 && (
+                            <div className="flex justify-between mb-2">
+                                <span>Coupon Discount</span>
+                                <span className="text-green-600">
+                                    -₹{couponDiscount}
+                                </span>
+                            </div>
+                        )}
+
                         <div className="flex justify-between mb-2">
                             <span>Delivery Charge</span>
-                            <span>₹{deliveryFee}</span>
+                            <span>
+                                {shippingInfo.isFreeShipping
+                                    ? "FREE"
+                                    : `₹${shippingInfo.shippingFee}`}
+                            </span>
                         </div>
+                        {!shippingInfo.isFreeShipping &&
+                            shippingInfo.remainingForFreeShipping > 0 && (
+                                <div className="text-xs text-gray-600 mb-2">
+                                    Add ₹{shippingInfo.remainingForFreeShipping}{" "}
+                                    more for free shipping
+                                </div>
+                            )}
                         <div className="flex justify-between font-bold text-base mt-4">
                             <span>Total Amount</span>
                             <span>₹{total}</span>

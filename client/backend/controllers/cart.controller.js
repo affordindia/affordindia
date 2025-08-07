@@ -9,7 +9,7 @@ import { body, param } from "express-validator";
 
 export const getCart = async (req, res, next) => {
     try {
-        const cart = await getUserCart(req.user._id);
+        const cart = await getUserCart(req.user._id, false); // Don't recalculate coupons on GET
         res.json(cart);
     } catch (err) {
         next(err);
@@ -20,7 +20,7 @@ export const addOrUpdateItem = async (req, res, next) => {
     try {
         const { productId, quantity } = req.body;
 
-        if (!productId || !quantity) {
+        if (!productId || quantity === undefined || quantity === null) {
             return res.status(400).json({
                 error: "Product ID and quantity are required",
             });
@@ -76,8 +76,8 @@ export const mergeCart = async (req, res, next) => {
 export const validateAddOrUpdateItem = [
     body("productId").isMongoId().withMessage("Invalid productId"),
     body("quantity")
-        .isInt({ min: 1 })
-        .withMessage("Quantity must be at least 1"),
+        .isInt({ min: 0 })
+        .withMessage("Quantity must be 0 or greater"),
 ];
 
 export const validateRemoveItem = [

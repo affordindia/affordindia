@@ -13,6 +13,7 @@ export const createOrder = async (req, res, next) => {
             shippingAddress,
             paymentMethod,
             paymentInfo,
+            userName,
             receiverName,
             receiverPhone,
         } = req.body;
@@ -21,6 +22,7 @@ export const createOrder = async (req, res, next) => {
             shippingAddress,
             paymentMethod,
             paymentInfo,
+            userName,
             receiverName,
             receiverPhone
         );

@@ -26,12 +26,6 @@ const ReviewsList = ({ productId, currentUserId, className = "" }) => {
     const [filter, setFilter] = useState("all");
     const [error, setError] = useState(null);
 
-    // Debug: Log currentUserId to see what we're receiving
-    useEffect(() => {
-        console.log("ReviewsList - currentUserId:", currentUserId);
-        console.log("ReviewsList - productId:", productId);
-    }, [currentUserId, productId]);
-
     // Reset form when editing is cancelled or completed
     useEffect(() => {
         if (!editingReview && !showForm) {

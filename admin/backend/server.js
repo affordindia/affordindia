@@ -10,6 +10,7 @@ import categoryRoutes from "./routes/category.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import bannerRoutes from "./routes/banner.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import couponRoutes from "./routes/coupon.routes.js";
 
 // Load env vars
 
@@ -34,6 +35,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/coupons", couponRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
