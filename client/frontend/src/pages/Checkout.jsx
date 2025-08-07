@@ -14,7 +14,7 @@ import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 const Checkout = () => {
     const { user } = useAuth();
     const { cart, clearCart } = useCart();
-    const { addresses, addAddress } = useProfile();
+    const { addresses, addAddress, refreshUserData } = useProfile();
     const [userName, setUserName] = useState(user?.name || "");
     const [userNameError, setUserNameError] = useState("");
     const navigate = useNavigate();
@@ -233,6 +233,17 @@ const Checkout = () => {
 
             if (!order || !order._id) {
                 throw new Error("Invalid order response from server");
+            }
+
+            // Refresh user data in both Auth and Profile contexts
+            // This ensures the name entered during checkout is reflected immediately
+            if (userName && userName.trim() && (!user?.name || user.name.trim() === "")) {
+                try {
+                    await refreshUserData();
+                } catch (error) {
+                    console.warn("Failed to refresh user data, but order was successful:", error);
+                    // Don't fail the order process if refresh fails
+                }
             }
 
             // Clear cart and navigate to confirmation

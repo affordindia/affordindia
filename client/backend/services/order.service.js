@@ -1,6 +1,7 @@
 import Order from "../models/order.model.js";
 import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
+import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
 
@@ -9,12 +10,26 @@ export const placeOrder = async (
     shippingAddress,
     paymentMethod,
     paymentInfo = {},
+    userName = undefined,
     receiverName = undefined,
     receiverPhone = undefined
 ) => {
     // Get user's cart
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
     if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
+
+    // Update user's name if provided and not already set
+    if (userName && userName.trim()) {
+        try {
+            const currentUser = await User.findById(userId);
+            if (currentUser && (!currentUser.name || currentUser.name.trim() === "")) {
+                await User.findByIdAndUpdate(userId, { name: userName.trim() });
+            }
+        } catch (error) {
+            console.error("Failed to update user name:", error);
+            // Don't fail the order if profile update fails
+        }
+    }
 
     // Validate stock and calculate totals
     let subtotal = 0;

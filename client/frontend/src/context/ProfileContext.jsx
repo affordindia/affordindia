@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import * as profileApi from "../api/profile.js";
+import { getCurrentUser } from "../api/auth.api.js";
 
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -139,6 +140,30 @@ export const ProfileProvider = ({ children }) => {
         setError(null);
     };
 
+    // Function to refresh user data in both Profile and Auth contexts
+    // This is useful when user data is updated elsewhere (e.g., during checkout)
+    const refreshUserData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            // Refresh user data in AuthContext
+            const authResponse = await getCurrentUser();
+            if (authResponse?.user) {
+                updateUser(authResponse.user);
+            }
+            
+            // Refresh profile data in ProfileContext
+            await fetchProfile();
+            
+        } catch (error) {
+            console.error("Failed to refresh user data:", error);
+            setError(error.message || "Failed to refresh user data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const value = {
         profile,
         addresses,
@@ -153,6 +178,7 @@ export const ProfileProvider = ({ children }) => {
         setDefaultAddress,
         getDefaultAddress,
         clearError,
+        refreshUserData,
     };
 
     return (
