@@ -146,16 +146,15 @@ export const ProfileProvider = ({ children }) => {
         try {
             setLoading(true);
             setError(null);
-            
+
             // Refresh user data in AuthContext
             const authResponse = await getCurrentUser();
             if (authResponse?.user) {
                 updateUser(authResponse.user);
             }
-            
+
             // Refresh profile data in ProfileContext
             await fetchProfile();
-            
         } catch (error) {
             console.error("Failed to refresh user data:", error);
             setError(error.message || "Failed to refresh user data");

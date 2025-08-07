@@ -22,7 +22,10 @@ export const placeOrder = async (
     if (userName && userName.trim()) {
         try {
             const currentUser = await User.findById(userId);
-            if (currentUser && (!currentUser.name || currentUser.name.trim() === "")) {
+            if (
+                currentUser &&
+                (!currentUser.name || currentUser.name.trim() === "")
+            ) {
                 await User.findByIdAndUpdate(userId, { name: userName.trim() });
             }
         } catch (error) {

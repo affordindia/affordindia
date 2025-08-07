@@ -237,11 +237,18 @@ const Checkout = () => {
 
             // Refresh user data in both Auth and Profile contexts
             // This ensures the name entered during checkout is reflected immediately
-            if (userName && userName.trim() && (!user?.name || user.name.trim() === "")) {
+            if (
+                userName &&
+                userName.trim() &&
+                (!user?.name || user.name.trim() === "")
+            ) {
                 try {
                     await refreshUserData();
                 } catch (error) {
-                    console.warn("Failed to refresh user data, but order was successful:", error);
+                    console.warn(
+                        "Failed to refresh user data, but order was successful:",
+                        error
+                    );
                     // Don't fail the order process if refresh fails
                 }
             }
