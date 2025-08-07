@@ -14,6 +14,7 @@ import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import Orders from "./pages/Orders.jsx";
+import Reviews from "./pages/Reviews.jsx";
 import Rakhi from "./pages/Rakhi.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
@@ -42,6 +43,10 @@ const App = () => {
                     <Route
                         path="/products/id/:id"
                         element={<ProductDetail />}
+                    />
+                    <Route
+                        path="/products/id/:id/reviews"
+                        element={<Reviews />}
                     />
                     <Route path="/rakhi" element={<Rakhi />} />
                     <Route
