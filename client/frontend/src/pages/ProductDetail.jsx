@@ -177,7 +177,7 @@ const ProductDetail = () => {
                         ) ? (
                             <Link
                                 to="/cart"
-                                className="button !bg-[#A89A3D]"
+                                className="button "
                             >
                                 <span className="button-content montserrat-global">
                                     Go to Cart
