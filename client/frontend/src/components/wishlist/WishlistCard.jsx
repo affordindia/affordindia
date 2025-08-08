@@ -37,14 +37,15 @@ const WishlistCard = ({ product }) => {
     };
 
     return (
-        <div className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden relative hover:shadow-lg transition-all flex flex-col group w-full ">
+        <div className="bg-[#ffffff] rounded-xl shadow-md overflow-hidden relative hover:shadow-lg transition-all flex flex-col group 
+                        w-full max-w-xs sm:max-w-[250px]">
             {/* Product Link */}
             <Link
                 to={`/products/id/${product._id}`}
                 className="flex flex-col flex-1"
             >
                 {/* Image */}
-                <div className="w-full aspect-square bg-gray-100 flex-shrink-0 overflow-hidden">
+                <div className="w-full h-36 sm:h-40 bg-gray-100 flex-shrink-0 overflow-hidden">
                     <img
                         src={product.images?.[0] || "/placeholder.jpg"}
                         alt={product.name}
@@ -84,7 +85,7 @@ const WishlistCard = ({ product }) => {
                 </div>
             </Link>
 
-            {/* Action Buttons - Always Horizontal */}
+            {/* Action Buttons */}
             <div className="px-3 pb-3 pt-0 flex flex-row gap-2">
                 {/* Move to Cart Button */}
                 <button

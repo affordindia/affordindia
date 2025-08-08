@@ -68,6 +68,13 @@ const NewArrivals = () => {
                       <span className="button-content montserrat-global text-2xl">View Collection</span>
                     </Link>
                   </div>
+
+                  {/* Loading Overlay */}
+      {(loading || actionLoading) && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-20">
+          <Loader size="small" />
+        </div>
+      )}
         </section>
     );
 };
