@@ -88,7 +88,7 @@ const AddressCard = ({ address, onEdit }) => {
                     <button
                         onClick={() => onEdit(address)}
                         disabled={loading}
-                        className="flex items-center gap-1 px-4 py-2 text-sm bg-gray-200 border border-gray-400 text-gray-800 rounded hover:bg-gray-300 transition-colors disabled:opacity-50 font-medium"
+                        className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] border border-gray-400 text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium"
                     >
                         <FaEdit className="text-xs" />
                         Edit

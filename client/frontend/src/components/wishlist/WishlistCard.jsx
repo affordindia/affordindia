@@ -80,7 +80,7 @@ const WishlistCard = ({ product }) => {
         <button
           onClick={handleMoveToCart}
           disabled={loading || actionLoading || product.stock < 1}
-          className="flex-[3] bg-[#B76E79] text-white py-2 px-3 rounded-lg hover:bg-[#B76E79] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+          className="flex-[3] bg-[#B76E79] text-white py-2 px-3 rounded-lg hover:bg-[#C68F98] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm whitespace-nowrap"
           title="Move to cart and remove from wishlist"
         >
           <FaShoppingCart size={14} />
