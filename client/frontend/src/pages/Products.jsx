@@ -300,7 +300,7 @@ const Products = () => {
 
                         {/* Sort Dropdown */}
                         <select
-  className="px-3 py-2 rounded-md text-sm outline-none focus:ring-0 focus:outline-none border-none"
+  className="px-3 py-2 rounded-md text-sm outline-none focus:ring-0 focus:outline-none border-none bg-[#EFEEE5] montserrat-global"
   value={sort}
   onChange={handleSort}
 >
