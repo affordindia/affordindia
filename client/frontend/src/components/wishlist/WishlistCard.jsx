@@ -74,30 +74,35 @@ const WishlistCard = ({ product }) => {
         </div>
       </Link>
 
-      {/* Action Buttons */}
-      <div className="p-3 pt-0 flex flex-row gap-2">
-        {/* Move to Cart Button - Wider */}
+      {/* Action Buttons - Always Horizontal */}
+      <div className="px-3 pb-3 pt-0 flex flex-row gap-2">
+        {/* Move to Cart Button */}
         <button
           onClick={handleMoveToCart}
           disabled={loading || actionLoading || product.stock < 1}
-          className="flex-[3] bg-[#B76E79] text-white py-2 px-3 rounded-lg hover:bg-[#C68F98] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+          className="flex-1 bg-[#B76E79] text-white py-2 px-1 xs:px-3 rounded-lg hover:bg-[#C68F98] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-1 xs:gap-2 text-md xs:text-sm font-medium min-h-[36px] xs:min-h-[40px] montserrat-global"
           title="Move to cart and remove from wishlist"
         >
-          <FaShoppingCart size={14} />
-          <span className="text-sm md:text-base">Move to Cart</span>
+          <FaShoppingCart size={12} className="xs:hidden" />
+          <FaShoppingCart size={14} className="hidden xs:block" />
+          <span className="hidden xs:inline">Move to Cart</span>
+          <span className="xs:hidden">Cart</span>
         </button>
 
-        
-        {/* Delete Button - Narrower */}
+        {/* Delete Button */}
         <button
           onClick={handleRemoveFromWishlist}
           disabled={loading || actionLoading}
-          className="flex-[1] bg-white border border-[#8C8C8C] py-2 px-2 sm:px-3 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-200 hover:bg-[#E35151] group/delete"
+          className="w-9 xs:w-12 bg-white border border-[#8C8C8C] py-2 px-1 xs:px-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-200 hover:bg-[#E35151] group/delete min-h-[36px] xs:min-h-[40px] flex-shrink-0"
           title="Remove from wishlist"
         >
           <FaTrash
+            size={12}
+            className="text-[#E35151] group-hover/delete:text-white transition-colors duration-200 xs:hidden"
+          />
+          <FaTrash
             size={14}
-            className="text-[#E35151] group-hover/delete:text-white transition-colors duration-200"
+            className="text-[#E35151] group-hover/delete:text-white transition-colors duration-200 hidden xs:block"
           />
         </button>
       </div>
