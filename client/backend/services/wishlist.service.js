@@ -8,7 +8,7 @@ export const getUserWishlist = async (userId) => {
         { new: true, upsert: true }
     ).populate({
         path: "items",
-        select: "name price images stock",
+        select: "name price images stock ratings reviewsCount discount",
     });
     return wishlist;
 };
