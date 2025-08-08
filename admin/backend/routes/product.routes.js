@@ -12,6 +12,8 @@ import {
     getProductReviews,
     deleteProductReview,
     getProductAnalytics,
+    getLowStockProducts,
+    bulkUpdateStock,
 } from "../controllers/product.controller.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
@@ -20,6 +22,12 @@ const router = express.Router();
 
 // All routes protected by admin auth
 router.use(authMiddleware);
+
+// GET /api/products/low-stock - Get low stock products
+router.get("/low-stock", getLowStockProducts);
+
+// PATCH /api/products/bulk-stock - Bulk stock update
+router.patch("/bulk-stock", bulkUpdateStock);
 
 router.get("/", getAllProducts);
 router.post("/", upload.array("images"), createProduct);

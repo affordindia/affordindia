@@ -11,10 +11,11 @@ import {
     getProductReviews as getProductReviewsService,
     deleteProductReview as deleteProductReviewService,
     getProductAnalytics as getProductAnalyticsService,
+    getLowStockProducts as getLowStockProductsService,
+    bulkUpdateStock as bulkUpdateStockService,
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
-import Product from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
     try {
@@ -242,6 +243,58 @@ export const getProductAnalytics = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Failed to fetch analytics",
+            error: error.message,
+        });
+    }
+};
+
+// Get low stock products
+export const getLowStockProducts = async (req, res) => {
+    try {
+        const { threshold = 10, limit = 20 } = req.query;
+        
+        const products = await getLowStockProductsService(threshold, limit);
+        
+        res.json({
+            success: true,
+            products,
+            count: products.length,
+            threshold: parseInt(threshold),
+        });
+    } catch (error) {
+        console.error("Get low stock products error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch low stock products",
+            error: error.message,
+        });
+    }
+};
+
+// Bulk stock update
+export const bulkUpdateStock = async (req, res) => {
+    try {
+        const { updates } = req.body; // Array of {productId, stock}
+        
+        if (!Array.isArray(updates) || updates.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide valid stock updates",
+            });
+        }
+
+        const result = await bulkUpdateStockService(updates);
+
+        res.json({
+            success: true,
+            message: `Successfully updated ${result.modifiedCount} products`,
+            ...result,
+        });
+    } catch (error) {
+        console.error("Bulk update stock error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update stock",
             error: error.message,
         });
     }

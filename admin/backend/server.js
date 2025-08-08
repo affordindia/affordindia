@@ -11,6 +11,9 @@ import userRoutes from "./routes/user.routes.js";
 import bannerRoutes from "./routes/banner.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import configRoutes from "./routes/config.routes.js";
+import adminReviewRoutes from "./routes/adminReviews.routes.js";
 
 // Load env vars
 
@@ -36,6 +39,9 @@ app.use("/api/users", userRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/config", configRoutes);
+app.use("/api/reviews", adminReviewRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

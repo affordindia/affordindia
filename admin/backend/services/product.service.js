@@ -125,3 +125,36 @@ export const getProductAnalytics = async (productId) => {
         reviewsCount: product.reviews.length,
     };
 };
+
+export const getLowStockProducts = async (threshold = 10, limit = 20) => {
+    return await Product.find({
+        stock: { $lt: parseInt(threshold) }
+    })
+    .select("name stock images price category")
+    .populate("category", "name")
+    .sort({ stock: 1 })
+    .limit(parseInt(limit));
+};
+
+export const bulkUpdateStock = async (updates) => {
+    if (!Array.isArray(updates) || updates.length === 0) {
+        throw new Error("Please provide valid stock updates");
+    }
+
+    const updatePromises = updates.map(({ productId, stock }) => 
+        Product.findByIdAndUpdate(
+            productId,
+            { stock: parseInt(stock) },
+            { new: true }
+        ).select("name stock")
+    );
+
+    const results = await Promise.all(updatePromises);
+    const successfulUpdates = results.filter(result => result !== null);
+
+    return {
+        modifiedCount: successfulUpdates.length,
+        updatedProducts: successfulUpdates,
+        totalRequested: updates.length,
+    };
+};
