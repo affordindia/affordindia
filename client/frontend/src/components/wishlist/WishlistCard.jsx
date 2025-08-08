@@ -62,11 +62,11 @@ const WishlistCard = ({ product }) => {
                             ₹{product.price}
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                            <span>{product.rating || "4.5"}</span>
+                            <span>{product.ratings || "4.5"}</span>
                             <span className="ml-1">★</span>
                             <span className="ml-2">|</span>
                             <span className="ml-2">
-                                {product.reviews || 120}
+                                {product.reviewsCount || 120}
                             </span>
                         </div>
                     </div>
