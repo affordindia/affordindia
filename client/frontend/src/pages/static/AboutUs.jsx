@@ -150,7 +150,7 @@ const AboutUs = () => {
       </section>
 
 {/* Our Mission */}
-<section className="bg-[#9D5353] py-10 mx-4 md:mx-20 rounded-lg text-white text-center mt-12">
+<section className="bg-[#B76E79] py-10 mx-4 md:mx-20 rounded-lg text-white text-center mt-12">
   <div className="max-w-xl mx-auto px-4">
     <h2 className="text-2xl md:text-3xl font-bold mb-4">Our Mission</h2>
     <p className="text-base md:text-lg font-light leading-relaxed">
