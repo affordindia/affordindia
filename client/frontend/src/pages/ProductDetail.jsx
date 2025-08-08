@@ -9,6 +9,7 @@ import Loader from "../components/common/Loader.jsx";
 import ReviewsPreview from "../components/review/ReviewsPreview";
 import HighlightsSection from "../components/productDetail/HighlightsSection.jsx";
 import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
+import { FaHeart } from "react-icons/fa6";
 
 import { FaRegHeart } from "react-icons/fa";
 
@@ -198,31 +199,22 @@ const ProductDetail = () => {
                                 </span>
                             </button>
                         )}
-                        <button
-                            onClick={handleAddToWishlist}
-                            disabled={wishlistLoading}
-                            className={`px-4 py-2 rounded-md text-white transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ${
-                                wishlist?.items?.some(
-                                    (item) => item._id === product._id
-                                )
-                                    ? "bg-red-600 hover:bg-red-500"
-                                    : "bg-red-500 hover:bg-red-400"
-                            } ${
-                                wishlistLoading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                            }`}
-                        >
-                            <FaRegHeart
-                                className={`text-2xl transition-transform duration-200 hover:scale-110 active:scale-95 ${
-                                    wishlist?.items?.some(
-                                        (item) => item._id === product._id
-                                    )
-                                        ? "fill-current"
-                                        : ""
-                                }`}
-                            />
-                        </button>
+                      <button
+    onClick={handleAddToWishlist}
+    disabled={wishlistLoading}
+    className={`px-4 py-2 rounded-md bg-white transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none border border-gray-400 ${
+        wishlistLoading ? "opacity-50 cursor-not-allowed" : ""
+    }`}
+>
+    <FaHeart
+        className={`text-2xl transition-all duration-200 hover:scale-110 active:scale-95 ${
+            wishlist?.items?.some((item) => item._id === product._id)
+                ? "text-red-500 fill-current" // Red when in wishlist
+                : "text-gray-600 hover:text-red-500" // Gray by default, red on hover
+        }`}
+    />
+   
+</button>
                     </div>
                     {wishlistMsg && (
                         <p className="text-sm mt-1 text-gray-500">
