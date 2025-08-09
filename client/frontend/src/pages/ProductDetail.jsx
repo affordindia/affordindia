@@ -142,7 +142,7 @@ const ProductDetail = () => {
                 onClick={() => setSelectedImage(img)}
                 className={`w-16 h-16 rounded-lg border cursor-pointer object-cover transition-all duration-200 ${
                   selectedImage === img
-                    ? "ring-2 ring-red-500"
+                    ? "ring-2 ring-[#404040]"
                     : "opacity-80 hover:opacity-100"
                 }`}
               />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaPlus, FaStar, FaArrowRight } from "react-icons/fa";
+import { FaPlus, FaStar, FaArrowRight, FaPen } from "react-icons/fa";
+import {  } from "react-icons/fa";
 import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import StarRating from "./StarRating";
@@ -253,7 +254,7 @@ const ReviewsPreview = ({ productId, currentUserId, className = "" }) => {
                                         }}
                                         className="w-full mt-6 bg-[#B76E79] text-white px-4 py-3 rounded-lg hover:bg-[#a55c66] transition-colors flex items-center justify-center gap-2"
                                     >
-                                        <FaPlus className="text-sm" />
+                                        <FaPen className="text-sm" />
                                         {userReview
                                             ? "Edit Review"
                                             : "Write a Review"}
