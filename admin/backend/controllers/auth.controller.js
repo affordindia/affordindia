@@ -13,7 +13,7 @@ export const loginAdmin = (req, res) => {
                 { email, password },
                 process.env.JWT_SECRET,
                 {
-                    expiresIn: "1d",
+                    expiresIn: "7d",
                 }
             );
             return res.json({ token });

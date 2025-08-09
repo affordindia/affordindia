@@ -1,54 +1,52 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+
 @import "tailwindcss";
 
-/* ===== AffordIndia Admin Design System ===== */
+/* ===== AffordIndia Admin Design System (Tailwind v4) ===== */
 
-/* Global Font */
-* {
-    font-family: "Montserrat", system-ui, sans-serif;
-}
+@theme {
+    /* Font Families */
+    --font-family-montserrat: "Montserrat", system-ui, sans-serif;
+    --font-family-playfair: "Playfair Display", serif;
 
-/* CSS Variables for Design System */
-:root {
-    /* Primary Brand Colors (from client) */
-    --admin-primary: #b76e79;
-    --admin-primary-light: #c68f98;
-    --admin-primary-dark: #a55b6b;
-    --admin-primary-bg: #fbf7f8;
+    /* Primary Brand Colors */
+    --color-admin-primary: #b76e79;
+    --color-admin-primary-light: #c68f98;
+    --color-admin-primary-dark: #a55b6b;
+    --color-admin-primary-bg: #fbf7f8;
 
     /* Background Colors */
-    --admin-bg: #f5f5f5;
-    --admin-bg-secondary: #f6f2eb;
-    --admin-card-bg: #ffffff;
-    --admin-sidebar-bg: #2d3748;
-    --admin-navbar-bg: #ffffff;
+    --color-admin-bg: #f5f5f5;
+    --color-admin-bg-secondary: #f6f2eb;
+    --color-admin-card: #ffffff;
+    --color-admin-sidebar: #2d3748;
+    --color-admin-navbar: #ffffff;
 
     /* Status Colors */
-    --admin-success: #48bb78;
-    --admin-success-light: #9ae6b4;
-    --admin-warning: #ed8936;
-    --admin-warning-light: #f6ad55;
-    --admin-error: #e53e3e;
-    --admin-error-light: #fc8181;
-    --admin-info: #4299e1;
-    --admin-info-light: #90cdf4;
+    --color-admin-success: #48bb78;
+    --color-admin-success-light: #9ae6b4;
+    --color-admin-warning: #ed8936;
+    --color-admin-warning-light: #f6ad55;
+    --color-admin-error: #e53e3e;
+    --color-admin-error-light: #fc8181;
+    --color-admin-info: #4299e1;
+    --color-admin-info-light: #90cdf4;
 
     /* Text Colors */
-    --admin-text-primary: #2d3748;
-    --admin-text-secondary: #718096;
-    --admin-text-muted: #a0aec0;
-    --admin-text-inverse: #ffffff;
+    --color-admin-text: #2d3748;
+    --color-admin-text-secondary: #718096;
+    --color-admin-text-muted: #a0aec0;
+    --color-admin-text-inverse: #ffffff;
 
     /* Border Colors */
-    --admin-border: #e2e8f0;
-    --admin-border-hover: #cbd5e0;
-    --admin-border-focus: var(--admin-primary);
+    --color-admin-border: #e2e8f0;
+    --color-admin-border-hover: #cbd5e0;
 
-    /* Shadow */
-    --admin-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --admin-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    /* Shadows */
+    --shadow-admin-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-admin-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
         0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --admin-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    --shadow-admin-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
         0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
@@ -60,8 +58,6 @@ html {
 body {
     margin: 0;
     padding: 0;
-    background-color: var(--admin-bg);
-    color: var(--admin-text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -71,150 +67,8 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
-}
-
-/* Custom Button Styles (inspired by client) */
-.btn-primary {
-    @apply relative overflow-hidden rounded-lg px-6 py-3 font-semibold text-white inline-flex items-center justify-center shadow-md transition-all duration-300;
-    background-color: var(--admin-primary);
-    border: none;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background-color: var(--admin-primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--admin-shadow-lg);
-}
-
-.btn-primary:active {
-    transform: translateY(0);
-}
-
-.btn-secondary {
-    @apply relative overflow-hidden rounded-lg px-6 py-3 font-semibold inline-flex items-center justify-center border-2 transition-all duration-300;
-    background-color: transparent;
-    color: var(--admin-primary);
-    border-color: var(--admin-primary);
-}
-
-.btn-secondary:hover {
-    background-color: var(--admin-primary);
-    color: white;
-}
-
-/* Card Styles */
-.admin-card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
-    background-color: var(--admin-card-bg);
-    border-color: var(--admin-border);
-}
-
-.admin-card:hover {
-    border-color: var(--admin-border-hover);
-    box-shadow: var(--admin-shadow-md);
-}
-
-/* Form Styles */
-.form-input {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 transition-all duration-200;
-    border-color: var(--admin-border);
-    background-color: var(--admin-card-bg);
-}
-
-.form-input:focus {
-    border-color: var(--admin-primary);
-    box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.1);
-}
-
-/* Table Styles */
-.admin-table {
-    @apply w-full bg-white rounded-lg overflow-hidden shadow-sm;
-    background-color: var(--admin-card-bg);
-}
-
-.admin-table th {
-    @apply px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider;
-    background-color: var(--admin-bg);
-    color: var(--admin-text-secondary);
-}
-
-.admin-table td {
-    @apply px-6 py-4 whitespace-nowrap border-t;
-    border-color: var(--admin-border);
-}
-
-/* Status Badge Styles */
-.status-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-}
-
-.status-success {
-    background-color: var(--admin-success-light);
-    color: var(--admin-success);
-}
-
-.status-warning {
-    background-color: var(--admin-warning-light);
-    color: var(--admin-warning);
-}
-
-.status-error {
-    background-color: var(--admin-error-light);
-    color: var(--admin-error);
-}
-
-.status-info {
-    background-color: var(--admin-info-light);
-    color: var(--admin-info);
-}
-
-/* Loading Animation */
-.loading-spinner {
-    @apply animate-spin rounded-full border-4 border-gray-200;
-    border-top-color: var(--admin-primary);
-}
-
-/* Utility Classes */
-.text-primary {
-    color: var(--admin-primary);
-}
-
-.bg-primary {
-    background-color: var(--admin-primary);
-}
-
-.border-primary {
-    border-color: var(--admin-primary);
-}
-
-/* Focus Styles */
-.focus-primary:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.1);
-    border-color: var(--admin-primary);
-}
-
-/* Montserrat font weight utilities */
-.font-montserrat {
-    font-family: "Montserrat", system-ui, sans-serif;
-}
-
-.font-playfair {
-    font-family: "Playfair Display", serif;
-}
-
-/* Responsive Design Helpers */
-@media (max-width: 768px) {
-    .admin-card {
-        @apply p-4;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        @apply px-4 py-2 text-sm;
-    }
 }
