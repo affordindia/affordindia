@@ -1,17 +1,10 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.jsx';
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import GlobalProvider from "./context/GlobalProvider.jsx";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Router> {/* ✅ Must be outside everything that uses useNavigate */}
-      <GlobalProvider>
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
         <App />
-      </GlobalProvider>
-    </Router>
-  </StrictMode>
+    </React.StrictMode>
 );
