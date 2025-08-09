@@ -10,27 +10,118 @@ export const createProduct = async (productData) => {
 
 export const getAllProducts = async (filter = {}, options = {}) => {
     const query = {};
+
+    // Text search
     if (filter.search) {
         query.name = { $regex: filter.search, $options: "i" };
     }
+
+    // Category filter
     if (filter.category) {
         query.category = filter.category;
     }
+
+    // Price range filter
     if (filter.minPrice || filter.maxPrice) {
         query.price = {};
-        if (filter.minPrice) query.price.$gte = filter.minPrice;
-        if (filter.maxPrice) query.price.$lte = filter.maxPrice;
+        if (filter.minPrice) query.price.$gte = parseFloat(filter.minPrice);
+        if (filter.maxPrice) query.price.$lte = parseFloat(filter.maxPrice);
     }
+
+    // Featured filter
     if (filter.isFeatured !== undefined) {
-        query.isFeatured = filter.isFeatured;
+        query.isFeatured = filter.isFeatured === "true";
     }
-    // ...add more filters as needed
+
+    // Stock filters
+    if (filter.inStock !== undefined) {
+        if (filter.inStock === "true") {
+            query.stock = { $gt: 0 };
+        } else if (filter.inStock === "false") {
+            query.stock = { $lte: 0 };
+        }
+    }
+    if (filter.lowStock !== undefined && filter.lowStock === "true") {
+        query.stock = { $gt: 0, $lte: 10 }; // Consider low stock as <= 10
+    }
+    if (filter.minStock) {
+        query.stock = { ...query.stock, $gte: parseInt(filter.minStock) };
+    }
+    if (filter.maxStock) {
+        query.stock = { ...query.stock, $lte: parseInt(filter.maxStock) };
+    }
+
+    // Rating filters
+    if (filter.minRating) {
+        query.ratings = { $gte: parseFloat(filter.minRating) };
+    }
+    if (filter.maxRating) {
+        query.ratings = {
+            ...query.ratings,
+            $lte: parseFloat(filter.maxRating),
+        };
+    }
+
+    // Reviews count filter
+    if (filter.hasReviews !== undefined) {
+        if (filter.hasReviews === "true") {
+            query.reviewsCount = { $gt: 0 };
+        } else if (filter.hasReviews === "false") {
+            query.reviewsCount = { $eq: 0 };
+        }
+    }
+    if (filter.minReviews) {
+        query.reviewsCount = { $gte: parseInt(filter.minReviews) };
+    }
+
+    // Sales count filter
+    if (filter.minSales) {
+        query.salesCount = { $gte: parseInt(filter.minSales) };
+    }
+    if (filter.maxSales) {
+        query.salesCount = {
+            ...query.salesCount,
+            $lte: parseInt(filter.maxSales),
+        };
+    }
+
+    // Views filter
+    if (filter.minViews) {
+        query.views = { $gte: parseInt(filter.minViews) };
+    }
+
+    // Discount filter
+    if (filter.hasDiscount !== undefined) {
+        if (filter.hasDiscount === "true") {
+            query.discount = { $gt: 0 };
+        } else if (filter.hasDiscount === "false") {
+            query.discount = { $eq: 0 };
+        }
+    }
+    if (filter.minDiscount) {
+        query.discount = { $gte: parseFloat(filter.minDiscount) };
+    }
+    if (filter.maxDiscount) {
+        query.discount = {
+            ...query.discount,
+            $lte: parseFloat(filter.maxDiscount),
+        };
+    }
+
+    // Get total count for pagination
+    const total = await Product.countDocuments(query);
+
+    // Get paginated products
     const products = await Product.find(query)
         .populate("category")
         .skip(options.skip !== undefined ? options.skip : DEFAULT_SKIP)
         .limit(options.limit !== undefined ? options.limit : DEFAULT_LIMIT)
         .sort(options.sort || {});
-    return products;
+
+    return {
+        products,
+        total,
+    };
 };
 
 export const getProductById = async (id) => {

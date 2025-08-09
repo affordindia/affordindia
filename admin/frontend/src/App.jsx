@@ -6,6 +6,10 @@ import AdminFooter from "./components/common/AdminFooter.jsx";
 import Loader from "./components/common/Loader.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Products from "./pages/products/Products.jsx";
+import ProductDetail from "./pages/products/ProductDetail.jsx";
+import AddProduct from "./pages/products/AddProduct.jsx";
+import EditProduct from "./pages/products/EditProduct.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -89,6 +93,38 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <Dashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/products"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Products />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/products/view/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <ProductDetail />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/products/add"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AddProduct />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/products/edit/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <EditProduct />
                                         </ProtectedRoute>
                                     }
                                 />

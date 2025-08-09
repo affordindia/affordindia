@@ -10,10 +10,17 @@ const productSchema = new mongoose.Schema(
         brand: { type: String },
         stock: { type: Number, default: 0 },
         ratings: { type: Number, default: 0 },
+        reviewsCount: { type: Number, default: 0 },
         reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
         isFeatured: { type: Boolean, default: false },
         views: { type: Number, default: 0 },
         salesCount: { type: Number, default: 0 },
+        discount: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
     },
     { timestamps: true }
 );

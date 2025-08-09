@@ -16,6 +16,7 @@ import {
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
+import Product from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
     try {
@@ -68,6 +69,20 @@ export const getAllProducts = async (req, res) => {
             minPrice: req.query.minPrice,
             maxPrice: req.query.maxPrice,
             isFeatured: req.query.isFeatured,
+            inStock: req.query.inStock,
+            lowStock: req.query.lowStock,
+            minStock: req.query.minStock,
+            maxStock: req.query.maxStock,
+            minRating: req.query.minRating,
+            maxRating: req.query.maxRating,
+            hasReviews: req.query.hasReviews,
+            minReviews: req.query.minReviews,
+            minSales: req.query.minSales,
+            maxSales: req.query.maxSales,
+            minViews: req.query.minViews,
+            hasDiscount: req.query.hasDiscount,
+            minDiscount: req.query.minDiscount,
+            maxDiscount: req.query.maxDiscount,
         };
         const options = {
             skip: req.query.skip ? parseInt(req.query.skip) : DEFAULT_SKIP,
