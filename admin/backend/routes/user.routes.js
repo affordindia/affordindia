@@ -1,11 +1,11 @@
 import express from "express";
-import { 
-    getAllUsers, 
-    getUserById, 
-    blockUser, 
-    unblockUser, 
-    deleteUser, 
-    getUserStats 
+import {
+    getAllUsers,
+    getUserById,
+    blockUser,
+    unblockUser,
+    deleteUser,
+    getUserStats,
 } from "../controllers/user.controller.js";
 import adminAuth from "../middlewares/auth.middleware.js";
 

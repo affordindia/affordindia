@@ -23,7 +23,7 @@ export const getAllReviews = async (req, res) => {
         } = req.query;
 
         const skip = (page - 1) * limit;
-        
+
         // Build filter object
         const filter = {};
         if (rating) filter.rating = rating;
@@ -39,7 +39,7 @@ export const getAllReviews = async (req, res) => {
         const options = {
             skip,
             limit: parseInt(limit),
-            sort
+            sort,
         };
 
         const result = await getAllReviewsService(filter, options);
@@ -48,7 +48,6 @@ export const getAllReviews = async (req, res) => {
             success: true,
             ...result,
         });
-
     } catch (error) {
         console.error("Get all reviews error:", error);
         res.status(500).json({
@@ -70,13 +69,15 @@ export const getReviewById = async (req, res) => {
             success: true,
             review,
         });
-
     } catch (error) {
         console.error("Get review by ID error:", error);
         const statusCode = error.message === "Review not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: error.message === "Review not found" ? "Review not found" : "Failed to fetch review",
+            message:
+                error.message === "Review not found"
+                    ? "Review not found"
+                    : "Failed to fetch review",
             error: error.message,
         });
     }
@@ -91,19 +92,23 @@ export const toggleReviewVisibility = async (req, res) => {
 
         res.json({
             success: true,
-            message: `Review ${review.isVisible ? "shown" : "hidden"} successfully`,
+            message: `Review ${
+                review.isVisible ? "shown" : "hidden"
+            } successfully`,
             review: {
                 id: review._id,
                 isVisible: review.isVisible,
             },
         });
-
     } catch (error) {
         console.error("Toggle review visibility error:", error);
         const statusCode = error.message === "Review not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: error.message === "Review not found" ? "Review not found" : "Failed to toggle review visibility",
+            message:
+                error.message === "Review not found"
+                    ? "Review not found"
+                    : "Failed to toggle review visibility",
             error: error.message,
         });
     }
@@ -120,13 +125,15 @@ export const deleteReview = async (req, res) => {
             success: true,
             message: "Review deleted successfully",
         });
-
     } catch (error) {
         console.error("Delete review error:", error);
         const statusCode = error.message === "Review not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: error.message === "Review not found" ? "Review not found" : "Failed to delete review",
+            message:
+                error.message === "Review not found"
+                    ? "Review not found"
+                    : "Failed to delete review",
             error: error.message,
         });
     }
@@ -151,7 +158,6 @@ export const bulkReviewOperations = async (req, res) => {
             message: result.message,
             result: result.result,
         });
-
     } catch (error) {
         console.error("Bulk review operations error:", error);
         const statusCode = error.message.includes("Invalid action") ? 400 : 500;
@@ -172,7 +178,6 @@ export const getReviewStats = async (req, res) => {
             success: true,
             stats,
         });
-
     } catch (error) {
         console.error("Get review stats error:", error);
         res.status(500).json({

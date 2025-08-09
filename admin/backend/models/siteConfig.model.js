@@ -11,7 +11,7 @@ const siteConfigSchema = new mongoose.Schema(
             maxCodAmount: { type: Number, default: 10000 },
         },
 
-        // Pagination Configuration  
+        // Pagination Configuration
         paginationConfig: {
             defaultProductsPerPage: { type: Number, default: 12 },
             maxProductsPerPage: { type: Number, default: 48 },

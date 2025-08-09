@@ -36,7 +36,7 @@ export const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await getUserByIdService(id);
-        
+
         res.json({
             success: true,
             user,
@@ -46,7 +46,10 @@ export const getUserById = async (req, res) => {
         const statusCode = err.message === "User not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: err.message === "User not found" ? "User not found" : "Failed to fetch user",
+            message:
+                err.message === "User not found"
+                    ? "User not found"
+                    : "Failed to fetch user",
             error: err.message,
         });
     }
@@ -70,7 +73,10 @@ export const blockUser = async (req, res) => {
         const statusCode = err.message === "User not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: err.message === "User not found" ? "User not found" : "Failed to block user",
+            message:
+                err.message === "User not found"
+                    ? "User not found"
+                    : "Failed to block user",
             error: err.message,
         });
     }
@@ -92,7 +98,10 @@ export const unblockUser = async (req, res) => {
         const statusCode = err.message === "User not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: err.message === "User not found" ? "User not found" : "Failed to unblock user",
+            message:
+                err.message === "User not found"
+                    ? "User not found"
+                    : "Failed to unblock user",
             error: err.message,
         });
     }
@@ -108,9 +117,10 @@ export const deleteUser = async (req, res) => {
 
         res.json({
             success: true,
-            message: hardDelete === "true" 
-                ? "User and all associated data deleted permanently"
-                : "User account deactivated successfully",
+            message:
+                hardDelete === "true"
+                    ? "User and all associated data deleted permanently"
+                    : "User account deactivated successfully",
             ...result,
         });
     } catch (err) {
@@ -118,7 +128,10 @@ export const deleteUser = async (req, res) => {
         const statusCode = err.message === "User not found" ? 404 : 500;
         res.status(statusCode).json({
             success: false,
-            message: err.message === "User not found" ? "User not found" : "Failed to delete user",
+            message:
+                err.message === "User not found"
+                    ? "User not found"
+                    : "Failed to delete user",
             error: err.message,
         });
     }

@@ -22,22 +22,23 @@ export const getUserByIdService = async (userId) => {
 
     // In Mongoose 8.x, use the userId string directly for most queries
     // For aggregation, convert to ObjectId using the correct method
-    const userObjId = mongoose.Types.ObjectId.isValid(userId) 
-        ? new mongoose.Types.ObjectId(userId) 
+    const userObjId = mongoose.Types.ObjectId.isValid(userId)
+        ? new mongoose.Types.ObjectId(userId)
         : userId;
 
-    const [orderCount, totalSpent, reviewCount, recentOrders] = await Promise.all([
-        Order.countDocuments({ user: userId }),
-        Order.aggregate([
-            { $match: { user: userObjId, paymentStatus: "paid" } },
-            { $group: { _id: null, total: { $sum: "$total" } } }
-        ]),
-        Review.countDocuments({ user: userId }),
-        Order.find({ user: userId })
-            .sort({ createdAt: -1 })
-            .limit(5)
-            .select("orderNumber total status paymentStatus createdAt")
-    ]);
+    const [orderCount, totalSpent, reviewCount, recentOrders] =
+        await Promise.all([
+            Order.countDocuments({ user: userId }),
+            Order.aggregate([
+                { $match: { user: userObjId, paymentStatus: "paid" } },
+                { $group: { _id: null, total: { $sum: "$total" } } },
+            ]),
+            Review.countDocuments({ user: userId }),
+            Order.find({ user: userId })
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .select("orderNumber total status paymentStatus createdAt"),
+        ]);
 
     return {
         ...user.toObject(),
@@ -55,10 +56,10 @@ export const getUserByIdService = async (userId) => {
 export const blockUserService = async (userId, reason = "Blocked by admin") => {
     const user = await User.findByIdAndUpdate(
         userId,
-        { 
+        {
             isBlocked: true,
             blockReason: reason,
-            blockedAt: new Date()
+            blockedAt: new Date(),
         },
         { new: true }
     ).select("-password");
@@ -78,10 +79,10 @@ export const blockUserService = async (userId, reason = "Blocked by admin") => {
 export const unblockUserService = async (userId) => {
     const user = await User.findByIdAndUpdate(
         userId,
-        { 
+        {
             isBlocked: false,
             blockReason: null,
-            blockedAt: null
+            blockedAt: null,
         },
         { new: true }
     ).select("-password");
@@ -110,7 +111,7 @@ export const deleteUserService = async (userId, hardDelete = false) => {
         await Promise.all([
             User.findByIdAndDelete(userId),
             Order.deleteMany({ user: userId }),
-            Review.deleteMany({ user: userId })
+            Review.deleteMany({ user: userId }),
         ]);
 
         return { deleted: true };
@@ -118,10 +119,10 @@ export const deleteUserService = async (userId, hardDelete = false) => {
         // Soft delete - just block the user
         const user = await User.findByIdAndUpdate(
             userId,
-            { 
+            {
                 isBlocked: true,
                 blockReason: "Account deleted by admin",
-                blockedAt: new Date()
+                blockedAt: new Date(),
             },
             { new: true }
         ).select("-password");
@@ -135,7 +136,7 @@ export const deleteUserService = async (userId, hardDelete = false) => {
                 id: user._id,
                 name: user.name,
                 isBlocked: user.isBlocked,
-            }
+            },
         };
     }
 };
@@ -147,19 +148,29 @@ export const getUserStatsService = async () => {
         activeUsers,
         blockedUsers,
         newUsersThisMonth,
-        topCustomers
+        topCustomers,
     ] = await Promise.all([
         User.countDocuments(),
         User.countDocuments({ isBlocked: false }),
         User.countDocuments({ isBlocked: true }),
         User.countDocuments({
-            createdAt: { 
-                $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) 
-            }
+            createdAt: {
+                $gte: new Date(
+                    new Date().getFullYear(),
+                    new Date().getMonth(),
+                    1
+                ),
+            },
         }),
         Order.aggregate([
             { $match: { paymentStatus: "paid" } },
-            { $group: { _id: "$user", totalSpent: { $sum: "$total" }, orderCount: { $sum: 1 } } },
+            {
+                $group: {
+                    _id: "$user",
+                    totalSpent: { $sum: "$total" },
+                    orderCount: { $sum: 1 },
+                },
+            },
             { $sort: { totalSpent: -1 } },
             { $limit: 10 },
             {
@@ -167,8 +178,8 @@ export const getUserStatsService = async () => {
                     from: "users",
                     localField: "_id",
                     foreignField: "_id",
-                    as: "user"
-                }
+                    as: "user",
+                },
             },
             { $unwind: "$user" },
             {
@@ -176,10 +187,10 @@ export const getUserStatsService = async () => {
                     name: "$user.name",
                     phone: "$user.phone",
                     totalSpent: 1,
-                    orderCount: 1
-                }
-            }
-        ])
+                    orderCount: 1,
+                },
+            },
+        ]),
     ]);
 
     const stats = {

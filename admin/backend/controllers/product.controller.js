@@ -252,9 +252,9 @@ export const getProductAnalytics = async (req, res) => {
 export const getLowStockProducts = async (req, res) => {
     try {
         const { threshold = 10, limit = 20 } = req.query;
-        
+
         const products = await getLowStockProductsService(threshold, limit);
-        
+
         res.json({
             success: true,
             products,
@@ -275,7 +275,7 @@ export const getLowStockProducts = async (req, res) => {
 export const bulkUpdateStock = async (req, res) => {
     try {
         const { updates } = req.body; // Array of {productId, stock}
-        
+
         if (!Array.isArray(updates) || updates.length === 0) {
             return res.status(400).json({
                 success: false,

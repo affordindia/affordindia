@@ -128,12 +128,12 @@ export const getProductAnalytics = async (productId) => {
 
 export const getLowStockProducts = async (threshold = 10, limit = 20) => {
     return await Product.find({
-        stock: { $lt: parseInt(threshold) }
+        stock: { $lt: parseInt(threshold) },
     })
-    .select("name stock images price category")
-    .populate("category", "name")
-    .sort({ stock: 1 })
-    .limit(parseInt(limit));
+        .select("name stock images price category")
+        .populate("category", "name")
+        .sort({ stock: 1 })
+        .limit(parseInt(limit));
 };
 
 export const bulkUpdateStock = async (updates) => {
@@ -141,7 +141,7 @@ export const bulkUpdateStock = async (updates) => {
         throw new Error("Please provide valid stock updates");
     }
 
-    const updatePromises = updates.map(({ productId, stock }) => 
+    const updatePromises = updates.map(({ productId, stock }) =>
         Product.findByIdAndUpdate(
             productId,
             { stock: parseInt(stock) },
@@ -150,7 +150,7 @@ export const bulkUpdateStock = async (updates) => {
     );
 
     const results = await Promise.all(updatePromises);
-    const successfulUpdates = results.filter(result => result !== null);
+    const successfulUpdates = results.filter((result) => result !== null);
 
     return {
         modifiedCount: successfulUpdates.length,
