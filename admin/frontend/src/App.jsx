@@ -10,6 +10,8 @@ import Products from "./pages/products/Products.jsx";
 import ProductDetail from "./pages/products/ProductDetail.jsx";
 import AddProduct from "./pages/products/AddProduct.jsx";
 import EditProduct from "./pages/products/EditProduct.jsx";
+import Orders from "./pages/orders/Orders.jsx";
+import OrderDetail from "./pages/orders/OrderDetail.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -125,6 +127,22 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <EditProduct />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/orders"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Orders />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/orders/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <OrderDetail />
                                         </ProtectedRoute>
                                     }
                                 />

@@ -7,7 +7,7 @@ import {
 // Get order by ID
 export async function getOrderByIdService(orderId) {
     return Order.findById(orderId)
-        .populate("user", "name email")
+        .populate("user", "name email phone")
         .populate("items.product", "name price images")
         .populate("coupon");
 }
@@ -21,7 +21,7 @@ export async function getAllOrdersService(filter = {}, options = {}) {
         .skip(Number(skip))
         .limit(Number(limit))
         .sort(sort)
-        .populate("user", "name email")
+        .populate("user", "name email phone")
         .populate("items.product", "name price images")
         .populate("coupon");
     const total = await Order.countDocuments(filter);
@@ -33,7 +33,7 @@ export async function updateOrderService(orderId, updateData) {
     const order = await Order.findByIdAndUpdate(orderId, updateData, {
         new: true,
     })
-        .populate("user", "name email")
+        .populate("user", "name email phone")
         .populate("items.product", "name price images")
         .populate("coupon");
     return order;

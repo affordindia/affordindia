@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema(
                 },
                 quantity: { type: Number, required: true },
                 price: { type: Number, required: true },
+                discountedPrice: { type: Number, required: true }, // price after discount
             },
         ],
         shippingAddress: {
@@ -28,6 +29,8 @@ const orderSchema = new mongoose.Schema(
             pincode: { type: String },
             country: { type: String, default: "India" },
         },
+        receiverName: { type: String },
+        receiverPhone: { type: String },
         paymentMethod: { type: String },
         paymentStatus: {
             type: String,
@@ -48,14 +51,21 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
         subtotal: { type: Number },
+        totalDiscount: { type: Number, default: 0 }, // sum of all product discounts
+        couponDiscount: { type: Number, default: 0 }, // coupon discount amount
         shippingFee: { type: Number },
-        discount: { type: Number },
         total: { type: Number },
         trackingNumber: { type: String },
         deliveredAt: { type: Date },
         cancelledAt: { type: Date },
         returnedAt: { type: Date },
-        coupon: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
+        coupon: {
+            couponId: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
+            code: String,
+            discountAmount: Number,
+            discountType: String,
+            discountValue: Number,
+        },
         notes: { type: String },
     },
     { timestamps: true }
