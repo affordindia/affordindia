@@ -14,6 +14,8 @@ import Orders from "./pages/orders/Orders.jsx";
 import OrderDetail from "./pages/orders/OrderDetail.jsx";
 import Coupons from "./pages/Coupons/Coupons.jsx";
 import AddEditCoupon from "./pages/Coupons/AddEditCoupon.jsx";
+import Categories from "./pages/Categories/Categories.jsx";
+import AddEditCategory from "./pages/Categories/AddEditCategory.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -169,6 +171,30 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <AddEditCoupon />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/categories"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Categories />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/categories/add"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AddEditCategory />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/categories/edit/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AddEditCategory />
                                         </ProtectedRoute>
                                     }
                                 />

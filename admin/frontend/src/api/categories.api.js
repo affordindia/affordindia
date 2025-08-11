@@ -24,6 +24,27 @@ export const getCategories = async () => {
 };
 
 /**
+ * Get single category by ID
+ */
+export const getCategory = async (id) => {
+    try {
+        const response = await api.get(`/categories/${id}`);
+        return {
+            success: true,
+            data: response.data,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to fetch category",
+        };
+    }
+};
+
+/**
  * Create new category
  */
 export const createCategory = async (categoryData) => {
