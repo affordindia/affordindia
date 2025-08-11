@@ -38,10 +38,16 @@ export const createCoupon = async (req, res) => {
     }
 };
 
-// Get all coupons (simplified)
+// Get all coupons with filters
 export const getAllCoupons = async (req, res) => {
     try {
-        const coupons = await CouponService.getAllCoupons();
+        const filters = {
+            category: req.query.category,
+            discountType: req.query.discountType,
+            status: req.query.status,
+        };
+
+        const coupons = await CouponService.getAllCoupons(filters);
 
         res.json({
             success: true,

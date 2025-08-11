@@ -8,7 +8,9 @@ export const getCategories = async () => {
         const response = await api.get("/categories");
         return {
             success: true,
-            data: response.data,
+            data: {
+                categories: response.data, // Backend returns categories array directly
+            },
         };
     } catch (error) {
         return {

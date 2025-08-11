@@ -15,12 +15,44 @@ class CouponService {
         }
     }
 
-    // Get all coupons (simplified - no pagination, sorting, filtering)
-    async getAllCoupons() {
+    // Get all coupons with usage tracking and filters
+    async getAllCoupons(filters = {}) {
         try {
-            return await Coupon.find({})
+            // Build query based on filters
+            const query = {};
+
+            if (filters.category) {
+                query.applicableCategories = filters.category;
+            }
+
+            if (filters.discountType) {
+                query.discountType = filters.discountType;
+            }
+
+            if (filters.status !== undefined) {
+                query.isActive = filters.status === "true";
+            }
+
+            const coupons = await Coupon.find(query)
                 .populate("applicableCategories", "name")
                 .sort({ createdAt: -1 });
+
+            // Get usage stats for each coupon
+            const couponsWithUsage = await Promise.all(
+                coupons.map(async (coupon) => {
+                    const totalUsages = await CouponUsage.countDocuments({
+                        coupon: coupon._id,
+                    });
+
+                    const couponObj = coupon.toObject();
+                    return {
+                        ...couponObj,
+                        totalUsages, // Total times this coupon has been used
+                    };
+                })
+            );
+
+            return couponsWithUsage;
         } catch (error) {
             throw error;
         }
