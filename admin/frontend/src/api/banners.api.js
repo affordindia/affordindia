@@ -4,15 +4,18 @@ import api from "./axios.js";
 export const getBanners = async () => {
     try {
         const response = await api.get("/banners");
-        return { 
-            success: true, 
-            data: response.data // Return banners array directly
+        return {
+            success: true,
+            data: response.data, // Return banners array directly
         };
     } catch (error) {
         console.error("Error fetching banners:", error);
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message || "Failed to fetch banners"
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to fetch banners",
         };
     }
 };
@@ -21,15 +24,18 @@ export const getBanners = async () => {
 export const getBanner = async (id) => {
     try {
         const response = await api.get(`/banners/${id}`);
-        return { 
-            success: true, 
-            data: response.data // Return banner directly
+        return {
+            success: true,
+            data: response.data, // Return banner directly
         };
     } catch (error) {
         console.error("Error fetching banner:", error);
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message || "Failed to fetch banner"
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to fetch banner",
         };
     }
 };
@@ -42,15 +48,18 @@ export const createBanner = async (bannerData) => {
                 "Content-Type": "multipart/form-data",
             },
         });
-        return { 
-            success: true, 
-            data: response.data 
+        return {
+            success: true,
+            data: response.data,
         };
     } catch (error) {
         console.error("Error creating banner:", error);
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message || "Failed to create banner"
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to create banner",
         };
     }
 };
@@ -63,15 +72,18 @@ export const updateBanner = async (id, bannerData) => {
                 "Content-Type": "multipart/form-data",
             },
         });
-        return { 
-            success: true, 
-            data: response.data 
+        return {
+            success: true,
+            data: response.data,
         };
     } catch (error) {
         console.error("Error updating banner:", error);
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message || "Failed to update banner"
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to update banner",
         };
     }
 };
@@ -80,15 +92,18 @@ export const updateBanner = async (id, bannerData) => {
 export const deleteBanner = async (id) => {
     try {
         const response = await api.delete(`/banners/${id}`);
-        return { 
-            success: true, 
-            data: response.data 
+        return {
+            success: true,
+            data: response.data,
         };
     } catch (error) {
         console.error("Error deleting banner:", error);
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message || "Failed to delete banner"
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to delete banner",
         };
     }
 };

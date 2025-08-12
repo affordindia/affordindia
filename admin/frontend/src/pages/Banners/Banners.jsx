@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiPlus, FiEdit, FiTrash2, FiImage, FiExternalLink, FiCalendar, FiEye } from "react-icons/fi";
+import {
+    FiPlus,
+    FiEdit,
+    FiTrash2,
+    FiImage,
+    FiExternalLink,
+    FiCalendar,
+    FiEye,
+} from "react-icons/fi";
 import { getBanners, deleteBanner } from "../../api/banners.api";
 
 const Banners = () => {
@@ -9,7 +17,7 @@ const Banners = () => {
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         bannerId: null,
-        bannerTitle: ""
+        bannerTitle: "",
     });
 
     useEffect(() => {
@@ -36,7 +44,7 @@ const Banners = () => {
         setDeleteModal({
             isOpen: true,
             bannerId,
-            bannerTitle
+            bannerTitle,
         });
     };
 
@@ -45,7 +53,11 @@ const Banners = () => {
             const response = await deleteBanner(deleteModal.bannerId);
             if (response.success) {
                 fetchBanners();
-                setDeleteModal({ isOpen: false, bannerId: null, bannerTitle: "" });
+                setDeleteModal({
+                    isOpen: false,
+                    bannerId: null,
+                    bannerTitle: "",
+                });
             } else {
                 console.error("Error deleting banner:", response.error);
             }
@@ -63,7 +75,7 @@ const Banners = () => {
         return new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
-            day: "numeric"
+            day: "numeric",
         });
     };
 
@@ -151,11 +163,19 @@ const Banners = () => {
                                         <FiImage className="w-16 h-16" />
                                     </div>
                                 )}
-                                
+
                                 {/* Status Badge on Image */}
                                 <div className="absolute top-4 left-4">
-                                    <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${getStatusColor(banner.status)}`}>
-                                        {banner.status?.charAt(0).toUpperCase() + banner.status?.slice(1) || "Inactive"}
+                                    <span
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium ${getStatusColor(
+                                            banner.status
+                                        )}`}
+                                    >
+                                        {banner.status
+                                            ?.charAt(0)
+                                            .toUpperCase() +
+                                            banner.status?.slice(1) ||
+                                            "Inactive"}
                                     </span>
                                 </div>
                             </div>
@@ -172,7 +192,10 @@ const Banners = () => {
                                                 </h3>
                                                 {banner.material && (
                                                     <p className="text-admin-text-secondary mb-3">
-                                                        <span className="font-medium">Category:</span> {banner.material}
+                                                        <span className="font-medium">
+                                                            Category:
+                                                        </span>{" "}
+                                                        {banner.material}
                                                     </p>
                                                 )}
                                             </div>
@@ -195,18 +218,32 @@ const Banners = () => {
                                         <div className="flex flex-wrap items-center gap-6 text-admin-text-secondary">
                                             <div className="flex items-center gap-2">
                                                 <FiCalendar className="w-4 h-4" />
-                                                <span><strong>Start:</strong> {formatDate(banner.startDate)}</span>
+                                                <span>
+                                                    <strong>Start:</strong>{" "}
+                                                    {formatDate(
+                                                        banner.startDate
+                                                    )}
+                                                </span>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <FiCalendar className="w-4 h-4" />
-                                                <span><strong>End:</strong> {formatDate(banner.endDate)}</span>
+                                                <span>
+                                                    <strong>End:</strong>{" "}
+                                                    {formatDate(banner.endDate)}
+                                                </span>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <FiEye className="w-4 h-4" />
-                                                <span className={`font-medium ${
-                                                    banner.isActive ? 'text-green-600' : 'text-gray-600'
-                                                }`}>
-                                                    {banner.isActive ? 'Visible' : 'Hidden'}
+                                                <span
+                                                    className={`font-medium ${
+                                                        banner.isActive
+                                                            ? "text-green-600"
+                                                            : "text-gray-600"
+                                                    }`}
+                                                >
+                                                    {banner.isActive
+                                                        ? "Visible"
+                                                        : "Hidden"}
                                                 </span>
                                             </div>
                                         </div>
@@ -222,7 +259,12 @@ const Banners = () => {
                                             Edit Banner
                                         </Link>
                                         <button
-                                            onClick={() => handleDeleteBanner(banner._id, banner.title)}
+                                            onClick={() =>
+                                                handleDeleteBanner(
+                                                    banner._id,
+                                                    banner.title
+                                                )
+                                            }
                                             className="bg-red-500 text-white py-2.5 px-6 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 font-medium"
                                         >
                                             <FiTrash2 className="w-4 h-4" />
@@ -245,17 +287,23 @@ const Banners = () => {
                                 <FiTrash2 className="w-6 h-6 text-red-600" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-admin-text">Delete Banner</h3>
-                                <p className="text-admin-text-secondary text-sm">This action cannot be undone</p>
+                                <h3 className="text-lg font-semibold text-admin-text">
+                                    Delete Banner
+                                </h3>
+                                <p className="text-admin-text-secondary text-sm">
+                                    This action cannot be undone
+                                </p>
                             </div>
                         </div>
-                        
+
                         <div className="mb-6">
                             <p className="text-admin-text">
-                                Are you sure you want to delete the banner <strong>{deleteModal.bannerTitle}</strong>?
+                                Are you sure you want to delete the banner{" "}
+                                <strong>{deleteModal.bannerTitle}</strong>?
                             </p>
                             <p className="text-admin-text-secondary text-sm mt-2">
-                                This will permanently remove the banner from your website.
+                                This will permanently remove the banner from
+                                your website.
                             </p>
                         </div>
 

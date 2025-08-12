@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiUpload, FiX, FiCalendar, FiExternalLink, FiEye } from "react-icons/fi";
+import {
+    FiArrowLeft,
+    FiUpload,
+    FiX,
+    FiCalendar,
+    FiExternalLink,
+    FiEye,
+} from "react-icons/fi";
 import { createBanner, updateBanner, getBanner } from "../../api/banners.api";
 import { getCategories } from "../../api/categories.api";
 
@@ -20,7 +27,7 @@ const AddEditBanner = () => {
         startDate: "",
         endDate: "",
         status: "inactive",
-        order: 0
+        order: 0,
     });
     const [imagePreview, setImagePreview] = useState(null);
     const [errors, setErrors] = useState({});
@@ -44,10 +51,14 @@ const AddEditBanner = () => {
                     material: banner.material || "",
                     link: banner.link || "",
                     isActive: banner.isActive ?? true,
-                    startDate: banner.startDate ? new Date(banner.startDate).toISOString().split('T')[0] : "",
-                    endDate: banner.endDate ? new Date(banner.endDate).toISOString().split('T')[0] : "",
+                    startDate: banner.startDate
+                        ? new Date(banner.startDate).toISOString().split("T")[0]
+                        : "",
+                    endDate: banner.endDate
+                        ? new Date(banner.endDate).toISOString().split("T")[0]
+                        : "",
                     status: banner.status || "inactive",
-                    order: banner.order || 0
+                    order: banner.order || 0,
                 });
                 setImagePreview(banner.image);
             } else {
@@ -75,16 +86,16 @@ const AddEditBanner = () => {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value
+            [name]: type === "checkbox" ? checked : value,
         }));
-        
+
         // Clear error for this field
         if (errors[name]) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                [name]: ""
+                [name]: "",
             }));
         }
     };
@@ -92,35 +103,35 @@ const AddEditBanner = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                image: file
+                image: file,
             }));
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onload = () => {
                 setImagePreview(reader.result);
             };
             reader.readAsDataURL(file);
-            
+
             // Clear error
             if (errors.image) {
-                setErrors(prev => ({
+                setErrors((prev) => ({
                     ...prev,
-                    image: ""
+                    image: "",
                 }));
             }
         }
     };
 
     const removeImage = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            image: null
+            image: null,
         }));
         setImagePreview(null);
-        
+
         // Reset file input
         const fileInput = document.getElementById("image-upload");
         if (fileInput) fileInput.value = "";
@@ -128,33 +139,33 @@ const AddEditBanner = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        
+
         if (!formData.title.trim()) {
             newErrors.title = "Title is required";
         }
-        
+
         if (!isEditing && !formData.image) {
             newErrors.image = "Banner image is required";
         }
-        
+
         if (formData.startDate && formData.endDate) {
             if (new Date(formData.startDate) >= new Date(formData.endDate)) {
                 newErrors.endDate = "End date must be after start date";
             }
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateForm()) return;
-        
+
         try {
             setLoading(true);
-            
+
             // Create FormData for file upload
             const submitData = new FormData();
             submitData.append("title", formData.title);
@@ -165,15 +176,15 @@ const AddEditBanner = () => {
             submitData.append("endDate", formData.endDate);
             submitData.append("status", formData.status);
             submitData.append("order", formData.order);
-            
+
             if (formData.image) {
                 submitData.append("image", formData.image);
             }
-            
-            const response = isEditing 
+
+            const response = isEditing
                 ? await updateBanner(id, submitData)
                 : await createBanner(submitData);
-                
+
             if (response.success) {
                 navigate("/banners");
             } else {
@@ -209,7 +220,9 @@ const AddEditBanner = () => {
                         {isEditing ? "Edit Banner" : "Add New Banner"}
                     </h1>
                     <p className="text-admin-text-secondary">
-                        {isEditing ? "Update banner details" : "Create a new banner for your website"}
+                        {isEditing
+                            ? "Update banner details"
+                            : "Create a new banner for your website"}
                     </p>
                 </div>
             </div>
@@ -241,14 +254,23 @@ const AddEditBanner = () => {
                                     </button>
                                 </div>
                             ) : (
-                                <div 
+                                <div
                                     className="w-full h-48 border-2 border-dashed border-admin-border rounded-lg flex items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
-                                    onClick={() => document.getElementById("image-upload").click()}
+                                    onClick={() =>
+                                        document
+                                            .getElementById("image-upload")
+                                            .click()
+                                    }
                                 >
                                     <div className="text-center">
                                         <FiUpload className="w-12 h-12 text-admin-text-muted mx-auto mb-3" />
-                                        <p className="text-admin-text-muted text-lg font-medium">Click to upload banner image</p>
-                                        <p className="text-admin-text-muted text-sm mt-1">Banners will be displayed at full width</p>
+                                        <p className="text-admin-text-muted text-lg font-medium">
+                                            Click to upload banner image
+                                        </p>
+                                        <p className="text-admin-text-muted text-sm mt-1">
+                                            Banners will be displayed at full
+                                            width
+                                        </p>
                                     </div>
                                 </div>
                             )}
@@ -260,7 +282,9 @@ const AddEditBanner = () => {
                                 className="hidden"
                             />
                             {errors.image && (
-                                <p className="text-red-500 text-sm">{errors.image}</p>
+                                <p className="text-red-500 text-sm">
+                                    {errors.image}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -268,7 +292,10 @@ const AddEditBanner = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Title */}
                         <div>
-                            <label htmlFor="title" className="block text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="title"
+                                className="block text-sm font-medium text-admin-text mb-2"
+                            >
                                 Banner Title *
                             </label>
                             <input
@@ -281,13 +308,18 @@ const AddEditBanner = () => {
                                 placeholder="Enter banner title"
                             />
                             {errors.title && (
-                                <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                                <p className="text-red-500 text-sm mt-1">
+                                    {errors.title}
+                                </p>
                             )}
                         </div>
 
                         {/* Material */}
                         <div>
-                            <label htmlFor="material" className="block text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="material"
+                                className="block text-sm font-medium text-admin-text mb-2"
+                            >
                                 Category
                             </label>
                             <select
@@ -299,7 +331,10 @@ const AddEditBanner = () => {
                             >
                                 <option value="">Select a category</option>
                                 {categories.map((category) => (
-                                    <option key={category._id} value={category.name}>
+                                    <option
+                                        key={category._id}
+                                        value={category.name}
+                                    >
                                         {category.name}
                                     </option>
                                 ))}
@@ -308,7 +343,10 @@ const AddEditBanner = () => {
 
                         {/* Link */}
                         <div>
-                            <label htmlFor="link" className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="link"
+                                className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2"
+                            >
                                 <FiExternalLink className="w-4 h-4" />
                                 Link (URL or Path)
                             </label>
@@ -325,7 +363,10 @@ const AddEditBanner = () => {
 
                         {/* Order */}
                         <div>
-                            <label htmlFor="order" className="block text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="order"
+                                className="block text-sm font-medium text-admin-text mb-2"
+                            >
                                 Display Order
                             </label>
                             <input
@@ -342,7 +383,10 @@ const AddEditBanner = () => {
 
                         {/* Start Date */}
                         <div>
-                            <label htmlFor="startDate" className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="startDate"
+                                className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2"
+                            >
                                 <FiCalendar className="w-4 h-4" />
                                 Start Date
                             </label>
@@ -358,7 +402,10 @@ const AddEditBanner = () => {
 
                         {/* End Date */}
                         <div>
-                            <label htmlFor="endDate" className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="endDate"
+                                className="flex items-center gap-2 text-sm font-medium text-admin-text mb-2"
+                            >
                                 <FiCalendar className="w-4 h-4" />
                                 End Date
                             </label>
@@ -371,13 +418,18 @@ const AddEditBanner = () => {
                                 className="w-full p-3 border border-admin-border rounded-lg focus:ring-2 focus:ring-admin-primary focus:border-transparent"
                             />
                             {errors.endDate && (
-                                <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                                <p className="text-red-500 text-sm mt-1">
+                                    {errors.endDate}
+                                </p>
                             )}
                         </div>
 
                         {/* Status */}
                         <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-admin-text mb-2">
+                            <label
+                                htmlFor="status"
+                                className="block text-sm font-medium text-admin-text mb-2"
+                            >
                                 Status
                             </label>
                             <select
@@ -405,7 +457,9 @@ const AddEditBanner = () => {
                                 />
                                 <div className="flex items-center gap-2">
                                     <FiEye className="w-4 h-4 text-admin-text-secondary" />
-                                    <span className="text-sm font-medium text-admin-text">Visible on website</span>
+                                    <span className="text-sm font-medium text-admin-text">
+                                        Visible on website
+                                    </span>
                                 </div>
                             </label>
                         </div>
@@ -425,7 +479,11 @@ const AddEditBanner = () => {
                             disabled={loading}
                             className="px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? "Saving..." : (isEditing ? "Update Banner" : "Create Banner")}
+                            {loading
+                                ? "Saving..."
+                                : isEditing
+                                ? "Update Banner"
+                                : "Create Banner"}
                         </button>
                     </div>
                 </form>
