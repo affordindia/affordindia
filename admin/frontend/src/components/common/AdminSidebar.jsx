@@ -122,7 +122,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                     </nav>
 
                     {/* Footer */}
-                    <div className="p-4 border-t border-admin-border">
+                    {/* <div className="p-4 border-t border-admin-border">
                         <div className="bg-gradient-to-r from-admin-primary to-admin-primary-light rounded-lg p-4 text-white">
                             <h3 className="text-sm font-semibold mb-2">
                                 Need Help?
@@ -134,7 +134,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                                 Get Help
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </aside>
         </>

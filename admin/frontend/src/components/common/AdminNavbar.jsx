@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-    FaUser,
-    FaSignOutAlt,
-    FaBell,
-    FaSearch,
-    FaBars,
-    FaTimes,
-} from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext.jsx";
 import NavLogo from "../../assets/NavLogo.png";
 
@@ -25,9 +18,9 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
     return (
         <nav className="bg-admin-navbar border-b border-admin-border fixed w-full top-0 z-50">
             <div className="px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    {/* Left side */}
-                    <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between h-16">
+                    {/* Left side - Logo and Hamburger */}
+                    <div className="flex items-center space-x-3">
                         {/* Mobile hamburger button - only visible on mobile */}
                         <button
                             onClick={toggleSidebar}
@@ -40,33 +33,25 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                                 <FaBars className="w-5 h-5" />
                             )}
                         </button>
-
-                        <div className="flex items-center space-x-3">
-                            <img
-                                src={NavLogo}
-                                alt="AffordIndia Logo"
-                                className="h-8 w-auto"
-                            />
-                            <span className="text-xl font-semibold text-admin-text font-montserrat">
-                                The <i>I-AM-THE-BOSS</i> Panel
-                            </span>
-                        </div>
+                        <img
+                            src={NavLogo}
+                            alt="AffordIndia Logo"
+                            className="h-10 w-auto"
+                        />
                     </div>
-
-                    {/* Center - Search */}
-                    <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
-                        <div className="relative w-full">
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="w-full pl-10 pr-4 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent bg-admin-card text-admin-text placeholder:text-admin-text-muted"
-                            />
-                            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        </div>
+                    {/* Center - Title */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                        <span className="text-xl font-semibold text-admin-text font-montserrat">
+                            The{" "}
+                            <span className="italic font-bold text-2xl">
+                                I-AM-THE-BOSS
+                            </span>{" "}
+                            Panel
+                        </span>
                     </div>
 
                     {/* Right side */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-6">
                         {/* Notifications */}
                         <div className="relative">
                             <button
