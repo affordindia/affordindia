@@ -16,6 +16,8 @@ import Coupons from "./pages/Coupons/Coupons.jsx";
 import AddEditCoupon from "./pages/Coupons/AddEditCoupon.jsx";
 import Categories from "./pages/Categories/Categories.jsx";
 import AddEditCategory from "./pages/Categories/AddEditCategory.jsx";
+import Banners from "./pages/Banners/Banners.jsx";
+import AddEditBanner from "./pages/Banners/AddEditBanner.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -195,6 +197,30 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <AddEditCategory />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/banners"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Banners />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/banners/add"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AddEditBanner />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/banners/edit/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AddEditBanner />
                                         </ProtectedRoute>
                                     }
                                 />

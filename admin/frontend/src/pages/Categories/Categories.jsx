@@ -21,7 +21,7 @@ const Categories = () => {
             setLoading(true);
             const response = await getCategories();
             if (response.success) {
-                setCategories(response.data.categories || []);
+                setCategories(response.data || []);
             } else {
                 console.error("Error fetching categories:", response.error);
             }

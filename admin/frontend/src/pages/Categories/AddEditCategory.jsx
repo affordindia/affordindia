@@ -33,7 +33,7 @@ const AddEditCategory = () => {
             setLoading(true);
             const response = await getCategory(id);
             if (response.success) {
-                const category = response.data.category || response.data;
+                const category = response.data;
                 setFormData({
                     name: category.name || "",
                     description: category.description || "",

@@ -44,9 +44,9 @@ const AddEditCoupon = () => {
             if (response.success) {
                 console.log(
                     "AddEditCoupon - Categories data:",
-                    response.data.categories
+                    response.data
                 );
-                setCategories(response.data.categories || []);
+                setCategories(response.data || []);
             } else {
                 console.error("Error fetching categories:", response.error);
             }

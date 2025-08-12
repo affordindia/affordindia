@@ -1,16 +1,11 @@
 import api from "./axios.js";
 
-/**
- * Get all categories
- */
 export const getCategories = async () => {
     try {
         const response = await api.get("/categories");
         return {
             success: true,
-            data: {
-                categories: response.data, // Backend returns categories array directly
-            },
+            data: response.data, // Return categories array directly
         };
     } catch (error) {
         return {
@@ -23,9 +18,6 @@ export const getCategories = async () => {
     }
 };
 
-/**
- * Get single category by ID
- */
 export const getCategory = async (id) => {
     try {
         const response = await api.get(`/categories/${id}`);
@@ -44,9 +36,6 @@ export const getCategory = async (id) => {
     }
 };
 
-/**
- * Create new category
- */
 export const createCategory = async (categoryData) => {
     try {
         const response = await api.post("/categories", categoryData);
@@ -65,9 +54,6 @@ export const createCategory = async (categoryData) => {
     }
 };
 
-/**
- * Update category
- */
 export const updateCategory = async (id, categoryData) => {
     try {
         const response = await api.put(`/categories/${id}`, categoryData);
@@ -86,9 +72,6 @@ export const updateCategory = async (id, categoryData) => {
     }
 };
 
-/**
- * Delete category
- */
 export const deleteCategory = async (id) => {
     try {
         await api.delete(`/categories/${id}`);

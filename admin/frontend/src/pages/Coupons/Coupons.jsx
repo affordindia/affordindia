@@ -66,7 +66,7 @@ const Coupons = () => {
             const response = await getCategories();
             console.log("Categories API response:", response);
             if (response.success) {
-                const categories = response.data.categories || response.data;
+                const categories = response.data;
                 console.log("Categories data:", categories);
                 setCategories(Array.isArray(categories) ? categories : []);
             } else {
