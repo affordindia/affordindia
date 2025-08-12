@@ -51,7 +51,7 @@ const App = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-admin-bg flex items-center justify-center">
-                <Loader />
+                <Loader fullScreen={true} />
             </div>
         );
     }

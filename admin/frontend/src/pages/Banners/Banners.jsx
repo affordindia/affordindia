@@ -10,6 +10,7 @@ import {
     FiEye,
 } from "react-icons/fi";
 import { getBanners, deleteBanner } from "../../api/banners.api";
+import Loader from "../../components/common/Loader.jsx";
 
 const Banners = () => {
     const [banners, setBanners] = useState([]);
@@ -93,11 +94,7 @@ const Banners = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary"></div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     return (

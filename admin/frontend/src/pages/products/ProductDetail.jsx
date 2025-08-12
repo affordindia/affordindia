@@ -78,11 +78,7 @@ const ProductDetail = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-96">
-                <Loader size="large" text="Loading product..." />
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error) {

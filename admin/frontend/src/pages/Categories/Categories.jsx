@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiPlus, FiEdit, FiTrash2, FiImage } from "react-icons/fi";
 import { getCategories, deleteCategory } from "../../api/categories.api";
+import Loader from "../../components/common/Loader.jsx";
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
@@ -63,11 +64,7 @@ const Categories = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary"></div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     return (

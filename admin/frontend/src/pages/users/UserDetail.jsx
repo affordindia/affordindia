@@ -114,7 +114,7 @@ const UserDetail = () => {
     };
 
     if (loading) {
-        return <Loader />;
+        return <Loader fullScreen={true} />;
     }
 
     if (error || !user) {

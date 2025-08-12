@@ -200,11 +200,7 @@ const OrderDetail = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-96">
-                <Loader size="large" text="Loading order details..." />
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error || !order) {

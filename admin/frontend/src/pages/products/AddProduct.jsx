@@ -149,11 +149,7 @@ const AddProduct = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-96">
-                <Loader size="large" text="Loading..." />
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     return (

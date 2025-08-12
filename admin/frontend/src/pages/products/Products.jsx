@@ -195,11 +195,7 @@ const Products = () => {
     const totalPages = Math.ceil(totalProducts / productsPerPage);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-96">
-                <Loader size="large" text="Loading products..." />
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     if (error) {

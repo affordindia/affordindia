@@ -18,6 +18,7 @@ import {
     FiDollarSign,
     FiTag,
 } from "react-icons/fi";
+import Loader from "../../components/common/Loader.jsx";
 
 const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
@@ -389,9 +390,7 @@ const Coupons = () => {
 
             {/* Content */}
             {loading ? (
-                <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary"></div>
-                </div>
+                <Loader fullScreen={true} />
             ) : (
                 <>
                     {coupons.length === 0 ? (

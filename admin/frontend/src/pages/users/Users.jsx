@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaFilter } from "react-icons/fa";
 import { getUsers } from "../../api/users.api.js";
+import Loader from "../../components/common/Loader.jsx";
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -213,13 +214,7 @@ const Users = () => {
     const totalPages = Math.ceil(totalUsers / usersPerPage);
 
     if (loading && currentPage === 1) {
-        return (
-            <div className="space-y-6">
-                <div className="flex justify-center items-center py-12">
-                    <div className="text-admin-text-secondary">Loading users...</div>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     return (
