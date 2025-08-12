@@ -10,40 +10,48 @@ export const getAllUsersService = async (filter = {}, options = {}) => {
         .skip(options.skip !== undefined ? options.skip : 0)
         .limit(options.limit !== undefined ? options.limit : 50)
         .select("-password");
-    
+
     // Calculate order statistics for each user
     const usersWithStats = await Promise.all(
         users.map(async (user) => {
             try {
                 const userId = user._id;
-                
+
                 const [orderCount, totalSpentResult] = await Promise.all([
-                    Order.countDocuments({ user: userId, paymentStatus: "paid" }),
+                    Order.countDocuments({
+                        user: userId,
+                        paymentStatus: "paid",
+                    }),
                     Order.aggregate([
                         { $match: { user: userId } },
-                        { 
-                            $group: { 
-                                _id: null, 
+                        {
+                            $group: {
+                                _id: null,
                                 totalAllOrders: { $sum: "$total" },
-                                totalPaidOrders: { 
+                                totalPaidOrders: {
                                     $sum: {
                                         $cond: [
                                             { $eq: ["$paymentStatus", "paid"] },
                                             "$total",
-                                            0
-                                        ]
-                                    }
+                                            0,
+                                        ],
+                                    },
                                 },
-                                totalPendingOrders: { 
+                                totalPendingOrders: {
                                     $sum: {
                                         $cond: [
-                                            { $eq: ["$paymentStatus", "pending"] },
+                                            {
+                                                $eq: [
+                                                    "$paymentStatus",
+                                                    "pending",
+                                                ],
+                                            },
                                             "$total",
-                                            0
-                                        ]
-                                    }
-                                }
-                            } 
+                                            0,
+                                        ],
+                                    },
+                                },
+                            },
                         },
                     ]),
                 ]);
@@ -58,7 +66,10 @@ export const getAllUsersService = async (filter = {}, options = {}) => {
                     totalSpent: totalSpent,
                 };
             } catch (error) {
-                console.error(`Error calculating stats for user ${user._id}:`, error);
+                console.error(
+                    `Error calculating stats for user ${user._id}:`,
+                    error
+                );
                 return {
                     ...user.toObject(),
                     orderCount: 0,
@@ -67,7 +78,7 @@ export const getAllUsersService = async (filter = {}, options = {}) => {
             }
         })
     );
-    
+
     return usersWithStats;
 };
 
@@ -89,20 +100,20 @@ export const getUserByIdService = async (userId) => {
             Order.countDocuments({ user: userId, paymentStatus: "paid" }),
             Order.aggregate([
                 { $match: { user: userObjId } },
-                { 
-                    $group: { 
-                        _id: null, 
+                {
+                    $group: {
+                        _id: null,
                         totalAllOrders: { $sum: "$total" },
-                        totalPaidOrders: { 
+                        totalPaidOrders: {
                             $sum: {
                                 $cond: [
                                     { $eq: ["$paymentStatus", "paid"] },
                                     "$total",
-                                    0
-                                ]
-                            }
-                        }
-                    } 
+                                    0,
+                                ],
+                            },
+                        },
+                    },
                 },
             ]),
             Review.countDocuments({ user: userId }),

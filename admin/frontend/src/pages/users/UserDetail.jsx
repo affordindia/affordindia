@@ -14,7 +14,12 @@ import {
     FaUserTimes,
     FaEye,
 } from "react-icons/fa";
-import { getUserById, deleteUser, blockUser, unblockUser } from "../../api/users.api.js";
+import {
+    getUserById,
+    deleteUser,
+    blockUser,
+    unblockUser,
+} from "../../api/users.api.js";
 import Loader from "../../components/common/Loader.jsx";
 
 const UserDetail = () => {
@@ -35,7 +40,7 @@ const UserDetail = () => {
         setError(null);
         try {
             const response = await getUserById(id);
-            
+
             // Handle different response formats
             if (response.success) {
                 // Use backend stats if available
@@ -43,10 +48,16 @@ const UserDetail = () => {
                     ...response.user,
                     isActive: !response.user.isBlocked,
                     // Use backend calculated stats if available
-                    totalOrders: response.user.stats?.orderCount || response.user.orderCount || 0,
-                    totalSpent: response.user.stats?.totalSpent || response.user.totalSpent || 0,
+                    totalOrders:
+                        response.user.stats?.orderCount ||
+                        response.user.orderCount ||
+                        0,
+                    totalSpent:
+                        response.user.stats?.totalSpent ||
+                        response.user.totalSpent ||
+                        0,
                     reviewCount: response.user.stats?.reviewCount || 0,
-                    recentOrders: response.user.recentOrders || []
+                    recentOrders: response.user.recentOrders || [],
                 };
                 setUser(userWithStats);
             } else if (response.user) {
@@ -83,8 +94,8 @@ const UserDetail = () => {
         setActionLoading(true);
         try {
             await deleteUser(id);
-            navigate("/users", { 
-                state: { message: "User deleted successfully" } 
+            navigate("/users", {
+                state: { message: "User deleted successfully" },
             });
         } catch (err) {
             console.error("Error deleting user:", err);
@@ -287,7 +298,8 @@ const UserDetail = () => {
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <p className="font-medium text-admin-text">
-                                                        {address.type || "Address"}
+                                                        {address.type ||
+                                                            "Address"}
                                                     </p>
                                                     {address.isDefault && (
                                                         <span className="px-2 py-1 bg-admin-primary text-white text-xs rounded">
@@ -296,8 +308,10 @@ const UserDetail = () => {
                                                     )}
                                                 </div>
                                                 <p className="text-admin-text-secondary text-sm">
-                                                    {address.street}, {address.city},{" "}
-                                                    {address.state} - {address.zipCode}
+                                                    {address.street},{" "}
+                                                    {address.city},{" "}
+                                                    {address.state} -{" "}
+                                                    {address.zipCode}
                                                 </p>
                                                 {address.country && (
                                                     <p className="text-admin-text-secondary text-sm">
@@ -312,7 +326,9 @@ const UserDetail = () => {
                         ) : (
                             <div className="text-center py-8">
                                 <FaMapMarkerAlt className="mx-auto text-4xl text-admin-text-secondary mb-4" />
-                                <p className="text-admin-text-secondary">No saved addresses</p>
+                                <p className="text-admin-text-secondary">
+                                    No saved addresses
+                                </p>
                             </div>
                         )}
                     </div>
@@ -324,7 +340,9 @@ const UserDetail = () => {
                                 Recent Orders
                             </h3>
                             <button
-                                onClick={() => navigate(`/orders?userId=${user._id}`)}
+                                onClick={() =>
+                                    navigate(`/orders?userId=${user._id}`)
+                                }
                                 className="text-admin-primary hover:text-admin-primary-dark transition-colors text-sm flex items-center"
                             >
                                 <FaEye className="mr-1" />
@@ -348,7 +366,9 @@ const UserDetail = () => {
                                         </div>
                                         <div className="text-right">
                                             <p className="font-medium text-admin-text">
-                                                {formatCurrency(order.total || 0)}
+                                                {formatCurrency(
+                                                    order.total || 0
+                                                )}
                                             </p>
                                             <p className="text-sm text-admin-text-secondary capitalize">
                                                 {order.status}
@@ -360,7 +380,9 @@ const UserDetail = () => {
                         ) : (
                             <div className="text-center py-8">
                                 <FaShoppingCart className="mx-auto text-4xl text-admin-text-secondary mb-4" />
-                                <p className="text-admin-text-secondary">No orders</p>
+                                <p className="text-admin-text-secondary">
+                                    No orders
+                                </p>
                             </div>
                         )}
                     </div>
@@ -406,7 +428,8 @@ const UserDetail = () => {
                                 <span className="font-semibold text-admin-text">
                                     {formatCurrency(
                                         user.totalOrders > 0
-                                            ? (user.totalSpent || 0) / user.totalOrders
+                                            ? (user.totalSpent || 0) /
+                                                  user.totalOrders
                                             : 0
                                     )}
                                 </span>
@@ -458,7 +481,9 @@ const UserDetail = () => {
                         </h3>
                         <div className="space-y-3">
                             <button
-                                onClick={() => navigate(`/orders?userId=${user._id}`)}
+                                onClick={() =>
+                                    navigate(`/orders?userId=${user._id}`)
+                                }
                                 className="w-full flex items-center justify-center px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors"
                             >
                                 <FaEye className="mr-2" />
@@ -473,8 +498,9 @@ const UserDetail = () => {
                             Danger Zone
                         </h3>
                         <p className="text-sm text-admin-text-secondary mb-4">
-                            User deletion is permanent and cannot be undone. This will remove
-                            all user data including order history.
+                            User deletion is permanent and cannot be undone.
+                            This will remove all user data including order
+                            history.
                         </p>
                         {!showDeleteConfirm ? (
                             <button
@@ -495,10 +521,14 @@ const UserDetail = () => {
                                         disabled={actionLoading}
                                         className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
                                     >
-                                        {actionLoading ? "Deleting..." : "Yes, Delete"}
+                                        {actionLoading
+                                            ? "Deleting..."
+                                            : "Yes, Delete"}
                                     </button>
                                     <button
-                                        onClick={() => setShowDeleteConfirm(false)}
+                                        onClick={() =>
+                                            setShowDeleteConfirm(false)
+                                        }
                                         className="flex-1 px-3 py-2 bg-admin-secondary text-admin-text rounded-lg hover:bg-admin-secondary-dark transition-colors text-sm"
                                     >
                                         Cancel

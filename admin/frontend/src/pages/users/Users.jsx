@@ -48,11 +48,11 @@ const Users = () => {
 
     // Client-side filtering function
     const applyClientSideFilters = (users) => {
-        return users.filter(user => {
+        return users.filter((user) => {
             // Search filter
             if (searchTerm) {
                 const searchLower = searchTerm.toLowerCase();
-                const matchesSearch = 
+                const matchesSearch =
                     user.name?.toLowerCase().includes(searchLower) ||
                     user.email?.toLowerCase().includes(searchLower) ||
                     user.phone?.toLowerCase().includes(searchLower) ||
@@ -76,13 +76,15 @@ const Users = () => {
             // Minimum Orders filter
             if (appliedFilters.minOrders !== "") {
                 const minOrders = parseInt(appliedFilters.minOrders);
-                if (isNaN(minOrders) || user.totalOrders < minOrders) return false;
+                if (isNaN(minOrders) || user.totalOrders < minOrders)
+                    return false;
             }
 
             // Minimum Spent filter
             if (appliedFilters.minSpent !== "") {
                 const minSpent = parseFloat(appliedFilters.minSpent);
-                if (isNaN(minSpent) || (user.totalSpent || 0) < minSpent) return false;
+                if (isNaN(minSpent) || (user.totalSpent || 0) < minSpent)
+                    return false;
             }
 
             // Date Joined filter
@@ -91,24 +93,34 @@ const Users = () => {
                 const now = new Date();
                 const range = appliedFilters.dateJoined;
                 let matches = false;
-                
+
                 if (range === "7") {
-                    const daysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    const daysAgo = new Date(
+                        now.getTime() - 7 * 24 * 60 * 60 * 1000
+                    );
                     matches = joinedDate >= daysAgo;
                 } else if (range === "30") {
-                    const daysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    const daysAgo = new Date(
+                        now.getTime() - 30 * 24 * 60 * 60 * 1000
+                    );
                     matches = joinedDate >= daysAgo;
                 } else if (range === "90") {
-                    const daysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    const daysAgo = new Date(
+                        now.getTime() - 90 * 24 * 60 * 60 * 1000
+                    );
                     matches = joinedDate >= daysAgo;
                 } else if (range === "180") {
-                    const daysAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    const daysAgo = new Date(
+                        now.getTime() - 180 * 24 * 60 * 60 * 1000
+                    );
                     matches = joinedDate >= daysAgo;
                 } else if (range === "365") {
-                    const daysAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    const daysAgo = new Date(
+                        now.getTime() - 365 * 24 * 60 * 60 * 1000
+                    );
                     matches = joinedDate >= daysAgo;
                 }
-                
+
                 if (!matches) return false;
             }
 
@@ -123,23 +135,23 @@ const Users = () => {
             // For now, fetch all users without backend filtering
             // We'll do client-side filtering for the advanced options
             const response = await getUsers({});
-            
+
             // Handle response format
             if (response && response.success && response.users) {
                 // Transform users data to match expected format
-                let transformedUsers = response.users.map(user => ({
+                let transformedUsers = response.users.map((user) => ({
                     ...user,
                     // Use backend calculated fields
                     totalOrders: user.orderCount || 0,
-                    totalSpent: user.totalSpent || 0
+                    totalSpent: user.totalSpent || 0,
                 }));
-                
+
                 // Apply client-side filters
                 const filteredUsers = applyClientSideFilters(transformedUsers);
-                
+
                 setAllUsers(filteredUsers); // Store filtered users
                 setTotalUsers(filteredUsers.length);
-                
+
                 // Apply client-side pagination
                 const startIndex = (currentPage - 1) * usersPerPage;
                 const endIndex = startIndex + usersPerPage;
@@ -164,7 +176,8 @@ const Users = () => {
     };
 
     const getActiveFiltersCount = () => {
-        return Object.values(appliedFilters).filter(value => value !== "").length;
+        return Object.values(appliedFilters).filter((value) => value !== "")
+            .length;
     };
 
     const clearAllFilters = () => {
@@ -243,7 +256,9 @@ const Users = () => {
                                 placeholder="Search users..."
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                                onKeyPress={(e) =>
+                                    e.key === "Enter" && handleSearch()
+                                }
                                 className="w-full pl-10 pr-4 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
                             />
                         </div>
@@ -257,7 +272,9 @@ const Users = () => {
 
                     {/* Filters Toggle */}
                     <button
-                        onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                        onClick={() =>
+                            setShowAdvancedFilters(!showAdvancedFilters)
+                        }
                         className={`px-4 py-2 border border-admin-border rounded-lg transition-colors whitespace-nowrap ${
                             showAdvancedFilters
                                 ? "bg-admin-primary text-white"
@@ -280,7 +297,12 @@ const Users = () => {
                                 </label>
                                 <select
                                     value={filters.isBlocked}
-                                    onChange={(e) => handleFilterChange("isBlocked", e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            "isBlocked",
+                                            e.target.value
+                                        )
+                                    }
                                     className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent text-sm"
                                 >
                                     <option value="">All Status</option>
@@ -296,7 +318,12 @@ const Users = () => {
                                 </label>
                                 <select
                                     value={filters.hasOrders}
-                                    onChange={(e) => handleFilterChange("hasOrders", e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            "hasOrders",
+                                            e.target.value
+                                        )
+                                    }
                                     className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent text-sm"
                                 >
                                     <option value="">All Users</option>
@@ -315,7 +342,12 @@ const Users = () => {
                                     min="0"
                                     placeholder="Enter minimum orders"
                                     value={filters.minOrders}
-                                    onChange={(e) => handleFilterChange("minOrders", e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            "minOrders",
+                                            e.target.value
+                                        )
+                                    }
                                     className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent text-sm"
                                 />
                             </div>
@@ -331,7 +363,12 @@ const Users = () => {
                                     step="0.01"
                                     placeholder="Enter minimum amount"
                                     value={filters.minSpent}
-                                    onChange={(e) => handleFilterChange("minSpent", e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            "minSpent",
+                                            e.target.value
+                                        )
+                                    }
                                     className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent text-sm"
                                 />
                             </div>
@@ -343,7 +380,12 @@ const Users = () => {
                                 </label>
                                 <select
                                     value={filters.dateJoined}
-                                    onChange={(e) => handleFilterChange("dateJoined", e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            "dateJoined",
+                                            e.target.value
+                                        )
+                                    }
                                     className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent text-sm"
                                 >
                                     <option value="">All Time</option>
@@ -355,7 +397,7 @@ const Users = () => {
                                 </select>
                             </div>
                         </div>
-                        
+
                         {/* Apply/Clear Buttons */}
                         <div className="flex gap-3 mt-6 pt-4 border-t border-admin-border">
                             <button
@@ -448,7 +490,9 @@ const Users = () => {
                                     {/* Total Spent */}
                                     <td className="px-6 py-4">
                                         <span className="font-medium text-admin-text">
-                                            {formatCurrency(user.totalSpent || 0)}
+                                            {formatCurrency(
+                                                user.totalSpent || 0
+                                            )}
                                         </span>
                                     </td>
 
@@ -493,8 +537,8 @@ const Users = () => {
                 <div className="mt-6 flex justify-between items-center">
                     <div className="text-sm text-admin-text-secondary">
                         Showing {(currentPage - 1) * usersPerPage + 1} to{" "}
-                        {Math.min(currentPage * usersPerPage, totalUsers)} of {totalUsers}{" "}
-                        users
+                        {Math.min(currentPage * usersPerPage, totalUsers)} of{" "}
+                        {totalUsers} users
                     </div>
                     <div className="flex space-x-1">
                         <button
@@ -509,7 +553,8 @@ const Users = () => {
                             if (
                                 page === 1 ||
                                 page === totalPages ||
-                                (page >= currentPage - 2 && page <= currentPage + 2)
+                                (page >= currentPage - 2 &&
+                                    page <= currentPage + 2)
                             ) {
                                 return (
                                     <button
