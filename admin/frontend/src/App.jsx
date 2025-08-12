@@ -18,6 +18,8 @@ import Categories from "./pages/Categories/Categories.jsx";
 import AddEditCategory from "./pages/Categories/AddEditCategory.jsx";
 import Banners from "./pages/Banners/Banners.jsx";
 import AddEditBanner from "./pages/Banners/AddEditBanner.jsx";
+import Users from "./pages/users/Users.jsx";
+import UserDetail from "./pages/users/UserDetail.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -221,6 +223,22 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <AddEditBanner />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/users"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Users />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/users/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <UserDetail />
                                         </ProtectedRoute>
                                     }
                                 />
