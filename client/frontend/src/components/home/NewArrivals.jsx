@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getNewProducts } from "../../api/product.js";
 import ProductCard from "../common/ProductCard.jsx";
 import { Link } from "react-router-dom";
-import Loader from "../common/Loader.jsx"; // ✅ Import your loader
+import Loader from "../common/Loader.jsx"; // ✅ Loader import
 
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ Loading state
+  const [loading, setLoading] = useState(true); // ✅ Loader state
 
   useEffect(() => {
     setLoading(true);
@@ -15,13 +15,18 @@ const NewArrivals = () => {
         setProducts(data.products || data);
       })
       .catch(() => setProducts([]))
-      .finally(() => setLoading(false)); // ✅ End loading after fetch
+      .finally(() => setLoading(false)); // ✅ Stop loader
   }, []);
 
   const mobileProducts = products.slice(0, 4);
 
+  // ✅ Loader while data is fetching
   if (loading) {
-    return <Loader fullScreen={false} size="large" />; // ✅ Loader while fetching
+    return (
+      <div className="py-8">
+        <Loader fullScreen={false} size="large" />
+      </div>
+    );
   }
 
   return (
