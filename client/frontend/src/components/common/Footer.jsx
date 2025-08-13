@@ -36,23 +36,13 @@ const Footer = () => {
           <h4 className="font-semibold mb-3">INFO</h4>
           <ul className="space-y-1">
             <li>
-              <Link to="/terms" onClick={scrollToTop} className="hover:underline">
-                Terms & Conditions
+              <Link to="/exchange" onClick={scrollToTop} className="hover:underline">
+                Exchanges Policy
               </Link>
             </li>
-            <li>
-              <Link to="/privacy" onClick={scrollToTop} className="hover:underline">
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
+             <li>
               <Link to="/returnpolicy" onClick={scrollToTop} className="hover:underline">
-                Returns & Refunds Policy
-              </Link>
-            </li>
-            <li>
-              <Link to="/shipping" onClick={scrollToTop} className="hover:underline">
-                Shipping Policy
+                Returns Policy
               </Link>
             </li>
             <li>
@@ -60,6 +50,28 @@ const Footer = () => {
                 Cancellation Policy
               </Link>
             </li>
+            <li>
+              <Link to="/ordering" onClick={scrollToTop} className="hover:underline">
+                Ordering & Product Information
+              </Link>
+            </li>
+            <li>
+              <Link to="/shipping" onClick={scrollToTop} className="hover:underline">
+                Shipping & Delivery Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/payment" onClick={scrollToTop} className="hover:underline">
+                Payments Policy
+              </Link>
+            </li>
+           
+            <li>
+              <Link to="/productcare" onClick={scrollToTop} className="hover:underline">
+                Product Care
+              </Link>
+            </li>
+            
             <li>
               <Link to="/faqs" onClick={scrollToTop} className="hover:underline">
                 FAQs

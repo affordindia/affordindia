@@ -3,71 +3,43 @@ import React from 'react';
 const ReturnPolicy = () => {
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 text-[#1F1F1F]">
-      {/* Title Section */}
+      {/* Page Title */}
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold border-b-4 border-[#B76E79] inline-block pb-1">
-          Return & Refund Policy
+          Return Policy – Afford India
         </h1>
       </div>
 
-      {/* Policy Card Container */}
+      {/* Content Card */}
       <div className="bg-white shadow-md rounded-xl border border-gray-200">
         <div className="divide-y divide-gray-200">
-          {/* 1 */}
+
+          {/* Intro */}
           <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">1. Returns</h2>
             <p className="text-sm leading-relaxed">
-              Our return policy lasts 7 days. If 7 days have gone by since your purchase, unfortunately, we can't offer you a refund or exchange.
-            </p>
-            <p className="text-sm leading-relaxed mt-2">
-              To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging.
+              We understand that sometimes things don’t go as planned, and we’re here to help you with an easy and transparent return process.
             </p>
           </div>
 
-          {/* 2 */}
+          {/* How to Return */}
           <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">2. Non-returnable Items</h2>
+            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">1. How do I return my order?</h2>
+            <ul className="list-decimal list-inside text-sm leading-relaxed space-y-2">
+              <li>Contact us within <strong>3 days</strong> of receiving your product via phone or email.</li>
+              <li>Pack the item securely in its original box along with the invoice, product tags, and any authenticity cards.</li>
+              <li>While packing the product, please record a <strong>clear video</strong> showing the item condition and the complete repacking process. This video must be shared with the Afford India team and is mandatory for return processing.</li>
+              <li>Our logistics partner will coordinate the pickup from your location.</li>
+              <li>Once the item passes our <strong>Quality Check</strong>, we will initiate a refund or replacement, as per your preference.</li>
+            </ul>
+          </div>
+
+          {/* International Orders */}
+          <div className="p-6">
             <p className="text-sm leading-relaxed">
-              Several types of goods are exempt from being returned, such as perishable goods, gift cards, downloadable software products, and personal care items.
+              <strong>Note for International Customers:</strong> Please refer to the “International Orders” section for return eligibility and process.
             </p>
           </div>
 
-          {/* 3 */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">3. Refunds (if applicable)</h2>
-            <p className="text-sm leading-relaxed">
-              Once your return is received and inspected, we will notify you via email. If approved, your refund will be processed, and a credit will automatically be applied to your original method of payment within 7–10 business days.
-            </p>
-          </div>
-
-          {/* 4 */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">4. Late or Missing Refunds</h2>
-            <p className="text-sm leading-relaxed">
-              If you haven’t received a refund yet, first check your bank account. Then contact your credit card company. If you’ve done all of this and still haven’t received your refund, please contact us at{' '}
-              <span className="font-medium text-blue-600">support@example.com</span>.
-            </p>
-          </div>
-
-          {/* 5 */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">5. Exchanges (if applicable)</h2>
-            <p className="text-sm leading-relaxed">
-              We only replace items if they are defective or damaged. If you need to exchange it for the same item, send us an email and ship your item to our warehouse address.
-            </p>
-          </div>
-
-          {/* 6 */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">6. Shipping</h2>
-            <p className="text-sm leading-relaxed">
-              To return your product, you should mail it to: <br />
-              <span className="font-medium">123, Main Street, Your City, Country</span>
-            </p>
-            <p className="text-sm leading-relaxed mt-2">
-              You will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable.
-            </p>
-          </div>
         </div>
       </div>
     </div>
