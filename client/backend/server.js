@@ -28,6 +28,7 @@ app.use(
             "http://localhost:5174",
             "https://client-frontend-chi.vercel.app",
             "https://client-frontend-hw8c.onrender.com",
+            "https://affordindia.vercel.app",
         ],
         credentials: true,
     })
