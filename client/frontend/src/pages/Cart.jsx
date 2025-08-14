@@ -7,11 +7,10 @@ import { Link } from "react-router-dom";
 import { calculateShipping } from "../api/shipping.js";
 
 const Cart = () => {
-    const { cart, updateCartItem, removeFromCart, loading, refreshCart } =
-        useCart();
+    const { cart, updateCartItem, removeFromCart, loading, refreshCart } = useCart();
     const items = cart?.items || [];
 
-    // Shipping state (same as checkout page)
+    // Shipping state
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -19,32 +18,29 @@ const Cart = () => {
         remainingForFreeShipping: 1000,
     });
 
-    // Calculate product-level discounts (same logic as checkout page)
-    const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
-        items.reduce(
-            (acc, { product, quantity }) => {
-                const hasDiscount = product.discount && product.discount > 0;
-                const discountedPrice = hasDiscount
-                    ? Math.round(product.price * (1 - product.discount / 100))
-                    : product.price;
+    // Discounts calculation
+    const { totalProductDiscount, originalSubtotal, discountedSubtotal } = items.reduce(
+        (acc, { product, quantity }) => {
+            const hasDiscount = product.discount && product.discount > 0;
+            const discountedPrice = hasDiscount
+                ? Math.round(product.price * (1 - product.discount / 100))
+                : product.price;
 
-                acc.originalSubtotal += product.price * quantity;
-                acc.discountedSubtotal += discountedPrice * quantity;
-                acc.totalProductDiscount +=
-                    (product.price - discountedPrice) * quantity;
-                return acc;
-            },
-            {
-                totalProductDiscount: 0,
-                originalSubtotal: 0,
-                discountedSubtotal: 0,
-            }
-        );
+            acc.originalSubtotal += product.price * quantity;
+            acc.discountedSubtotal += discountedPrice * quantity;
+            acc.totalProductDiscount += (product.price - discountedPrice) * quantity;
+            return acc;
+        },
+        {
+            totalProductDiscount: 0,
+            originalSubtotal: 0,
+            discountedSubtotal: 0,
+        }
+    );
 
-    // Get coupon discount from backend cart response
     const couponDiscount = cart?.couponDiscount || 0;
 
-    // Calculate shipping using API (same logic as checkout page)
+    // Fetch shipping
     useEffect(() => {
         const fetchShipping = async () => {
             if (discountedSubtotal > 0) {
@@ -53,28 +49,20 @@ const Cart = () => {
                         0,
                         discountedSubtotal - couponDiscount
                     );
-                    const shipping = await calculateShipping(
-                        orderAmountAfterCoupon
-                    );
+                    const shipping = await calculateShipping(orderAmountAfterCoupon);
                     setShippingInfo(shipping);
                 } catch (error) {
                     console.error("Error calculating shipping:", error);
-                    // Keep fallback values in state
                 }
             }
         };
-
         fetchShipping();
     }, [discountedSubtotal, couponDiscount]);
 
-    // Calculate final total (matching checkout logic)
-    const total =
-        discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
+    const total = discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
 
     const handleCartUpdate = async () => {
-        // Refresh cart to get updated totals and coupon calculations
         await refreshCart();
-        // Dispatch event for coupon section to refresh
         window.dispatchEvent(new CustomEvent("cartUpdated"));
     };
 
@@ -94,7 +82,7 @@ const Cart = () => {
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-5">
             <h2 className="text-2xl font-bold mb-2">Your Shopping Cart</h2>
 
-            {/* Header Row */}
+            {/* Header Row (Desktop Only) */}
             <div className="hidden md:flex font-semibold text-gray-700 px-4 w-full">
                 <span className="flex-[2]">Products</span>
                 <span className="flex-1 text-center">Price</span>
@@ -111,22 +99,50 @@ const Cart = () => {
                         className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#F7F4EF] text-[#404040] rounded-md w-full shadow-md"
                     >
                         {/* Product Info */}
-                        <div className="flex items-center gap-4 flex-[2]">
+                        <div className="flex items-start gap-4 flex-[2]">
                             <Link to={`/products/id/${product._id}`}>
                                 <img
-                                    src={
-                                        product.images?.[0] ||
-                                        "/placeholder.png"
-                                    }
+                                    src={product.images?.[0] || "/placeholder.png"}
                                     alt={product.name}
-                                    className="w-20 h-20 object-cover rounded-sm  cursor-pointer hover:opacity-90 transition"
+                                    className="w-20 h-20 object-cover rounded-sm cursor-pointer hover:opacity-90 transition"
                                 />
                             </Link>
-                            <div className="text-sm">{product.name}</div>
+                            <div className="flex flex-col flex-1">
+                                <span className="text-sm font-medium">{product.name}</span>
+
+                                {/* Mobile Price & Subtotal */}
+                                <div className="mt-2 md:hidden text-sm">
+                                    {product.discount && product.discount > 0 ? (
+                                        <>
+                                            <span className="line-through text-gray-400 mr-1 text-xs">
+                                                ₹{product.price}
+                                            </span>
+                                            <span className="font-semibold">
+                                                ₹
+                                                {Math.round(
+                                                    product.price * (1 - product.discount / 100)
+                                                )}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>₹{product.price}</>
+                                    )}
+                                    <div className="text-xs text-gray-500">
+                                        Subtotal:{" "}
+                                        {product.discount && product.discount > 0
+                                            ? `₹${
+                                                  Math.round(
+                                                      product.price * (1 - product.discount / 100)
+                                                  ) * quantity
+                                              }`
+                                            : `₹${product.price * quantity}`}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Price */}
-                        <div className="flex-1 flex md:justify-center items-center">
+                        {/* Price (Desktop Only) */}
+                        <div className="hidden md:flex flex-1 justify-center items-center">
                             <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
@@ -136,8 +152,7 @@ const Cart = () => {
                                         <span>
                                             ₹
                                             {Math.round(
-                                                product.price *
-                                                    (1 - product.discount / 100)
+                                                product.price * (1 - product.discount / 100)
                                             )}
                                         </span>
                                     </>
@@ -151,21 +166,10 @@ const Cart = () => {
                         <div className="flex-1 flex md:justify-center items-center">
                             <div className="flex items-center bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10">
                                 <button
-                                    className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
+                                    className="w-8 h-full text-xl font-medium flex items-center justify-center"
                                     onClick={async () => {
-                                        try {
-                                            await updateCartItem(
-                                                product._id,
-                                                quantity - 1
-                                            );
-                                            await handleCartUpdate();
-                                        } catch (error) {
-                                            // Handle error (e.g., show toast)
-                                            console.error(
-                                                "Failed to update cart:",
-                                                error
-                                            );
-                                        }
+                                        await updateCartItem(product._id, quantity - 1);
+                                        await handleCartUpdate();
                                     }}
                                 >
                                     –
@@ -174,40 +178,37 @@ const Cart = () => {
                                     {quantity}
                                 </div>
                                 <button
-                                    className="w-8 h-full text-xl font-medium flex items-center justify-center cursor-pointer"
+                                    className="w-8 h-full text-xl font-medium flex items-center justify-center"
                                     onClick={async () => {
-                                        try {
-                                            await updateCartItem(
-                                                product._id,
-                                                quantity + 1
-                                            );
-                                            await handleCartUpdate();
-                                        } catch (error) {
-                                            // Handle error (e.g., show toast)
-                                            console.error(
-                                                "Failed to update cart:",
-                                                error
-                                            );
-                                        }
+                                        await updateCartItem(product._id, quantity + 1);
+                                        await handleCartUpdate();
                                     }}
                                 >
                                     +
                                 </button>
                             </div>
+
+                            {/* Delete (Mobile) */}
+                            <button
+                                onClick={async () => {
+                                    await removeFromCart(product._id);
+                                    await handleCartUpdate();
+                                }}
+                                className="md:hidden ml-3 text-[#404040] hover:text-black text-lg"
+                            >
+                                <FaTrash />
+                            </button>
                         </div>
 
-                        {/* Subtotal */}
-                        <div className="flex-1 flex md:justify-center items-center">
+                        {/* Subtotal (Desktop Only) */}
+                        <div className="hidden md:flex flex-1 justify-center items-center">
                             <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
-                                        <span className="">
-                                            ₹
-                                            {Math.round(
-                                                product.price *
-                                                    (1 - product.discount / 100)
-                                            ) * quantity}
-                                        </span>
+                                        ₹
+                                        {Math.round(
+                                            product.price * (1 - product.discount / 100)
+                                        ) * quantity}
                                     </>
                                 ) : (
                                     <>₹{product.price * quantity}</>
@@ -215,22 +216,14 @@ const Cart = () => {
                             </div>
                         </div>
 
-                        {/* Delete */}
-                        <div className="flex-1 flex md:justify-center items-center">
+                        {/* Delete (Desktop Only) */}
+                        <div className="hidden md:flex flex-1 justify-center items-center">
                             <button
                                 onClick={async () => {
-                                    try {
-                                        await removeFromCart(product._id);
-                                        await handleCartUpdate();
-                                    } catch (error) {
-                                        console.error(
-                                            "Failed to remove from cart:",
-                                            error
-                                        );
-                                    }
+                                    await removeFromCart(product._id);
+                                    await handleCartUpdate();
                                 }}
                                 className="text-[#404040] hover:text-black text-lg"
-                                aria-label="Remove item"
                             >
                                 <FaTrash />
                             </button>
@@ -239,7 +232,7 @@ const Cart = () => {
                 ))}
             </div>
 
-            {/* Actions & Order Summary */}
+            {/* Actions & Summary */}
             <div className="flex flex-col md:flex-row md:items-start gap-8 mt-6">
                 {/* Actions */}
                 <div className="w-full md:max-w-xs">
@@ -253,13 +246,9 @@ const Cart = () => {
                     </div>
                 </div>
 
-                {/* Order Summary */}
+                {/* Summary */}
                 <div className="w-full md:max-w-md md:ml-auto">
-                    {/* Coupon Section */}
-                    <CouponSection
-                        cart={cart}
-                        onCartUpdate={handleCartUpdate}
-                    />
+                    <CouponSection cart={cart} onCartUpdate={handleCartUpdate} />
 
                     <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
                         <div className="flex justify-between mb-2">
@@ -270,18 +259,14 @@ const Cart = () => {
                         {totalProductDiscount > 0 && (
                             <div className="flex justify-between mb-2">
                                 <span>Product Discount</span>
-                                <span className="text-green-600">
-                                    -₹{totalProductDiscount}
-                                </span>
+                                <span className="text-green-600">-₹{totalProductDiscount}</span>
                             </div>
                         )}
 
                         {couponDiscount > 0 && (
                             <div className="flex justify-between mb-2">
                                 <span>Coupon Discount</span>
-                                <span className="text-green-600">
-                                    -₹{couponDiscount}
-                                </span>
+                                <span className="text-green-600">-₹{couponDiscount}</span>
                             </div>
                         )}
 
@@ -296,8 +281,7 @@ const Cart = () => {
                         {!shippingInfo.isFreeShipping &&
                             shippingInfo.remainingForFreeShipping > 0 && (
                                 <div className="text-xs text-gray-600 mb-2">
-                                    Add ₹{shippingInfo.remainingForFreeShipping}{" "}
-                                    more for free shipping
+                                    Add ₹{shippingInfo.remainingForFreeShipping} more for free shipping
                                 </div>
                             )}
                         <div className="flex justify-between font-bold text-base mt-4">
