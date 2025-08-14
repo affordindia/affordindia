@@ -55,11 +55,7 @@ const Footer = () => {
                 Ordering & Product Information
               </Link>
             </li>
-            <li>
-              <Link to="/shipping" onClick={scrollToTop} className="hover:underline">
-                Shipping & Delivery Policy
-              </Link>
-            </li>
+           
             <li>
               <Link to="/payment" onClick={scrollToTop} className="hover:underline">
                 Payments Policy
