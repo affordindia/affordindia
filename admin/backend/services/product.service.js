@@ -42,7 +42,7 @@ export const getAllProducts = async (filter = {}, options = {}) => {
         }
     }
     if (filter.lowStock !== undefined && filter.lowStock === "true") {
-        query.stock = { $gt: 0, $lte: 10 }; // Consider low stock as <= 10
+        query.stock = { $lte: 10 }; // Consider low stock as <= 10 (includes 0)
     }
     if (filter.minStock) {
         query.stock = { ...query.stock, $gte: parseInt(filter.minStock) };

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
 import { getProducts } from "../../api/products.api.js";
 import { getCategories } from "../../api/categories.api.js";
 import Loader from "../../components/common/Loader.jsx";
 
 const Products = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -62,6 +64,25 @@ const Products = () => {
 
     const productsPerPage = 12;
 
+    // Handle URL parameters on component mount
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const filterParam = searchParams.get("filter");
+
+        if (filterParam === "lowStock") {
+            // Set low stock filter
+            setFilters((prev) => ({
+                ...prev,
+                lowStock: true,
+            }));
+            setAppliedFilters((prev) => ({
+                ...prev,
+                lowStock: true,
+            }));
+            setShowAdvancedFilters(true); // Show filters so user can see what's applied
+        }
+    }, [location.search]);
+
     useEffect(() => {
         fetchProducts();
         fetchCategories();
@@ -81,11 +102,14 @@ const Products = () => {
 
             // Add applied filters
             Object.keys(appliedFilters).forEach((key) => {
-                if (
-                    appliedFilters[key] !== "" &&
-                    appliedFilters[key] !== false
-                ) {
-                    params[key] = appliedFilters[key];
+                const value = appliedFilters[key];
+                if (value !== "" && value !== false) {
+                    // Convert boolean true to string for backend
+                    if (value === true) {
+                        params[key] = "true";
+                    } else {
+                        params[key] = value;
+                    }
                 }
             });
 

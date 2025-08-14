@@ -109,9 +109,9 @@ export const getDashboardStatsService = async () => {
                 ),
 
             // Low stock products
-            Product.find({ stock: { $lt: 10 } })
-                .select("name stock images")
-                .limit(10),
+            // Low stock products (all for count, limited for display)
+            Product.find({ stock: { $lte: 10 } }).select("name stock images"),
+            // .limit(10),
 
             // Total reviews
             Review.countDocuments(),
@@ -221,12 +221,14 @@ export const getDashboardStatsService = async () => {
                     date: order.createdAt,
                 })),
 
-                lowStockProducts: lowStockProducts.map((product) => ({
-                    id: product._id,
-                    name: product.name,
-                    stock: product.stock,
-                    image: product.images?.[0] || null,
-                })),
+                lowStockProducts: lowStockProducts
+                    .slice(0, 5)
+                    .map((product) => ({
+                        id: product._id,
+                        name: product.name,
+                        stock: product.stock,
+                        image: product.images?.[0] || null,
+                    })),
             },
 
             analytics: {
