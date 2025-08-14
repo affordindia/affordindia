@@ -11,7 +11,7 @@ const ContactUs = () => {
 
       <div className="max-w-5xl mx-auto bg-white shadow-md rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* Left Section - Contact Info */}
-        <div className="bg-[#87585F] text-white p-8 flex flex-col justify-center space-y-6">
+        <div className="bg-[#B76E79] text-white p-8 flex flex-col justify-center space-y-6">
           <h2 className="text-2xl font-bold">Get in Touch</h2>
           <p className="text-gray-200 text-sm">
             Have questions or need support? We’re here to help you anytime.
@@ -57,7 +57,7 @@ const ContactUs = () => {
 
             <button
               type="submit"
-              className="bg-[#87585F] text-white w-full py-2 text-sm font-medium rounded-md hover:bg-[#333] transition"
+              className="bg-[#B76E79] text-white w-full py-2 text-sm font-medium rounded-md hover:bg-[#333] transition"
             >
               Send Message
             </button>

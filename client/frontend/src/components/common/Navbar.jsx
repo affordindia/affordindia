@@ -149,10 +149,10 @@ const Navbar = () => {
           </Link>
 
           {/* Auth Button */}
-          <div className="relative profile-dropdown-container transition-transform transform hover:scale-110 duration-200">
+          <div className="relative profile-dropdown-container ">
             <button
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="relative p-2 hover:bg-gray-100 rounded-full"
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-transform transform hover:scale-110 duration-200"
             >
               <FaUser className="text-xl hover:text-black" />
             </button>
