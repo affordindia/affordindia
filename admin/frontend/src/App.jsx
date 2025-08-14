@@ -20,6 +20,7 @@ import Banners from "./pages/Banners/Banners.jsx";
 import AddEditBanner from "./pages/Banners/AddEditBanner.jsx";
 import Users from "./pages/users/Users.jsx";
 import UserDetail from "./pages/users/UserDetail.jsx";
+import Reviews from "./pages/reviews/Reviews.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -239,6 +240,14 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <UserDetail />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/reviews"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Reviews />
                                         </ProtectedRoute>
                                     }
                                 />

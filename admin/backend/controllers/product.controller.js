@@ -277,7 +277,6 @@ export const getLowStockProducts = async (req, res) => {
             threshold: parseInt(threshold),
         });
     } catch (error) {
-        console.error("Get low stock products error:", error);
         res.status(500).json({
             success: false,
             message: "Failed to fetch low stock products",
@@ -306,7 +305,6 @@ export const bulkUpdateStock = async (req, res) => {
             ...result,
         });
     } catch (error) {
-        console.error("Bulk update stock error:", error);
         res.status(500).json({
             success: false,
             message: "Failed to update stock",
