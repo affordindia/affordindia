@@ -262,7 +262,7 @@ const Reviews = () => {
     };
 
     if (loading) {
-        return <Loader />;
+        return <Loader fullScreen={true} />;
     }
 
     return (

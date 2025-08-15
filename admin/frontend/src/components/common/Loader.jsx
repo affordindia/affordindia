@@ -3,7 +3,7 @@ import { ThreeDot } from "react-loading-indicators";
 
 const Loader = ({ size = "medium", fullScreen = false }) => {
     const containerClasses = fullScreen
-        ? "min-h-screen flex items-center justify-center bg-gray-50"
+        ? "min-h-screen flex items-center justify-center bg-admin-bg"
         : "flex items-center justify-center py-8";
 
     return (
