@@ -42,11 +42,12 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                     {/* Center - Title */}
                     <div className="absolute left-1/2 transform -translate-x-1/2">
                         <span className="text-xl font-semibold text-admin-text font-montserrat">
-                            The{" "}
+                            {/* The{" "}
                             <span className="italic font-bold text-2xl">
                                 I-AM-THE-BOSS
                             </span>{" "}
-                            Panel
+                            Panel */}
+                            <span className="text-2xl">ADMIN PANEL</span>
                         </span>
                     </div>
 
