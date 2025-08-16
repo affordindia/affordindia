@@ -12,6 +12,7 @@ import bannerRoutes from "./routes/banner.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 import configRoutes from "./routes/config.routes.js";
 import reviewRoutes from "./routes/reviews.routes.js";
 
@@ -40,6 +41,7 @@ app.use("/api/banners", bannerRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/analytics", analyticsRoutes);
 app.use("/api/config", configRoutes);
 app.use("/api/reviews", reviewRoutes);
 

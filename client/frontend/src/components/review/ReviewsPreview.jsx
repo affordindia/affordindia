@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaPlus, FaStar, FaArrowRight, FaPen } from "react-icons/fa";
-import {  } from "react-icons/fa";
 import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import StarRating from "./StarRating";
