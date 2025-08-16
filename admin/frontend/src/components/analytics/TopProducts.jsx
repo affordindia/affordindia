@@ -48,7 +48,7 @@ const TopProducts = ({ data, loading = false }) => {
                 {data.slice(0, 10).map((product, index) => (
                     <div
                         key={product.id}
-                        className="flex items-center space-x-4 p-3 bg-admin-bg rounded-lg border border-admin-border hover:border-admin-primary cursor-pointer transition-all duration-200 hover:scale-105"
+                        className="flex items-center space-x-4 p-3 mb-3 bg-admin-bg rounded-lg border border-admin-border hover:border-admin-primary cursor-pointer transition-all duration-200 hover:scale-105"
                         onClick={() => navigate(`/products/view/${product.id}`)}
                     >
                         {/* Rank */}

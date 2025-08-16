@@ -118,7 +118,7 @@ const CustomerAnalytics = ({ data, loading = false }) => {
                                 .map((customer, index) => (
                                     <div
                                         key={customer.id}
-                                        className="flex items-center justify-between p-3 bg-admin-bg rounded-lg border border-admin-border hover:border-admin-primary cursor-pointer transition-all duration-200"
+                                        className="flex items-center justify-between p-3 mb-3 bg-admin-bg rounded-lg border border-admin-border hover:border-admin-primary cursor-pointer transition-all duration-200"
                                         onClick={() =>
                                             navigate(`/users/${customer.id}`)
                                         }

@@ -21,7 +21,12 @@ import reviewRoutes from "./routes/reviews.routes.js";
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+        origin: ["https://admin-portal-affordindia.vercel.app"],
+        credentials: true,
+    })
+);
 app.use(express.json());
 
 // Connect to DB
