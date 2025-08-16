@@ -23,7 +23,11 @@ const app = express();
 // Middleware
 app.use(
     cors({
-        origin: ["https://admin-portal-affordindia.vercel.app"],
+        origin: [
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "https://admin-portal-affordindia.vercel.app",
+        ],
         credentials: true,
     })
 );
