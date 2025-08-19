@@ -15,31 +15,85 @@ import {
     getLowStockProducts,
     bulkUpdateStock,
 } from "../controllers/product.controller.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import {
+    verifyAdminAuth,
+    requirePermission,
+} from "../middlewares/adminAuth.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
 
 const router = express.Router();
 
 // All routes protected by admin auth
-router.use(authMiddleware);
+router.use(verifyAdminAuth);
 
 // GET /api/products/low-stock - Get low stock products
-router.get("/low-stock", getLowStockProducts);
+router.get(
+    "/low-stock",
+    requirePermission("products.view"),
+    getLowStockProducts
+);
 
 // PATCH /api/products/bulk-stock - Bulk stock update
-router.patch("/bulk-stock", bulkUpdateStock);
+router.patch(
+    "/bulk-stock",
+    requirePermission("products.bulk_update"),
+    bulkUpdateStock
+);
 
-router.get("/", getAllProducts);
-router.post("/", upload.array("images"), createProduct);
-router.get("/:id", getProductById);
-router.put("/:id", upload.array("images"), updateProduct);
-router.delete("/:id", deleteProduct);
-router.delete("/:id/images", removeProductImage);
-router.patch("/:id/stock", updateProductStock);
-router.patch("/:id/feature", updateProductFeature);
-router.post("/:id/reviews", addProductReview);
-router.get("/:id/reviews", getProductReviews);
-router.delete("/:id/reviews/:reviewId", deleteProductReview);
-router.get("/:id/analytics", getProductAnalytics);
+// Product CRUD operations
+router.get("/", requirePermission("products.view"), getAllProducts);
+router.post(
+    "/",
+    requirePermission("products.create"),
+    upload.array("images"),
+    createProduct
+);
+router.get("/:id", requirePermission("products.view"), getProductById);
+router.put(
+    "/:id",
+    requirePermission("products.update"),
+    upload.array("images"),
+    updateProduct
+);
+router.delete("/:id", requirePermission("products.delete"), deleteProduct);
+router.delete(
+    "/:id/images",
+    requirePermission("products.update"),
+    removeProductImage
+);
+router.patch(
+    "/:id/stock",
+    requirePermission("products.update"),
+    updateProductStock
+);
+router.patch(
+    "/:id/feature",
+    requirePermission("products.update"),
+    updateProductFeature
+);
+
+// Product reviews
+router.post(
+    "/:id/reviews",
+    requirePermission("reviews.moderate"),
+    addProductReview
+);
+router.get(
+    "/:id/reviews",
+    requirePermission("reviews.view"),
+    getProductReviews
+);
+router.delete(
+    "/:id/reviews/:reviewId",
+    requirePermission("reviews.delete"),
+    deleteProductReview
+);
+
+// Product analytics
+router.get(
+    "/:id/analytics",
+    requirePermission("analytics.view"),
+    getProductAnalytics
+);
 
 export default router;

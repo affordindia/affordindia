@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
@@ -15,6 +16,8 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import configRoutes from "./routes/config.routes.js";
 import reviewRoutes from "./routes/reviews.routes.js";
+import adminAuthRoutes from "./routes/adminAuth.routes.js";
+import adminUsersRoutes from "./routes/adminUsers.routes.js";
 
 // Load env vars
 
@@ -32,6 +35,7 @@ app.use(
     })
 );
 app.use(express.json());
+app.use(cookieParser());
 
 // Connect to DB
 connectDB();
@@ -43,6 +47,8 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/admin", authRoutes);
+app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin/users", adminUsersRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);

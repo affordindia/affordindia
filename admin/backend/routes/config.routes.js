@@ -6,26 +6,33 @@ import {
     updateConfigSection,
     resetConfig,
 } from "../controllers/config.controller.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import {
+    verifyAdminAuth,
+    requirePermission,
+} from "../middlewares/adminAuth.middleware.js";
 
 const router = express.Router();
 
 // Protect all config routes
-router.use(authMiddleware);
+router.use(verifyAdminAuth);
 
 // GET /api/config - Get all site configuration
-router.get("/", getSiteConfig);
+router.get("/", requirePermission("config.view"), getSiteConfig);
 
 // PUT /api/config - Update all site configuration
-router.put("/", updateSiteConfig);
+router.put("/", requirePermission("config.update"), updateSiteConfig);
 
 // GET /api/config/:section - Get specific configuration section
-router.get("/:section", getConfigSection);
+router.get("/:section", requirePermission("config.view"), getConfigSection);
 
 // PUT /api/config/:section - Update specific configuration section
-router.put("/:section", updateConfigSection);
+router.put(
+    "/:section",
+    requirePermission("config.update"),
+    updateConfigSection
+);
 
 // POST /api/config/reset - Reset configuration to defaults
-router.post("/reset", resetConfig);
+router.post("/reset", requirePermission("config.update"), resetConfig);
 
 export default router;

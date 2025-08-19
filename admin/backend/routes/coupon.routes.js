@@ -10,38 +10,49 @@ import {
     getCouponTemplates,
     createCouponFromTemplateController,
 } from "../controllers/coupon.controller.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import {
+    verifyAdminAuth,
+    requirePermission,
+} from "../middlewares/adminAuth.middleware.js";
 
 const router = express.Router();
 
 // All routes require authentication
-router.use(authMiddleware);
+router.use(verifyAdminAuth);
 
 // GET /api/coupons/templates - Get available coupon templates
-router.get("/templates", getCouponTemplates);
+router.get("/templates", requirePermission("coupons.view"), getCouponTemplates);
 
 // POST /api/coupons/from-template - Create coupon from template
-router.post("/from-template", createCouponFromTemplateController);
+router.post(
+    "/from-template",
+    requirePermission("coupons.create"),
+    createCouponFromTemplateController
+);
 
 // GET /api/coupons - Get all coupons
-router.get("/", getAllCoupons);
+router.get("/", requirePermission("coupons.view"), getAllCoupons);
 
 // POST /api/coupons - Create new coupon
-router.post("/", createCoupon);
+router.post("/", requirePermission("coupons.create"), createCoupon);
 
 // GET /api/coupons/:id/stats - Get coupon statistics
-router.get("/:id/stats", getCouponStats);
+router.get("/:id/stats", requirePermission("coupons.view"), getCouponStats);
 
 // GET /api/coupons/:id - Get single coupon
-router.get("/:id", getCoupon);
+router.get("/:id", requirePermission("coupons.view"), getCoupon);
 
 // PUT /api/coupons/:id - Update coupon
-router.put("/:id", updateCoupon);
+router.put("/:id", requirePermission("coupons.update"), updateCoupon);
 
 // DELETE /api/coupons/:id - Delete coupon
-router.delete("/:id", deleteCoupon);
+router.delete("/:id", requirePermission("coupons.delete"), deleteCoupon);
 
 // PATCH /api/coupons/:id/toggle-status - Toggle coupon active status
-router.patch("/:id/toggle-status", toggleCouponStatus);
+router.patch(
+    "/:id/toggle-status",
+    requirePermission("coupons.update"),
+    toggleCouponStatus
+);
 
 export default router;
