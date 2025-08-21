@@ -5,7 +5,6 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
-import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -46,7 +45,6 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api/admin", authRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin/users", adminUsersRoutes);
 app.use("/api/products", productRoutes);
