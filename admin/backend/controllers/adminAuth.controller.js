@@ -391,7 +391,9 @@ export const getAllPermissions = async (req, res) => {
 export const getAllRBACConfig = async (req, res) => {
     try {
         // Import directly to avoid circular dependency
-        const { ACCESS_LEVELS, PERMISSIONS } = await import("../config/rbac.config.js");
+        const { ACCESS_LEVELS, PERMISSIONS } = await import(
+            "../config/rbac.config.js"
+        );
         res.status(200).json({
             success: true,
             message: "RBAC config fetched successfully",

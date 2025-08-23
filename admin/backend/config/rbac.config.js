@@ -5,28 +5,33 @@ export const ACCESS_LEVELS = {
     LEVEL_1: {
         value: 1,
         name: "Basic",
-        description: "Basic access: Can view dashboard, products, categories, and banners."
+        description:
+            "Basic access: Can view dashboard, products, categories, and banners.",
     },
     LEVEL_2: {
         value: 2,
         name: "Moderator",
-        description: "Moderate access: Can view analytics, manage orders, view users, and coupons."
+        description:
+            "Moderate access: Can view analytics, manage orders, view users, and coupons.",
     },
     LEVEL_3: {
         value: 3,
         name: "Advanced",
-        description: "Advanced access: Can create/update products, moderate reviews, update users, and manage banners/coupons."
+        description:
+            "Advanced access: Can create/update products, moderate reviews, update users, and manage banners/coupons.",
     },
     LEVEL_4: {
         value: 4,
         name: "Manager",
-        description: "Manager access: Can manage categories, delete users, view system config/logs, and manage admins."
+        description:
+            "Manager access: Can manage categories, delete users, view system config/logs, and manage admins.",
     },
     LEVEL_5: {
         value: 5,
         name: "Superadmin",
-        description: "Superadmin access: Full system control, can delete admins, manage permissions, perform backups."
-    }
+        description:
+            "Superadmin access: Full system control, can delete admins, manage permissions, perform backups.",
+    },
 };
 
 // Permissions - Single source of truth for access control
