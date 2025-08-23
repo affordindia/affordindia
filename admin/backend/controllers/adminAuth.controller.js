@@ -386,3 +386,24 @@ export const getAllPermissions = async (req, res) => {
         });
     }
 };
+
+// Get all RBAC config for frontend
+export const getAllRBACConfig = async (req, res) => {
+    try {
+        // Import directly to avoid circular dependency
+        const { ACCESS_LEVELS, PERMISSIONS } = await import("../config/rbac.config.js");
+        res.status(200).json({
+            success: true,
+            message: "RBAC config fetched successfully",
+            data: {
+                accessLevels: ACCESS_LEVELS,
+                permissions: PERMISSIONS,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch RBAC config",
+        });
+    }
+};

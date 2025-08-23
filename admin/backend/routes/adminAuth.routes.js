@@ -8,6 +8,7 @@ import {
     updateProfile,
     getAdminPermissions,
     getAllPermissions,
+    getAllRBACConfig,
 } from "../controllers/adminAuth.controller.js";
 import {
     verifyAdminAuth,
@@ -33,5 +34,6 @@ router.get(
     requirePermission("admins.manage_permissions"),
     getAllPermissions
 );
+router.get("/rbac-config", getAllRBACConfig);
 
 export default router;
