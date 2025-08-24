@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { adminLogin } from "../api/auth.api.js";
+import {
+    login as apiLogin,
+    logout as apiLogout,
+    fetchProfile,
+    refreshToken,
+} from "../api/auth.api.js";
 
 const AuthContext = createContext();
 
@@ -11,121 +16,109 @@ export const useAuth = () => {
     return context;
 };
 
-// Helper function to decode JWT token (without verification - just to check expiry)
-const isTokenValid = (token) => {
-    if (!token) return false;
-
-    try {
-        // Parse JWT payload (base64 decode)
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const currentTime = Date.now() / 1000;
-
-        // Check if token is expired
-        if (payload.exp && payload.exp < currentTime) {
-            console.log("Token expired");
-            return false;
-        }
-
-        // Check if token has required admin credentials
-        if (payload.email && payload.password) {
-            return true;
-        }
-
-        return false;
-    } catch (error) {
-        console.error("Error parsing token:", error);
-        return false;
-    }
-};
-
 export const AuthProvider = ({ children }) => {
     const [admin, setAdmin] = useState(null);
-    const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Initialize authentication state on app load
+    // On mount, fetch profile to check authentication, but skip if on /login
     useEffect(() => {
-        const initAuth = () => {
+        const checkAuth = async () => {
+            // Only fetch profile if not on /login
+            if (window.location.pathname === "/login") {
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
+            setError(null);
             try {
-                const savedToken = localStorage.getItem("admin_token");
-
-                if (savedToken && isTokenValid(savedToken)) {
-                    // Token exists and is valid
-                    setToken(savedToken);
-                    setAdmin({
-                        id: "admin",
-                        email: "admin@affordindia.com",
-                        name: "Admin User",
-                        role: "admin",
-                    });
-                    setIsAuthenticated(true);
+                const res = await fetchProfile();
+                if (res.success) {
+                    setAdmin(res.admin);
                 } else {
-                    // No token or token is invalid/expired
-                    localStorage.removeItem("admin_token");
-                    setIsAuthenticated(false);
+                    setAdmin(null);
                 }
-            } catch (error) {
-                console.error("Auth initialization error:", error);
-                localStorage.removeItem("admin_token");
-                setIsAuthenticated(false);
+            } catch (e) {
+                setAdmin(null);
             } finally {
                 setLoading(false);
             }
         };
-
-        initAuth();
+        checkAuth();
     }, []);
 
+    // Login
     const login = async (credentials) => {
+        setLoading(true);
+        setError(null);
         try {
-            setLoading(true);
-
-            // Use auth API for login
-            const result = await adminLogin(credentials);
-
-            if (result.success) {
-                localStorage.setItem("admin_token", result.token);
-                setToken(result.token);
-                setAdmin(result.admin);
-                setIsAuthenticated(true);
-
+            const res = await apiLogin(credentials);
+            if (res.success) {
+                setAdmin(res.admin);
                 return { success: true };
             } else {
-                return {
-                    success: false,
-                    error: result.error,
-                };
+                setError(res.error);
+                return { success: false, error: res.error };
             }
-        } catch (error) {
-            console.error("Login error:", error);
-            return {
-                success: false,
-                error: error.message || "Login failed",
-            };
+        } catch (e) {
+            setError(e.message || "Login failed");
+            return { success: false, error: e.message || "Login failed" };
         } finally {
             setLoading(false);
         }
     };
 
-    const logout = () => {
-        // Simple logout - just clear local state and storage
-        localStorage.removeItem("admin_token");
-        setToken(null);
-        setAdmin(null);
-        setIsAuthenticated(false);
+    // Logout
+    const logout = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            await apiLogout();
+        } catch (e) {
+            // ignore
+        } finally {
+            setAdmin(null);
+            setLoading(false);
+        }
     };
 
-    const value = {
-        admin,
-        token,
-        loading,
-        isAuthenticated,
-        login,
-        logout,
+    // Token refresh (can be called from axios or manually)
+    const handleTokenRefresh = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await refreshToken();
+            if (res.success) {
+                // Optionally re-fetch profile
+                const profileRes = await fetchProfile();
+                if (profileRes.success) {
+                    setAdmin(profileRes.admin);
+                }
+                return true;
+            }
+            setAdmin(null);
+            return false;
+        } catch (e) {
+            setAdmin(null);
+            return false;
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+        <AuthContext.Provider
+            value={{
+                admin,
+                isAuthenticated: !!admin,
+                loading,
+                error,
+                login,
+                logout,
+                handleTokenRefresh,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
     );
 };

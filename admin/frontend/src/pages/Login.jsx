@@ -24,32 +24,32 @@ const Login = () => {
             ...prev,
             [name]: value,
         }));
-        // Clear error when user starts typing
-        if (error) setError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
+        if (loading) return;
 
+        setError("");
         if (!formData.email || !formData.password) {
             setError("Please fill in all fields");
             return;
         }
-
-        console.log("Login attempt:", { email: formData.email });
 
         const result = await login({
             email: formData.email,
             password: formData.password,
         });
 
-        console.log("Login result:", result);
-
         if (result.success) {
             navigate(from, { replace: true });
         } else {
-            setError(result.error || "Login failed");
+            // Handle various error types
+            const errorMsg =
+                result?.error ||
+                result?.message ||
+                "Login failed. Please check your credentials.";
+            setError(errorMsg);
         }
     };
 
@@ -71,14 +71,24 @@ const Login = () => {
 
                 {/* Login Form */}
                 <div className="bg-admin-card rounded-2xl shadow-lg p-8 border border-admin-border">
+                    {/* Error Message - always visible above the form */}
+                    {error && (
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                fontWeight: "bold",
+                                color: "#d32f2f",
+                                background: "#fdecea",
+                                border: "1px solid #f44336",
+                                borderRadius: "8px",
+                                padding: "12px",
+                                textAlign: "center",
+                            }}
+                        >
+                            {error}
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Error Message */}
-                        {error && (
-                            <div className="bg-admin-error-light border border-admin-error text-admin-error px-4 py-3 rounded-lg text-sm">
-                                {error}
-                            </div>
-                        )}
-
                         {/* Email Input */}
                         <div>
                             <label

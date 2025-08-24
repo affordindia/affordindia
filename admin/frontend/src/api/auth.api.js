@@ -1,53 +1,84 @@
 import api from "./axios.js";
 
-export const adminLogin = async (credentials) => {
-    console.log("API CALL: adminLogin");
+// Login
+export const login = async ({ email, password }) => {
     try {
-        console.log("Attempting login with credentials:", {
-            email: credentials.email,
-        });
-
-        const response = await api.post("/admin/login", {
-            email: credentials.email,
-            password: credentials.password,
-        });
-
-        console.log("Login response:", response.data);
-
-        // Backend returns only { token }, so we create admin data
-        const adminData = {
-            email: credentials.email,
-            id: "admin",
-            name: "Admin User",
-            role: "admin",
-        };
-
-        return {
-            success: true,
-            data: response.data,
-            token: response.data.token,
-            admin: adminData,
-        };
-    } catch (error) {
-        console.error("Auth API - Login error:", error);
-
-        let errorMessage = "Login failed";
-        if (error.code === "ECONNABORTED") {
-            errorMessage = "Request timeout - server may be slow";
-        } else if (error.code === "ERR_NETWORK") {
-            errorMessage = "Cannot connect to server - check if it's running";
-        } else if (error.response?.status === 401) {
-            errorMessage = "Invalid email or password";
-        } else if (error.response?.data?.message) {
-            errorMessage = error.response.data.message;
-        } else if (error.message) {
-            errorMessage = error.message;
+        const res = await api.post("/admin/auth/login", { email, password });
+        if (res.data?.success) {
+            return { success: true, admin: res.data.data?.admin };
         }
-
+        return { success: false, error: res.data?.message || "Login failed" };
+    } catch (error) {
         return {
             success: false,
-            error: errorMessage,
-            status: error.response?.status || 500,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Login failed",
+        };
+    }
+};
+
+// Logout
+export const logout = async () => {
+    try {
+        const res = await api.post("/admin/auth/logout");
+        return { success: res.data?.success };
+    } catch (error) {
+        return { success: false, error: error.message || "Logout failed" };
+    }
+};
+
+// Refresh token
+export const refreshToken = async () => {
+    try {
+        const res = await api.post("/admin/auth/refresh");
+        return { success: res.data?.success };
+    } catch (error) {
+        return { success: false, error: error.message || "Refresh failed" };
+    }
+};
+
+// Fetch profile
+export const fetchProfile = async () => {
+    try {
+        const res = await api.get("/admin/auth/profile");
+        if (res.data?.success) {
+            return { success: true, admin: res.data.data?.admin };
+        }
+        return {
+            success: false,
+            error: res.data?.message || "Profile fetch failed",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Profile fetch failed",
+        };
+    }
+};
+
+// Register admin
+export const registerAdmin = async (adminData) => {
+    try {
+        const res = await api.post("/admin/auth/register", adminData);
+        if (res.data?.success) {
+            return { success: true, admin: res.data.data?.admin };
+        }
+        return {
+            success: false,
+            error: res.data?.message || "Register failed",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.message ||
+                "Register failed",
         };
     }
 };

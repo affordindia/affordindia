@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import AccessDenied from "./components/AccessDenied.jsx";
 import AdminNavbar from "./components/common/AdminNavbar.jsx";
 import AdminSidebar from "./components/common/AdminSidebar.jsx";
 import AdminFooter from "./components/common/AdminFooter.jsx";
@@ -49,7 +50,7 @@ const App = () => {
         setSidebarOpen(false);
     };
 
-    // Show loading screen while checking authentication
+    // Always show loader while checking authentication
     if (loading) {
         return (
             <div className="min-h-screen bg-admin-bg flex items-center justify-center">
@@ -58,12 +59,17 @@ const App = () => {
         );
     }
 
-    // If not authenticated, show login page
+    // After loading, show login page if not authenticated
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen bg-admin-bg">
                 <Routes>
-                    <Route path="*" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/access-denied" element={<AccessDenied />} />
+                    <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                    />
                 </Routes>
             </div>
         );
@@ -93,6 +99,10 @@ const App = () => {
                         <div className="min-h-full p-4 sm:p-6">
                             <Routes>
                                 <Route
+                                    path="/access-denied"
+                                    element={<AccessDenied />}
+                                />
+                                <Route
                                     path="/"
                                     element={
                                         <ProtectedRoute>
@@ -111,7 +121,7 @@ const App = () => {
                                 <Route
                                     path="/analytics"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="analytics.view">
                                             <Analytics />
                                         </ProtectedRoute>
                                     }
@@ -119,7 +129,7 @@ const App = () => {
                                 <Route
                                     path="/products"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="products.view">
                                             <Products />
                                         </ProtectedRoute>
                                     }
@@ -127,7 +137,7 @@ const App = () => {
                                 <Route
                                     path="/products/view/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="products.view">
                                             <ProductDetail />
                                         </ProtectedRoute>
                                     }
@@ -135,7 +145,7 @@ const App = () => {
                                 <Route
                                     path="/products/add"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="products.create">
                                             <AddProduct />
                                         </ProtectedRoute>
                                     }
@@ -143,7 +153,7 @@ const App = () => {
                                 <Route
                                     path="/products/edit/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="products.update">
                                             <EditProduct />
                                         </ProtectedRoute>
                                     }
@@ -151,7 +161,7 @@ const App = () => {
                                 <Route
                                     path="/orders"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="orders.view">
                                             <Orders />
                                         </ProtectedRoute>
                                     }
@@ -159,7 +169,7 @@ const App = () => {
                                 <Route
                                     path="/orders/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="orders.view">
                                             <OrderDetail />
                                         </ProtectedRoute>
                                     }
@@ -167,7 +177,7 @@ const App = () => {
                                 <Route
                                     path="/coupons"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="coupons.view">
                                             <Coupons />
                                         </ProtectedRoute>
                                     }
@@ -175,7 +185,7 @@ const App = () => {
                                 <Route
                                     path="/coupons/add"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="coupons.create">
                                             <AddEditCoupon />
                                         </ProtectedRoute>
                                     }
@@ -183,7 +193,7 @@ const App = () => {
                                 <Route
                                     path="/coupons/edit/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="coupons.update">
                                             <AddEditCoupon />
                                         </ProtectedRoute>
                                     }
@@ -191,7 +201,7 @@ const App = () => {
                                 <Route
                                     path="/categories"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="categories.view">
                                             <Categories />
                                         </ProtectedRoute>
                                     }
@@ -199,7 +209,7 @@ const App = () => {
                                 <Route
                                     path="/categories/add"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="categories.create">
                                             <AddEditCategory />
                                         </ProtectedRoute>
                                     }
@@ -207,7 +217,7 @@ const App = () => {
                                 <Route
                                     path="/categories/edit/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="categories.update">
                                             <AddEditCategory />
                                         </ProtectedRoute>
                                     }
@@ -215,7 +225,7 @@ const App = () => {
                                 <Route
                                     path="/banners"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="banners.view">
                                             <Banners />
                                         </ProtectedRoute>
                                     }
@@ -223,7 +233,7 @@ const App = () => {
                                 <Route
                                     path="/banners/add"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="banners.create">
                                             <AddEditBanner />
                                         </ProtectedRoute>
                                     }
@@ -231,7 +241,7 @@ const App = () => {
                                 <Route
                                     path="/banners/edit/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="banners.update">
                                             <AddEditBanner />
                                         </ProtectedRoute>
                                     }
@@ -239,7 +249,7 @@ const App = () => {
                                 <Route
                                     path="/users"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="users.view">
                                             <Users />
                                         </ProtectedRoute>
                                     }
@@ -247,7 +257,7 @@ const App = () => {
                                 <Route
                                     path="/users/:id"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="users.view">
                                             <UserDetail />
                                         </ProtectedRoute>
                                     }
@@ -255,7 +265,7 @@ const App = () => {
                                 <Route
                                     path="/reviews"
                                     element={
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requirePermissions="reviews.view">
                                             <Reviews />
                                         </ProtectedRoute>
                                     }

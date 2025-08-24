@@ -11,9 +11,27 @@ import {
     FaTicketAlt,
     FaCog,
     FaChartLine,
+    FaLock,
 } from "react-icons/fa";
+import { useRBAC } from "../../context/RBACContext";
 
 const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
+    // RBAC permission mapping for each tab
+    // Add required permission keys for each tab as needed
+    const { hasPermission } = useRBAC();
+
+    const menuPermissions = {
+        Users: "users.view",
+        Products: "products.view",
+        Orders: "orders.view",
+        Reviews: "reviews.view",
+        Categories: "categories.view",
+        Banners: "banners.view",
+        Coupons: "coupons.view",
+        Analytics: "analytics.view",
+        Settings: "settings.view",
+        Dashboard: null, // always allowed
+    };
     const location = useLocation();
 
     const menuItems = [
@@ -102,21 +120,37 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                     <nav className="flex-1 px-4 pt-6 pb-6 space-y-1 overflow-y-auto">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
+                            const requiredPerm = menuPermissions[item.label];
+                            const isAllowed =
+                                !requiredPerm || hasPermission(requiredPerm);
                             return (
-                                <NavLink
-                                    key={item.path}
-                                    to={item.path}
-                                    className={getLinkClasses(item.path)}
-                                    onClick={() => {
-                                        // Close sidebar on mobile after navigation
-                                        if (window.innerWidth < 1024) {
-                                            closeSidebar();
-                                        }
-                                    }}
-                                >
-                                    <Icon className="w-5 h-5 mr-3" />
-                                    {item.label}
-                                </NavLink>
+                                <div key={item.path}>
+                                    {isAllowed ? (
+                                        <NavLink
+                                            to={item.path}
+                                            className={getLinkClasses(
+                                                item.path
+                                            )}
+                                            onClick={() => {
+                                                if (window.innerWidth < 1024) {
+                                                    closeSidebar();
+                                                }
+                                            }}
+                                        >
+                                            <Icon className="w-5 h-5 mr-3" />
+                                            {item.label}
+                                        </NavLink>
+                                    ) : (
+                                        <div
+                                            className="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-admin-bg text-admin-text cursor-not-allowed opacity-60"
+                                            title="Access Denied"
+                                        >
+                                            <Icon className="w-5 h-5 mr-3" />
+                                            {item.label}
+                                            <FaLock className="ml-auto w-4 h-4 text-admin-text" />
+                                        </div>
+                                    )}
+                                </div>
                             );
                         })}
                     </nav>
