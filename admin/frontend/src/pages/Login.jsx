@@ -163,21 +163,6 @@ const Login = () => {
                             </button>
                         </p>
                     </div>
-
-                    {/* Test Credentials Info */}
-                    <div className="mt-4 p-3 bg-admin-bg rounded-lg border border-admin-border">
-                        <p className="text-xs text-admin-text-secondary text-center mb-2">
-                            <strong>Test Credentials:</strong>
-                        </p>
-                        <div className="text-xs text-admin-text-muted text-center space-y-1">
-                            <div>
-                                <strong>Email:</strong> admin@affordindia.com
-                            </div>
-                            <div>
-                                <strong>Password:</strong> affordindia@2025
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Additional Info */}
