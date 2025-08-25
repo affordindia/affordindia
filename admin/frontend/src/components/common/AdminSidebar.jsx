@@ -46,11 +46,6 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
             icon: FaChartLine,
         },
         {
-            label: "Users",
-            path: "/users",
-            icon: FaUsers,
-        },
-        {
             label: "Products",
             path: "/products",
             icon: FaBox,
@@ -81,6 +76,11 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
             icon: FaTicketAlt,
         },
         {
+            label: "Users",
+            path: "/users",
+            icon: FaUsers,
+        },
+        {
             label: "Settings",
             path: "/settings",
             icon: FaCog,
@@ -88,10 +88,15 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
     ];
 
     const getLinkClasses = (path) => {
-        const isActive =
-            location.pathname === path ||
-            (path === "/dashboard" && location.pathname === "/");
-
+        let isActive = false;
+        if (path === "/dashboard") {
+            isActive =
+                location.pathname === "/dashboard" || location.pathname === "/";
+        } else {
+            isActive =
+                location.pathname === path ||
+                location.pathname.startsWith(path + "/");
+        }
         return `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
             isActive
                 ? "bg-admin-primary text-white shadow-admin-md"

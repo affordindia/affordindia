@@ -71,6 +71,8 @@ const ProductDetail = () => {
                     ...prev,
                     isFeatured: !prev.isFeatured,
                 }));
+            } else {
+                setError(result.error);
             }
         } catch (error) {
             console.error("Error toggling featured status:", error);
@@ -81,41 +83,46 @@ const ProductDetail = () => {
         return <Loader fullScreen={true} />;
     }
 
-    if (error) {
+    if (!product) {
         return (
             <div className="flex items-center justify-center min-h-96">
                 <div className="text-center">
-                    <div className="text-red-500 text-lg mb-4">⚠️ {error}</div>
-                    <button
-                        onClick={() => {
-                            setError(null);
-                            fetchProduct();
-                        }}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-4"
-                    >
-                        Retry
-                    </button>
-                    <button
-                        onClick={() => navigate("/products")}
-                        className="px-4 py-2 border border-admin-border rounded hover:bg-admin-bg"
-                    >
-                        Back to Products
-                    </button>
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ Product not found
+                    </div>
+                    <div className="flex gap-3 justify-center">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark mr-4 transition-colors"
+                        >
+                            Go Back
+                        </button>
+                        <button
+                            onClick={() => navigate("/products")}
+                            className="px-4 py-2 text-admin-text-secondary bg-admin-card border border-admin-border rounded-lg hover:bg-admin-bg hover:text-admin-text focus:outline-none focus:ring-2 focus:ring-admin-primary transition-all duration-200 disabled:opacity-50"
+                        >
+                            All Products
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    if (!product) {
+    if (error) {
         return (
-            <div className="text-center py-12">
-                <p className="text-admin-text-secondary">Product not found</p>
-                <Link
-                    to="/products"
-                    className="inline-block mt-4 px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark"
-                >
-                    Back to Products
-                </Link>
+            <div className="fixed inset-0 bg-blur-xs bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="bg-admin-card rounded-lg p-6 max-w-md w-full border border-admin-border shadow-xl text-center">
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ {error}
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="mt-4 px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors font-semibold"
+                    >
+                        OK
+                    </button>
+                </div>
             </div>
         );
     }

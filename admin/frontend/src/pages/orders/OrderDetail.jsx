@@ -81,11 +81,11 @@ const OrderDetail = () => {
                 setShowStatusModal(false);
                 setNewStatus("");
             } else {
-                alert(response.error || "Failed to update status");
+                setError(response.error || "Failed to update status");
             }
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Failed to update order status");
+            setError("Failed to update order status");
         } finally {
             setUpdating(false);
         }
@@ -107,11 +107,11 @@ const OrderDetail = () => {
                 setShowPaymentModal(false);
                 setNewPaymentStatus("");
             } else {
-                alert(response.error || "Failed to update payment status");
+                setError(response.error || "Failed to update payment status");
             }
         } catch (error) {
             console.error("Error updating payment status:", error);
-            alert("Failed to update payment status");
+            setError("Failed to update payment status");
         } finally {
             setUpdating(false);
         }
@@ -124,11 +124,11 @@ const OrderDetail = () => {
             if (response.success) {
                 navigate("/orders");
             } else {
-                alert(response.error || "Failed to delete order");
+                setError(response.error || "Failed to delete order");
             }
         } catch (error) {
             console.error("Error deleting order:", error);
-            alert("Failed to delete order");
+            setError("Failed to delete order");
         } finally {
             setUpdating(false);
             setShowDeleteModal(false);
@@ -203,27 +203,45 @@ const OrderDetail = () => {
         return <Loader fullScreen={true} />;
     }
 
-    if (error || !order) {
+    if (!order) {
         return (
             <div className="flex items-center justify-center min-h-96">
                 <div className="text-center">
                     <div className="text-admin-error text-lg mb-4">
-                        ⚠️ {error || "Order not found"}
+                        ⚠️ Order not found
                     </div>
                     <div className="flex gap-3 justify-center">
                         <button
                             onClick={() => navigate(-1)}
-                            className="px-4 py-2 bg-admin-text-secondary text-white rounded hover:bg-admin-text"
+                            className="px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark mr-4 transition-colors"
                         >
                             Go Back
                         </button>
                         <button
                             onClick={() => navigate("/orders")}
-                            className="px-4 py-2 bg-admin-primary text-white rounded hover:bg-admin-primary-dark"
+                            className="px-4 py-2 text-admin-text-secondary bg-admin-card border border-admin-border rounded-lg hover:bg-admin-bg hover:text-admin-text focus:outline-none focus:ring-2 focus:ring-admin-primary transition-all duration-200 disabled:opacity-50"
                         >
                             All Orders
                         </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="fixed inset-0 bg-blur-xs bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="bg-admin-card rounded-lg p-6 max-w-md w-full border border-admin-border shadow-xl text-center">
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ {error}
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="mt-4 px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors font-semibold"
+                    >
+                        OK
+                    </button>
                 </div>
             </div>
         );

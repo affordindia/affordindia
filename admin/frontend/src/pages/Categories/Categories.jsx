@@ -7,6 +7,7 @@ import Loader from "../../components/common/Loader.jsx";
 const Categories = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         categoryId: null,
@@ -20,14 +21,15 @@ const Categories = () => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
+            setError(null);
             const response = await getCategories();
             if (response.success) {
                 setCategories(response.data || []);
             } else {
-                console.error("Error fetching categories:", response.error);
+                setError(response.error || "Failed to fetch categories");
             }
         } catch (error) {
-            console.error("Error fetching categories:", error);
+            setError("Failed to fetch categories");
         } finally {
             setLoading(false);
         }
@@ -52,10 +54,20 @@ const Categories = () => {
                     categoryName: "",
                 });
             } else {
-                console.error("Error deleting category:", response.error);
+                setError(response.error || "Failed to delete category");
+                setDeleteModal({
+                    isOpen: false,
+                    categoryId: null,
+                    categoryName: "",
+                });
             }
         } catch (error) {
-            console.error("Error deleting category:", error);
+            setError("Failed to delete category");
+            setDeleteModal({
+                isOpen: false,
+                categoryId: null,
+                categoryName: "",
+            });
         }
     };
 
@@ -65,6 +77,25 @@ const Categories = () => {
 
     if (loading) {
         return <Loader fullScreen={true} />;
+    }
+
+    // Error Modal
+    if (error) {
+        return (
+            <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
+                <div className="bg-admin-card rounded-lg p-6 max-w-md w-full border border-admin-border shadow-xl text-center">
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ {error}
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="mt-4 px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors font-semibold"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -236,7 +267,7 @@ const Categories = () => {
 
             {/* Delete Confirmation Modal */}
             {deleteModal.isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-admin-card rounded-lg p-6 max-w-md w-full mx-4 border border-admin-border">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">

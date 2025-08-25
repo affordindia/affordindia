@@ -24,6 +24,7 @@ const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [filters, setFilters] = useState({
         category: "",
         discountType: "",
@@ -44,19 +45,18 @@ const Coupons = () => {
     const fetchCoupons = async () => {
         try {
             setLoading(true);
+            setError(null);
             const activeFilters = Object.fromEntries(
                 Object.entries(filters).filter(([_, value]) => value !== "")
             );
-            console.log("Applying filters:", activeFilters);
             const response = await getCoupons(activeFilters);
-            console.log("Coupons API response:", response);
             if (response.success) {
                 setCoupons(response.data.coupons || []);
             } else {
-                console.error("Error fetching coupons:", response.error);
+                setError(response.error || "Failed to fetch coupons");
             }
         } catch (error) {
-            console.error("Error fetching coupons:", error);
+            setError("Failed to fetch coupons");
         } finally {
             setLoading(false);
         }
@@ -64,30 +64,30 @@ const Coupons = () => {
 
     const fetchCategories = async () => {
         try {
+            setError(null);
             const response = await getCategories();
-            console.log("Categories API response:", response);
             if (response.success) {
                 const categories = response.data;
-                console.log("Categories data:", categories);
                 setCategories(Array.isArray(categories) ? categories : []);
             } else {
-                console.error("Error fetching categories:", response.error);
+                setError(response.error || "Failed to fetch categories");
             }
         } catch (error) {
-            console.error("Error fetching categories:", error);
+            setError("Failed to fetch categories");
         }
     };
 
     const handleToggleStatus = async (couponId) => {
         try {
+            setError(null);
             const response = await toggleCouponStatus(couponId);
             if (response.success) {
                 fetchCoupons();
             } else {
-                console.error("Error toggling coupon status:", response.error);
+                setError(response.error || "Failed to toggle coupon status");
             }
         } catch (error) {
-            console.error("Error toggling coupon status:", error);
+            setError("Failed to toggle coupon status");
         }
     };
 
@@ -110,10 +110,20 @@ const Coupons = () => {
                     couponCode: "",
                 });
             } else {
-                console.error("Error deleting coupon:", response.error);
+                setError(response.error || "Failed to delete coupon");
+                setDeleteModal({
+                    isOpen: false,
+                    couponId: null,
+                    couponCode: "",
+                });
             }
         } catch (error) {
-            console.error("Error deleting coupon:", error);
+            setError("Failed to delete coupon");
+            setDeleteModal({
+                isOpen: false,
+                couponId: null,
+                couponCode: "",
+            });
         }
     };
 
@@ -292,6 +302,26 @@ const Coupons = () => {
         </div>
     );
 
+    if (loading) {
+        return <Loader fullScreen={true} />;
+    }
+    if (error) {
+        return (
+            <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
+                <div className="bg-admin-card rounded-lg p-6 max-w-md w-full border border-admin-border shadow-xl text-center">
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ {error}
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="mt-4 px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors font-semibold"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="space-y-6">
             {/* Header */}

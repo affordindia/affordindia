@@ -15,6 +15,7 @@ import Loader from "../../components/common/Loader.jsx";
 const Banners = () => {
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         bannerId: null,
@@ -28,14 +29,15 @@ const Banners = () => {
     const fetchBanners = async () => {
         try {
             setLoading(true);
+            setError(null);
             const response = await getBanners();
             if (response.success) {
                 setBanners(response.data || []);
             } else {
-                console.error("Error fetching banners:", response.error);
+                setError(response.error || "Failed to fetch banners");
             }
         } catch (error) {
-            console.error("Error fetching banners:", error);
+            setError("Failed to fetch banners");
         } finally {
             setLoading(false);
         }
@@ -60,10 +62,20 @@ const Banners = () => {
                     bannerTitle: "",
                 });
             } else {
-                console.error("Error deleting banner:", response.error);
+                setError(response.error || "Failed to delete banner");
+                setDeleteModal({
+                    isOpen: false,
+                    bannerId: null,
+                    bannerTitle: "",
+                });
             }
         } catch (error) {
-            console.error("Error deleting banner:", error);
+            setError("Failed to delete banner");
+            setDeleteModal({
+                isOpen: false,
+                bannerId: null,
+                bannerTitle: "",
+            });
         }
     };
 
@@ -95,6 +107,25 @@ const Banners = () => {
 
     if (loading) {
         return <Loader fullScreen={true} />;
+    }
+
+    // Error Modal
+    if (error) {
+        return (
+            <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 z-50 flex items-center justify-center p-4">
+                <div className="bg-admin-card rounded-lg p-6 max-w-md w-full border border-admin-border shadow-xl text-center">
+                    <div className="text-admin-error text-lg mb-4">
+                        ⚠️ {error}
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="mt-4 px-6 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors font-semibold"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -277,7 +308,7 @@ const Banners = () => {
 
             {/* Delete Confirmation Modal */}
             {deleteModal.isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-admin-card rounded-lg p-6 max-w-md w-full mx-4 border border-admin-border">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
