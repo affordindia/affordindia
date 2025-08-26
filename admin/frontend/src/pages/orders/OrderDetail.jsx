@@ -22,6 +22,7 @@ import {
 import Loader from "../../components/common/Loader.jsx";
 import OrderStatusBadge from "../../components/orders/OrderStatusBadge.jsx";
 import PaymentStatusBadge from "../../components/orders/PaymentStatusBadge.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const OrderDetail = () => {
     const { id } = useParams();
@@ -274,27 +275,34 @@ const OrderDetail = () => {
                                     <FaShoppingCart className="text-admin-primary w-4 h-4" />
                                     <OrderStatusBadge status={order.status} />
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        setNewStatus(order.status);
-                                        setShowStatusModal(true);
-                                    }}
-                                    className="text-admin-primary hover:text-admin-primary-dark text-sm flex items-center gap-1"
-                                >
-                                    <FaEdit className="w-3 h-3" />
-                                    Update
-                                </button>
+                                <ProtectedComponent permission="orders.update">
+                                    <button
+                                        onClick={() => {
+                                            setNewStatus(order.status);
+                                            setShowStatusModal(true);
+                                        }}
+                                        className="text-admin-primary hover:text-admin-primary-dark text-sm flex items-center gap-1"
+                                    >
+                                        <FaEdit className="w-3 h-3" />
+                                        Update
+                                    </button>
+                                </ProtectedComponent>
                             </div>
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <button
-                            onClick={() => setShowDeleteModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        <ProtectedComponent
+                            permission="orders.cancel"
+                            view={true}
                         >
-                            <FaTrash className="w-4 h-4" />
-                            Delete Order
-                        </button>
+                            <button
+                                onClick={() => setShowDeleteModal(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            >
+                                <FaTrash className="w-4 h-4" />
+                                Delete Order
+                            </button>
+                        </ProtectedComponent>
                     </div>
                 </div>
             </div>
@@ -549,18 +557,20 @@ const OrderDetail = () => {
                                         <PaymentStatusBadge
                                             paymentStatus={order.paymentStatus}
                                         />
-                                        <button
-                                            onClick={() => {
-                                                setNewPaymentStatus(
-                                                    order.paymentStatus
-                                                );
-                                                setShowPaymentModal(true);
-                                            }}
-                                            className="text-admin-primary hover:text-admin-primary-dark text-xs flex items-center gap-1"
-                                        >
-                                            <FaEdit className="w-3 h-3" />
-                                            Update
-                                        </button>
+                                        <ProtectedComponent permission="orders.update">
+                                            <button
+                                                onClick={() => {
+                                                    setNewPaymentStatus(
+                                                        order.paymentStatus
+                                                    );
+                                                    setShowPaymentModal(true);
+                                                }}
+                                                className="text-admin-primary hover:text-admin-primary-dark text-xs flex items-center gap-1"
+                                            >
+                                                <FaEdit className="w-3 h-3" />
+                                                Update
+                                            </button>
+                                        </ProtectedComponent>
                                     </div>
                                 </div>
                             </div>

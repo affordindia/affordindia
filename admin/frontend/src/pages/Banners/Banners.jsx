@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { getBanners, deleteBanner } from "../../api/banners.api";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const Banners = () => {
     const [banners, setBanners] = useState([]);
@@ -140,13 +141,15 @@ const Banners = () => {
                         Manage website banners ({banners.length} banners)
                     </p>
                 </div>
-                <Link
-                    to="/banners/add"
-                    className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
-                >
-                    <FiPlus className="w-4 h-4" />
-                    Add Banner
-                </Link>
+                <ProtectedComponent permission="banners.create" view={true}>
+                    <Link
+                        to="/banners/add"
+                        className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
+                    >
+                        <FiPlus className="w-4 h-4" />
+                        Add Banner
+                    </Link>
+                </ProtectedComponent>
             </div>
 
             {/* Banners List */}
@@ -279,25 +282,35 @@ const Banners = () => {
 
                                     {/* Right Side - Actions */}
                                     <div className="flex lg:flex-col gap-3 lg:min-w-max">
-                                        <Link
-                                            to={`/banners/edit/${banner._id}`}
-                                            className="bg-admin-primary text-white py-2.5 px-6 rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center justify-center gap-2 font-medium"
+                                        <ProtectedComponent
+                                            permission="banners.update"
+                                            view={true}
                                         >
-                                            <FiEdit className="w-4 h-4" />
-                                            Edit Banner
-                                        </Link>
-                                        <button
-                                            onClick={() =>
-                                                handleDeleteBanner(
-                                                    banner._id,
-                                                    banner.title
-                                                )
-                                            }
-                                            className="bg-red-500 text-white py-2.5 px-6 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 font-medium"
+                                            <Link
+                                                to={`/banners/edit/${banner._id}`}
+                                                className="bg-admin-primary text-white py-2.5 px-6 rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center justify-center gap-2 font-medium"
+                                            >
+                                                <FiEdit className="w-4 h-4" />
+                                                Edit Banner
+                                            </Link>
+                                        </ProtectedComponent>
+                                        <ProtectedComponent
+                                            permission="banners.update"
+                                            view={true}
                                         >
-                                            <FiTrash2 className="w-4 h-4" />
-                                            Delete
-                                        </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDeleteBanner(
+                                                        banner._id,
+                                                        banner.title
+                                                    )
+                                                }
+                                                className="bg-red-500 text-white py-2.5 px-6 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 font-medium"
+                                            >
+                                                <FiTrash2 className="w-4 h-4" />
+                                                Delete
+                                            </button>
+                                        </ProtectedComponent>
                                     </div>
                                 </div>
                             </div>

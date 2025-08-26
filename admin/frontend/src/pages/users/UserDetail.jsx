@@ -21,6 +21,7 @@ import {
     unblockUser,
 } from "../../api/users.api.js";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const UserDetail = () => {
     const { id } = useParams();
@@ -169,27 +170,29 @@ const UserDetail = () => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                    <button
-                        onClick={handleToggleStatus}
-                        disabled={actionLoading}
-                        className={`flex items-center px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
-                            user.isActive
-                                ? "bg-red-600 hover:bg-red-700 text-white"
-                                : "bg-green-600 hover:bg-green-700 text-white"
-                        }`}
-                    >
-                        {user.isActive ? (
-                            <>
-                                <FaUserTimes className="mr-2" />
-                                Block User
-                            </>
-                        ) : (
-                            <>
-                                <FaUserCheck className="mr-2" />
-                                Unblock User
-                            </>
-                        )}
-                    </button>
+                    <ProtectedComponent permission="users.block" view={true}>
+                        <button
+                            onClick={handleToggleStatus}
+                            disabled={actionLoading}
+                            className={`flex items-center px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
+                                user.isActive
+                                    ? "bg-red-600 hover:bg-red-700 text-white"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
+                            }`}
+                        >
+                            {user.isActive ? (
+                                <>
+                                    <FaUserTimes className="mr-2" />
+                                    Block User
+                                </>
+                            ) : (
+                                <>
+                                    <FaUserCheck className="mr-2" />
+                                    Unblock User
+                                </>
+                            )}
+                        </button>
+                    </ProtectedComponent>
                 </div>
             </div>
 
@@ -503,13 +506,18 @@ const UserDetail = () => {
                             history.
                         </p>
                         {!showDeleteConfirm ? (
-                            <button
-                                onClick={() => setShowDeleteConfirm(true)}
-                                className="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            <ProtectedComponent
+                                permission="users.delete"
+                                view={true}
                             >
-                                <FaTrash className="mr-2" />
-                                Delete User Account
-                            </button>
+                                <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    <FaTrash className="mr-2" />
+                                    Delete User Account
+                                </button>
+                            </ProtectedComponent>
                         ) : (
                             <div className="space-y-3">
                                 <p className="text-sm font-medium text-red-600">

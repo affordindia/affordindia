@@ -19,6 +19,7 @@ import {
     FiTag,
 } from "react-icons/fi";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
@@ -266,37 +267,43 @@ const Coupons = () => {
 
                 {/* Right Section - Actions */}
                 <div className="flex-shrink-0 w-16 bg-gray-50 border-l-2 border-dashed border-gray-300 flex flex-col justify-center gap-1 p-1">
-                    <Link
-                        to={`/coupons/edit/${coupon._id}`}
-                        className="w-full bg-blue-600 text-white p-1.5 rounded text-center hover:bg-blue-700 transition-colors flex items-center justify-center"
-                        title="Edit Coupon"
-                    >
-                        <FiEdit className="w-3 h-3" />
-                    </Link>
-                    <button
-                        onClick={() => handleToggleStatus(coupon._id)}
-                        className={`w-full p-1.5 rounded flex items-center justify-center transition-colors ${
-                            coupon.isActive
-                                ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                                : "bg-green-500 text-white hover:bg-green-600"
-                        }`}
-                        title={coupon.isActive ? "Deactivate" : "Activate"}
-                    >
-                        {coupon.isActive ? (
-                            <FiToggleRight className="w-3 h-3" />
-                        ) : (
-                            <FiToggleLeft className="w-3 h-3" />
-                        )}
-                    </button>
-                    <button
-                        onClick={() =>
-                            handleDeleteCoupon(coupon._id, coupon.code)
-                        }
-                        className="w-full bg-red-500 text-white p-1.5 rounded hover:bg-red-600 transition-colors flex items-center justify-center"
-                        title="Delete Coupon"
-                    >
-                        <FiTrash2 className="w-3 h-3" />
-                    </button>
+                    <ProtectedComponent permission="coupons.update">
+                        <Link
+                            to={`/coupons/edit/${coupon._id}`}
+                            className="w-full bg-blue-600 text-white p-1.5 rounded text-center hover:bg-blue-700 transition-colors flex items-center justify-center"
+                            title="Edit Coupon"
+                        >
+                            <FiEdit className="w-3 h-3" />
+                        </Link>
+                    </ProtectedComponent>
+                    <ProtectedComponent permission="coupons.update">
+                        <button
+                            onClick={() => handleToggleStatus(coupon._id)}
+                            className={`w-full p-1.5 rounded flex items-center justify-center transition-colors ${
+                                coupon.isActive
+                                    ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                                    : "bg-green-500 text-white hover:bg-green-600"
+                            }`}
+                            title={coupon.isActive ? "Deactivate" : "Activate"}
+                        >
+                            {coupon.isActive ? (
+                                <FiToggleRight className="w-3 h-3" />
+                            ) : (
+                                <FiToggleLeft className="w-3 h-3" />
+                            )}
+                        </button>
+                    </ProtectedComponent>
+                    <ProtectedComponent permission="coupons.delete">
+                        <button
+                            onClick={() =>
+                                handleDeleteCoupon(coupon._id, coupon.code)
+                            }
+                            className="w-full bg-red-500 text-white p-1.5 rounded hover:bg-red-600 transition-colors flex items-center justify-center"
+                            title="Delete Coupon"
+                        >
+                            <FiTrash2 className="w-3 h-3" />
+                        </button>
+                    </ProtectedComponent>
                 </div>
             </div>
         </div>
@@ -342,13 +349,15 @@ const Coupons = () => {
                         <FiFilter className="w-4 h-4" />
                         Filters
                     </button>
-                    <Link
-                        to="/coupons/add"
-                        className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
-                    >
-                        <FiPlus className="w-4 h-4" />
-                        Add Coupon
-                    </Link>
+                    <ProtectedComponent permission="coupons.create" view={true}>
+                        <Link
+                            to="/coupons/add"
+                            className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
+                        >
+                            <FiPlus className="w-4 h-4" />
+                            Add Coupon
+                        </Link>
+                    </ProtectedComponent>
                 </div>
             </div>
 

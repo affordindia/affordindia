@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FiPlus, FiEdit, FiTrash2, FiImage } from "react-icons/fi";
 import { getCategories, deleteCategory } from "../../api/categories.api";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
@@ -111,13 +112,15 @@ const Categories = () => {
                         categories)
                     </p>
                 </div>
-                <Link
-                    to="/categories/add"
-                    className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
-                >
-                    <FiPlus className="w-4 h-4" />
-                    Add Category
-                </Link>
+                <ProtectedComponent permission="categories.create" view={true}>
+                    <Link
+                        to="/categories/add"
+                        className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors"
+                    >
+                        <FiPlus className="w-4 h-4" />
+                        Add Category
+                    </Link>
+                </ProtectedComponent>
             </div>
 
             {/* Categories Table */}
@@ -236,25 +239,36 @@ const Categories = () => {
                                         {/* Actions */}
                                         <td className="py-3 px-4">
                                             <div className="flex items-center justify-center gap-2">
-                                                <Link
-                                                    to={`/categories/edit/${category._id}`}
-                                                    className="bg-admin-primary text-white py-1.5 px-3 rounded text-sm hover:bg-admin-primary-dark transition-colors flex items-center gap-1"
+                                                <ProtectedComponent
+                                                    permission="categories.update"
+                                                    view={true}
                                                 >
-                                                    <FiEdit className="w-3 h-3" />
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDeleteCategory(
-                                                            category._id,
-                                                            category.name
-                                                        )
-                                                    }
-                                                    className="bg-red-500 text-white py-1.5 px-3 rounded text-sm hover:bg-red-600 transition-colors flex items-center gap-1"
+                                                    <Link
+                                                        to={`/categories/edit/${category._id}`}
+                                                        className="bg-admin-primary text-white py-1.5 px-3 rounded text-sm hover:bg-admin-primary-dark transition-colors flex items-center gap-1"
+                                                    >
+                                                        <FiEdit className="w-3 h-3" />
+                                                        Edit
+                                                    </Link>
+                                                </ProtectedComponent>
+
+                                                <ProtectedComponent
+                                                    permission="categories.update"
+                                                    view={true}
                                                 >
-                                                    <FiTrash2 className="w-3 h-3" />
-                                                    Delete
-                                                </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDeleteCategory(
+                                                                category._id,
+                                                                category.name
+                                                            )
+                                                        }
+                                                        className="bg-red-500 text-white py-1.5 px-3 rounded text-sm hover:bg-red-600 transition-colors flex items-center gap-1"
+                                                    >
+                                                        <FiTrash2 className="w-3 h-3" />
+                                                        Delete
+                                                    </button>
+                                                </ProtectedComponent>
                                             </div>
                                         </td>
                                     </tr>

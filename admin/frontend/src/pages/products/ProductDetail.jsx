@@ -15,6 +15,7 @@ import {
     toggleProductFeature,
 } from "../../api/products.api.js";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -155,35 +156,47 @@ const ProductDetail = () => {
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={handleToggleFeatured}
-                        className={`p-2 rounded-lg transition-colors ${
-                            product.isFeatured
-                                ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-                                : "bg-admin-bg text-admin-text-secondary hover:bg-yellow-100 hover:text-yellow-600"
-                        }`}
-                        title={
-                            product.isFeatured
-                                ? "Remove from featured"
-                                : "Mark as featured"
-                        }
+                    <ProtectedComponent permission="products.update">
+                        <button
+                            onClick={handleToggleFeatured}
+                            className={`p-2 rounded-lg transition-colors ${
+                                product.isFeatured
+                                    ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
+                                    : "bg-admin-bg text-admin-text-secondary hover:bg-yellow-100 hover:text-yellow-600"
+                            }`}
+                            title={
+                                product.isFeatured
+                                    ? "Remove from featured"
+                                    : "Mark as featured"
+                            }
+                        >
+                            <FaStar className="w-5 h-5" />
+                        </button>
+                    </ProtectedComponent>
+                    <ProtectedComponent
+                        permission="products.update"
+                        view={true}
                     >
-                        <FaStar className="w-5 h-5" />
-                    </button>
-                    <Link
-                        to={`/products/edit/${product._id}`}
-                        className="px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center gap-2"
+                        <Link
+                            to={`/products/edit/${product._id}`}
+                            className="px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center gap-2"
+                        >
+                            <FaEdit className="w-4 h-4" />
+                            Edit Product
+                        </Link>
+                    </ProtectedComponent>
+                    <ProtectedComponent
+                        permission="products.delete"
+                        view={true}
                     >
-                        <FaEdit className="w-4 h-4" />
-                        Edit Product
-                    </Link>
-                    <button
-                        onClick={() => setDeleteConfirm(true)}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
-                    >
-                        <FaTrash className="w-4 h-4" />
-                        Delete Product
-                    </button>
+                        <button
+                            onClick={() => setDeleteConfirm(true)}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                        >
+                            <FaTrash className="w-4 h-4" />
+                            Delete Product
+                        </button>
+                    </ProtectedComponent>
                 </div>
             </div>
 

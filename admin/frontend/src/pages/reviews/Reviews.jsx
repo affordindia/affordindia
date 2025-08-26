@@ -17,6 +17,7 @@ import {
     deleteReview,
 } from "../../api/reviews.api.js";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const Reviews = () => {
     // State management
@@ -538,45 +539,51 @@ const Reviews = () => {
                                     </span>
 
                                     <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() =>
-                                                handleToggleVisibility(
-                                                    review._id
-                                                )
-                                            }
-                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
-                                                review.isVisible
-                                                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                                                    : "bg-green-500 text-white hover:bg-green-600"
-                                            }`}
-                                            title={
-                                                review.isVisible
-                                                    ? "Hide Review"
-                                                    : "Show Review"
-                                            }
-                                        >
-                                            {review.isVisible ? (
-                                                <>
-                                                    <FaEyeSlash className="w-3 h-3" />
-                                                    Hide
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FaEye className="w-3 h-3" />
-                                                    Show
-                                                </>
-                                            )}
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleDeleteReview(review._id)
-                                            }
-                                            className="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs font-medium flex items-center gap-1.5"
-                                            title="Delete Review"
-                                        >
-                                            <FaTrash className="w-3 h-3" />
-                                            Delete
-                                        </button>
+                                        <ProtectedComponent permission="reviews.moderate">
+                                            <button
+                                                onClick={() =>
+                                                    handleToggleVisibility(
+                                                        review._id
+                                                    )
+                                                }
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                                                    review.isVisible
+                                                        ? "bg-orange-500 text-white hover:bg-orange-600"
+                                                        : "bg-green-500 text-white hover:bg-green-600"
+                                                }`}
+                                                title={
+                                                    review.isVisible
+                                                        ? "Hide Review"
+                                                        : "Show Review"
+                                                }
+                                            >
+                                                {review.isVisible ? (
+                                                    <>
+                                                        <FaEyeSlash className="w-3 h-3" />
+                                                        Hide
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaEye className="w-3 h-3" />
+                                                        Show
+                                                    </>
+                                                )}
+                                            </button>
+                                        </ProtectedComponent>
+                                        <ProtectedComponent permission="reviews.delete">
+                                            <button
+                                                onClick={() =>
+                                                    handleDeleteReview(
+                                                        review._id
+                                                    )
+                                                }
+                                                className="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs font-medium flex items-center gap-1.5"
+                                                title="Delete Review"
+                                            >
+                                                <FaTrash className="w-3 h-3" />
+                                                Delete
+                                            </button>
+                                        </ProtectedComponent>
                                     </div>
                                 </div>
                             </div>

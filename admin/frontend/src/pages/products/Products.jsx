@@ -4,6 +4,7 @@ import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
 import { getProducts } from "../../api/products.api.js";
 import { getCategories } from "../../api/categories.api.js";
 import Loader from "../../components/common/Loader.jsx";
+import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
 
 const Products = () => {
     const location = useLocation();
@@ -253,13 +254,15 @@ const Products = () => {
                         Manage your product inventory ({totalProducts} products)
                     </p>
                 </div>
-                <Link
-                    to="/products/add"
-                    className="bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center gap-2"
-                >
-                    <FaPlus className="w-4 h-4" />
-                    Add Product
-                </Link>
+                <ProtectedComponent permission="products.create" view={true}>
+                    <Link
+                        to="/products/add"
+                        className="bg-admin-primary text-white px-4 py-2 rounded-lg hover:bg-admin-primary-dark transition-colors flex items-center gap-2"
+                    >
+                        <FaPlus className="w-4 h-4" />
+                        Add Product
+                    </Link>
+                </ProtectedComponent>
             </div>
 
             {/* Filters */}
