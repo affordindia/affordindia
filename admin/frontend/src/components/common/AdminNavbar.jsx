@@ -7,6 +7,26 @@ import NavLogo from "../../assets/NavLogo.png";
 const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
     const { admin, logout } = useAuth();
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+    React.useEffect(() => {
+        const handleClickOutside = (e) => {
+            const dropdown = document.getElementById("admin-profile-dropdown");
+            const button = document.getElementById("admin-profile-btn");
+            if (
+                dropdown &&
+                !dropdown.contains(e.target) &&
+                button &&
+                !button.contains(e.target)
+            ) {
+                setProfileDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const [notificationOpen, setNotificationOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -54,7 +74,7 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                     {/* Right side */}
                     <div className="flex items-center space-x-6">
                         {/* Notifications */}
-                        <div className="relative">
+                        {/* <div className="relative">
                             <button
                                 onClick={() =>
                                     setNotificationOpen(!notificationOpen)
@@ -65,10 +85,10 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                                     3
                                 </span>
-                            </button>
+                            </button> */}
 
-                            {/* Notification Dropdown */}
-                            {notificationOpen && (
+                        {/* Notification Dropdown */}
+                        {/* {notificationOpen && (
                                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                     <div className="p-4 border-b border-gray-200">
                                         <h3 className="text-sm font-semibold text-gray-900">
@@ -108,14 +128,16 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </div> */}
 
                         {/* Profile Dropdown */}
                         <div className="relative">
                             <button
-                                onClick={() =>
-                                    setProfileDropdownOpen(!profileDropdownOpen)
-                                }
+                                id="admin-profile-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setProfileDropdownOpen((open) => !open);
+                                }}
                                 className="flex items-center space-x-2 p-2 rounded-lg text-admin-text-secondary hover:bg-admin-bg hover:text-admin-text focus:outline-none focus:ring-2 focus:ring-admin-primary transition-all duration-200"
                             >
                                 <div className="w-8 h-8 bg-admin-primary rounded-full flex items-center justify-center">
@@ -128,7 +150,10 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
 
                             {/* Profile Dropdown Menu */}
                             {profileDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div
+                                    id="admin-profile-dropdown"
+                                    className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                                >
                                     <div className="p-3 border-b border-gray-200">
                                         <p className="text-sm font-medium text-gray-900">
                                             {admin?.name || "Admin User"}
@@ -136,6 +161,12 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                                         <p className="text-xs text-gray-500">
                                             {admin?.email ||
                                                 "admin@affordindia.com"}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Access Level:{" "}
+                                            <span className="font-semibold">
+                                                {admin?.accessLevel ?? "-"}
+                                            </span>
                                         </p>
                                     </div>
                                     <div className="py-1">
@@ -147,7 +178,7 @@ const AdminNavbar = ({ toggleSidebar, sidebarOpen }) => {
                                             }
                                         >
                                             <FaUser className="mr-3 w-4 h-4" />
-                                            Profile Settings
+                                            Profile
                                         </Link>
                                         <button
                                             onClick={handleLogout}

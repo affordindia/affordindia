@@ -8,6 +8,7 @@ import Loader from "./components/common/Loader.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Analytics from "./pages/analytics/Analytics.jsx";
+import Profile from "./pages/profile/Profile.jsx";
 import Products from "./pages/products/Products.jsx";
 import ProductDetail from "./pages/products/ProductDetail.jsx";
 import AddProduct from "./pages/products/AddProduct.jsx";
@@ -115,6 +116,14 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <Dashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/profile"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Profile />
                                         </ProtectedRoute>
                                     }
                                 />
