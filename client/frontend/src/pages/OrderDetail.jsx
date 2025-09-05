@@ -155,7 +155,7 @@ const OrderDetail = () => {
                                 Order Details
                             </h1>
                             <p className="text-gray-600">
-                                {order.orderId} • Placed on{" "}
+                                #{order.orderId} • Placed on{" "}
                                 {new Date(order.createdAt).toLocaleDateString(
                                     "en-IN",
                                     {

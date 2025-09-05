@@ -169,7 +169,7 @@ const Orders = () => {
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                                     <div>
                                         <h3 className="font-semibold text-[#404040]">
-                                            Order #{order._id.slice(-8)}
+                                            Order #{order.orderId}
                                         </h3>
                                         <p className="text-sm text-gray-600">
                                             Placed on{" "}

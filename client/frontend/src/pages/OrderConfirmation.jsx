@@ -74,7 +74,7 @@ const OrderConfirmation = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
                             <h2 className="text-lg font-semibold text-[#404040]">
-                                Order #{order._id.slice(-8)}
+                                Order #{order.orderId}
                             </h2>
                             <p className="text-sm text-gray-600">
                                 Placed on{" "}
