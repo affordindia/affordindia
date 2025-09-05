@@ -41,7 +41,7 @@ const Checkout = () => {
         pincode: "",
         country: "India",
     });
-    const [paymentMethod, setPaymentMethod] = useState("COD");
+    const [paymentMethod, setPaymentMethod] = useState("ONLINE");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");
@@ -502,6 +502,7 @@ const Checkout = () => {
                         shippingFee={shippingInfo.shippingFee}
                         shippingInfo={shippingInfo}
                         total={total}
+                        paymentMethod={paymentMethod}
                         onPlaceOrder={handlePlaceOrder}
                         loading={loading}
                         disabled={

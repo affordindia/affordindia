@@ -9,6 +9,7 @@ const OrderSummary = ({
     shippingFee,
     shippingInfo,
     total,
+    paymentMethod,
     onPlaceOrder,
     loading,
     disabled,
@@ -133,8 +134,10 @@ const OrderSummary = ({
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Placing Order...
                     </div>
-                ) : (
+                ) : paymentMethod === "COD" ? (
                     `Place Order - ₹${total.toLocaleString()}`
+                ) : (
+                    `Pay Online - ₹${total.toLocaleString()}`
                 )}
             </button>
 
