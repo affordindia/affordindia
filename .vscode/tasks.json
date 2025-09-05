@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Admin Frontend",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/admin/frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Admin Backend",
+            "type": "shell",
+            "command": "npm run server",
+            "options": {
+                "cwd": "${workspaceFolder}/admin/backend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Client Frontend",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/client/frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Client Backend",
+            "type": "shell",
+            "command": "npm run server",
+            "options": {
+                "cwd": "${workspaceFolder}/client/backend"
+            },
+            "problemMatcher": []
+        }
+    ],
+    "compounds": [
+        {
+            "label": "Start All",
+            "dependsOn": [
+                "Admin Frontend",
+                "Admin Backend",
+                "Client Frontend",
+                "Client Backend"
+            ],
+            "dependsOrder": "parallel"
+        }
+    ]
+}

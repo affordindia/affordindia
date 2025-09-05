@@ -229,7 +229,10 @@ const Checkout = () => {
                     : undefined,
             };
 
-            const order = await createOrder(orderData);
+            const response = await createOrder(orderData);
+
+            // Handle wrapped response from backend
+            const order = response.order || response;
 
             if (!order || !order._id) {
                 throw new Error("Invalid order response from server");
@@ -253,12 +256,37 @@ const Checkout = () => {
                 }
             }
 
-            // Clear cart and navigate to confirmation
-            await clearCart();
+            // Handle different payment methods
+            if (paymentMethod === "ONLINE") {
+                // For online payment, check if we got a payment URL
+                const paymentUrl = order.paymentUrl || response.paymentUrl;
+                if (paymentUrl) {
+                    console.log(
+                        "🔄 Redirecting to payment gateway:",
+                        paymentUrl
+                    );
 
-            // Navigate using React Router (preserves console logs)
-            navigate(`/order-confirmation/${order._id}`, { replace: true });
-            return;
+                    // Clear cart before redirecting to payment
+                    await clearCart();
+
+                    // Store order ID in localStorage for return handling
+                    localStorage.setItem("pendingOrderId", order._id);
+
+                    // Redirect to HDFC payment gateway
+                    window.location.href = paymentUrl;
+                    return; // Stop execution here as we're redirecting
+                } else {
+                    throw new Error("Payment URL not received from server");
+                }
+            } else {
+                // For COD, proceed normally
+                console.log("✅ COD order placed successfully");
+
+                // Clear cart and navigate to confirmation
+                await clearCart();
+                navigate(`/payment/status/${order._id}`, { replace: true });
+                return;
+            }
         } catch (error) {
             console.error("Order placement failed:", error);
 

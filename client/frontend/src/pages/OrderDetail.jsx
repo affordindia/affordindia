@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
+import { verifyPaymentStatus } from "../api/payment.js";
 import Loader from "../components/common/Loader.jsx";
 import {
     FaArrowLeft,
@@ -20,6 +21,8 @@ const OrderDetail = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [verifyingPayment, setVerifyingPayment] = useState(false);
+    const [verificationMessage, setVerificationMessage] = useState("");
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -39,6 +42,34 @@ const OrderDetail = () => {
             fetchOrder();
         }
     }, [orderId]);
+
+    const handleVerifyPayment = async () => {
+        try {
+            setVerifyingPayment(true);
+            setVerificationMessage("");
+
+            const response = await verifyPaymentStatus(orderId);
+
+            if (response.success) {
+                setVerificationMessage("Payment verified successfully!");
+
+                // Refresh order data to get updated payment status
+                const updatedOrder = await getOrderById(orderId);
+                setOrder(updatedOrder);
+            } else {
+                setVerificationMessage(
+                    response.message || "Payment verification failed"
+                );
+            }
+        } catch (error) {
+            console.error("Payment verification failed:", error);
+            setVerificationMessage(
+                "Failed to verify payment. Please try again."
+            );
+        } finally {
+            setVerifyingPayment(false);
+        }
+    };
 
     const getStatusIcon = (status) => {
         switch (status?.toLowerCase()) {
@@ -124,7 +155,7 @@ const OrderDetail = () => {
                                 Order Details
                             </h1>
                             <p className="text-gray-600">
-                                Order #{order._id.slice(-8)} • Placed on{" "}
+                                {order.orderId} • Placed on{" "}
                                 {new Date(order.createdAt).toLocaleDateString(
                                     "en-IN",
                                     {
@@ -189,6 +220,116 @@ const OrderDetail = () => {
                                             {order.receiverPhone}
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Payment Information */}
+                        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                                <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
+                                    <FaCreditCard />
+                                    Payment Information
+                                </h2>
+                            </div>
+                            <div className="p-4">
+                                <div className="space-y-3 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="font-medium">
+                                            Payment Method:
+                                        </span>
+                                        <span className="capitalize">
+                                            {order.paymentMethod === "COD"
+                                                ? "Cash on Delivery"
+                                                : "Online Payment"}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-medium">
+                                            Payment Status:
+                                        </span>
+                                        <span
+                                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                order.paymentStatus === "paid"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : order.paymentStatus ===
+                                                      "failed"
+                                                    ? "bg-red-100 text-red-800"
+                                                    : "bg-yellow-100 text-yellow-800"
+                                            }`}
+                                        >
+                                            {order.paymentStatus === "paid"
+                                                ? "Paid"
+                                                : order.paymentStatus ===
+                                                  "failed"
+                                                ? "Failed"
+                                                : "Pending"}
+                                        </span>
+                                    </div>
+                                    {order.paymentVerifiedAt && (
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">
+                                                Payment Verified:
+                                            </span>
+                                            <span className="text-green-600">
+                                                {new Date(
+                                                    order.paymentVerifiedAt
+                                                ).toLocaleDateString("en-IN")}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Payment Action Buttons */}
+                                    {order.paymentMethod === "ONLINE" &&
+                                        order.paymentStatus !== "paid" && (
+                                            <div className="mt-4 pt-3 border-t">
+                                                <button
+                                                    onClick={
+                                                        handleVerifyPayment
+                                                    }
+                                                    disabled={verifyingPayment}
+                                                    className="bg-[#C1B086] text-white px-4 py-2 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                                >
+                                                    {verifyingPayment ? (
+                                                        <>
+                                                            <FaClock className="animate-spin" />
+                                                            Verifying...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FaCheckCircle />
+                                                            Verify Payment
+                                                        </>
+                                                    )}
+                                                </button>
+
+                                                {verificationMessage && (
+                                                    <div
+                                                        className={`mt-2 p-2 rounded text-xs ${
+                                                            verificationMessage.includes(
+                                                                "successfully"
+                                                            )
+                                                                ? "bg-green-50 text-green-700 border border-green-200"
+                                                                : "bg-red-50 text-red-700 border border-red-200"
+                                                        }`}
+                                                    >
+                                                        {verificationMessage}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                    {order.paymentMethod === "ONLINE" &&
+                                        order.paymentStatus === "pending" && (
+                                            <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                                <p className="text-xs text-yellow-700">
+                                                    ⚠️ Your payment is still
+                                                    pending. If you've already
+                                                    paid, click "Verify Payment"
+                                                    to check the status.
+                                                </p>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         </div>

@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import { generateOrderId } from "../utils/orderId.util.js";
 
 const orderSchema = new mongoose.Schema(
     {
+        orderId: {
+            type: String,
+            unique: true,
+            default: generateOrderId,
+            index: true,
+        },
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
@@ -38,6 +45,12 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
         paymentInfo: { type: Object },
+        paymentGateway: { type: String }, // 'HDFC', 'COD'
+        paymentSessionId: { type: String }, // HDFC session ID from session API
+        paymentResponse: { type: Object }, // Full HDFC response from status API
+        paymentSessionData: { type: Object }, // Original HDFC session creation response for verification
+        paymentUrl: { type: String }, // Payment URL for frontend redirect
+        paymentVerifiedAt: { type: Date }, // When payment was confirmed
         status: {
             type: String,
             enum: [

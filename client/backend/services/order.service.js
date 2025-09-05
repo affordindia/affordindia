@@ -4,6 +4,7 @@ import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
+import { createPaymentSession } from "./paymentGateway.service.js";
 
 export const placeOrder = async (
     userId,
@@ -14,8 +15,22 @@ export const placeOrder = async (
     receiverName = undefined,
     receiverPhone = undefined
 ) => {
+    console.log("🛒 Attempting to place order for user:", userId);
+
     // Get user's cart
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
+
+    console.log("🛒 Cart found:", cart ? `${cart.items.length} items` : "null");
+    if (cart) {
+        console.log(
+            "🛒 Cart items:",
+            cart.items.map((item) => ({
+                product: item.product?.name || item.product?._id,
+                quantity: item.quantity,
+            }))
+        );
+    }
+
     if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
     // Update user's name if provided and not already set
@@ -71,7 +86,7 @@ export const placeOrder = async (
             : null;
 
     // Use shipping service for consistent calculation
-    const { shippingFee } = calculateShipping(
+    const { shippingFee } = await calculateShipping(
         subtotal - totalDiscount - couponDiscount
     );
 
@@ -102,6 +117,7 @@ export const placeOrder = async (
         paymentMethod,
         paymentStatus,
         paymentInfo,
+        paymentGateway: paymentMethod === "COD" ? "COD" : "HDFC",
         status: "pending",
         subtotal,
         totalDiscount,
@@ -112,6 +128,59 @@ export const placeOrder = async (
         receiverPhone,
         coupon: appliedCoupon,
     });
+
+    // Add userName to order object for payment gateway use
+    if (userName) {
+        order.userName = userName;
+    }
+
+    // Handle payment method specific logic
+    let paymentUrl = null;
+
+    if (paymentMethod === "ONLINE") {
+        try {
+            console.log(
+                "🔄 Creating HDFC payment session for order:",
+                order._id
+            );
+            console.log("🔢 Using custom Order ID for payment:", order.orderId);
+
+            // Create payment session with HDFC (using custom orderId)
+            const paymentSessionResponse = await createPaymentSession(order);
+
+            // Extract payment details directly
+            const sessionId = paymentSessionResponse.id;
+            paymentUrl = paymentSessionResponse.payment_links?.web;
+
+            // Update order with payment session details
+            await Order.findByIdAndUpdate(order._id, {
+                paymentSessionId: sessionId,
+                paymentUrl: paymentUrl,
+                paymentSessionData: paymentSessionResponse, // Store for verification
+            });
+
+            console.log(
+                "✅ Payment session created successfully for order:",
+                order._id
+            );
+            console.log("💳 Payment URL:", paymentUrl);
+        } catch (error) {
+            console.error(
+                "❌ Payment session creation failed for order:",
+                order._id,
+                error
+            );
+
+            // If payment session creation fails, we should handle this gracefully
+            // Option 1: Fail the entire order creation
+            // Option 2: Mark order as failed and allow manual retry
+
+            // For now, we'll fail the order creation
+            throw new Error(
+                `Payment session creation failed: ${error.message}`
+            );
+        }
+    }
 
     // Clear cart including applied coupon
     cart.items = [];
@@ -139,7 +208,7 @@ export const placeOrder = async (
     }
 
     // Format response with totalDiscount and discountedPrice per item
-    return {
+    const orderResponse = {
         ...order.toObject(),
         totalDiscount: order.totalDiscount,
         items: order.items.map((item) => ({
@@ -147,6 +216,16 @@ export const placeOrder = async (
             discountedPrice: item.discountedPrice,
         })),
     };
+
+    // Add payment URL for online payments
+    if (paymentMethod === "ONLINE" && paymentUrl) {
+        orderResponse.paymentUrl = paymentUrl;
+        orderResponse.requiresPayment = true;
+    } else {
+        orderResponse.requiresPayment = false;
+    }
+
+    return orderResponse;
 };
 
 export const getUserOrders = async (userId) => {
@@ -184,6 +263,7 @@ export const getOrderById = async (userId, orderId) => {
             path: "user",
             select: "name phone",
         });
+
     if (!order) throw new Error("Order not found");
     // Format for API consistency
     return {

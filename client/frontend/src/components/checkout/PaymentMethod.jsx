@@ -54,34 +54,35 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                     </div>
                 </label>
 
-                {/* Online Payment - Disabled for now */}
-                <label className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg cursor-not-allowed bg-gray-50 opacity-60">
+                {/* Online Payment - Now Enabled */}
+                <label className="flex items-center gap-4 p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                     <input
                         type="radio"
                         name="payment"
                         value="ONLINE"
-                        disabled
-                        className="w-4 h-4 text-gray-400"
+                        checked={selected === "ONLINE"}
+                        onChange={(e) => onChange(e.target.value)}
+                        className="w-4 h-4 text-[#C1B086] focus:ring-[#C1B086]"
                     />
                     <div className="flex items-center gap-3 flex-1">
                         <div className="p-2 bg-blue-100 rounded-lg">
                             <FaCreditCard className="text-blue-600" />
                         </div>
                         <div>
-                            <div className="font-medium text-gray-400">
+                            <div className="font-medium text-[#404040]">
                                 Online Payment
                             </div>
-                            <div className="text-sm text-gray-400">
+                            <div className="text-sm text-gray-600">
                                 Credit Card, Debit Card, UPI, Net Banking
                             </div>
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-sm font-medium text-orange-500">
-                            Coming Soon
+                        <div className="text-sm font-medium text-blue-600">
+                            Available
                         </div>
-                        <div className="text-xs text-gray-400">
-                            Integration in progress
+                        <div className="text-xs text-gray-500">
+                            Secure payment via HDFC
                         </div>
                     </div>
                 </label>
@@ -104,6 +105,23 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                 </div>
             )}
 
+            {selected === "ONLINE" && (
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-700 mb-2">
+                        <FaCreditCard />
+                        <span className="font-medium">
+                            Online Payment Selected
+                        </span>
+                    </div>
+                    <div className="text-sm text-blue-600">
+                        <p>• Secure payment via HDFC SmartGateway</p>
+                        <p>• Supports Credit/Debit Cards, UPI, Net Banking</p>
+                        <p>• Complete payment to confirm your order</p>
+                        <p>• You'll be redirected to payment gateway</p>
+                    </div>
+                </div>
+            )}
+
             {/* Security Notice */}
             <div className="mt-4 flex items-center gap-2 text-xs text-gray-600">
                 <FaLock />
@@ -112,7 +130,7 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
 
             {/* Future Payment Methods Preview */}
             <div className="mt-4 text-xs text-gray-500">
-                <p>Coming soon: Razorpay integration for online payments</p>
+                <p>Powered by HDFC SmartGateway - Your payments are secure</p>
             </div>
         </div>
     );

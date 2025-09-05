@@ -135,6 +135,63 @@ const OrderConfirmation = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Payment Information */}
+                <div className="px-6 py-4 border-b">
+                    <h3 className="font-semibold text-[#404040] mb-2">
+                        Payment Information
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                            <span className="font-medium">Payment Method:</span>
+                            <span className="capitalize">
+                                {order.paymentMethod === "COD"
+                                    ? "Cash on Delivery"
+                                    : "Online Payment"}
+                            </span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="font-medium">Payment Status:</span>
+                            <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    order.paymentStatus === "paid"
+                                        ? "bg-green-100 text-green-800"
+                                        : order.paymentStatus === "failed"
+                                        ? "bg-red-100 text-red-800"
+                                        : "bg-yellow-100 text-yellow-800"
+                                }`}
+                            >
+                                {order.paymentStatus === "paid"
+                                    ? "Paid"
+                                    : order.paymentStatus === "failed"
+                                    ? "Failed"
+                                    : "Pending"}
+                            </span>
+                        </div>
+                        {order.paymentMethod === "ONLINE" &&
+                            order.paymentStatus === "pending" && (
+                                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                    <p className="text-xs text-yellow-700">
+                                        ⚠️ Payment is still pending. Please
+                                        complete the payment to confirm your
+                                        order.
+                                    </p>
+                                </div>
+                            )}
+                        {order.paymentVerifiedAt && (
+                            <div className="flex justify-between">
+                                <span className="font-medium">
+                                    Payment Verified:
+                                </span>
+                                <span className="text-green-600">
+                                    {new Date(
+                                        order.paymentVerifiedAt
+                                    ).toLocaleDateString("en-IN")}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
                 {/* Order Items */}
                 <div className="px-6 py-4">
                     <h3 className="font-semibold text-[#404040] mb-3 flex items-center gap-2">

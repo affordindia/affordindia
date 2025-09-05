@@ -17,6 +17,7 @@ export const createOrder = async (req, res, next) => {
             receiverName,
             receiverPhone,
         } = req.body;
+
         const order = await placeOrder(
             req.user._id,
             shippingAddress,
@@ -26,7 +27,26 @@ export const createOrder = async (req, res, next) => {
             receiverName,
             receiverPhone
         );
-        res.status(201).json(order);
+
+        // Customize response based on payment method
+        if (order.requiresPayment && order.paymentUrl) {
+            // Online payment - return payment URL
+            res.status(201).json({
+                success: true,
+                message: "Order created successfully. Please complete payment.",
+                order: order,
+                paymentUrl: order.paymentUrl,
+                requiresPayment: true,
+            });
+        } else {
+            // COD or payment session already handled
+            res.status(201).json({
+                success: true,
+                message: "Order created successfully.",
+                order: order,
+                requiresPayment: false,
+            });
+        }
     } catch (err) {
         next(err);
     }
