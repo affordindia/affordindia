@@ -111,17 +111,11 @@ export const handleHdfcWebhook = async (req, res) => {
                 break;
 
             case "TXN_CHARGED":
-                console.log(
-                    `💰 Transaction charged for: ${webhookData.content.txn?.order_id}`
-                );
-                // Transaction charged - this usually follows ORDER_SUCCEEDED
+                await handleTransactionEvent(webhookData);
                 break;
 
             case "TXN_FAILED":
-                console.log(
-                    `❌ Transaction failed for: ${webhookData.content.txn?.order_id}`
-                );
-                // Transaction failed - this usually follows ORDER_FAILED
+                await handleTransactionEvent(webhookData);
                 break;
 
             default:
@@ -172,14 +166,19 @@ async function handleOrderEvent(webhookData) {
                 "❌ Webhook payment data verification failed:",
                 verification.errors
             );
-            // For webhook, we log the error but don't completely fail
-            // This allows manual investigation of discrepancies
             console.error(
                 "🚨 SECURITY ALERT: Payment data mismatch detected in webhook"
             );
             console.error("📋 Order ID:", customOrderId);
-            console.error("📋 Verification details:", verification.details);
-            // Continue processing but mark it for review
+
+            // Update order status to failed due to verification failure
+            await Order.findByIdAndUpdate(order._id, {
+                paymentStatus: "failed",
+                status: "failed",
+                paymentFailureReason: "Webhook verification failed",
+            });
+
+            // Continue processing webhook events
         } else {
             console.log("✅ Webhook payment data verification passed");
         }
@@ -232,8 +231,74 @@ async function handleTransactionEvent(webhookData) {
         console.log(`💳 Processing transaction event: ${eventName}`);
         console.log(`💳 Transaction data:`, transactionData);
 
+        if (eventName === "TXN_FAILED") {
+            const txnData = transactionData.txn || transactionData;
+            const orderId = txnData.order_id;
+
+            if (!orderId) {
+                console.log("❌ No order ID found in TXN_FAILED event");
+                return;
+            }
+
+            console.log(`❌ Transaction failed for order: ${orderId}`);
+
+            // Find order by custom order ID
+            const order = await Order.findOne({ orderId: orderId });
+            if (!order) {
+                console.log(`❌ Order not found for TXN_FAILED: ${orderId}`);
+                return;
+            }
+
+            // Update order status to failed
+            const updateData = {
+                paymentStatus: "failed",
+                status: "failed",
+                paymentResponse: txnData,
+                paymentVerifiedAt: new Date(),
+                paymentFailureReason: "Transaction failed (TXN_FAILED webhook)",
+            };
+
+            await Order.findByIdAndUpdate(order._id, updateData);
+            console.log(
+                `📊 Updated order ${orderId} status to failed due to TXN_FAILED`
+            );
+        } else if (eventName === "TXN_CHARGED") {
+            const txnData = transactionData.txn || transactionData;
+            const orderId = txnData.order_id;
+
+            if (!orderId) {
+                console.log("❌ No order ID found in TXN_CHARGED event");
+                return;
+            }
+
+            console.log(`💰 Transaction charged for order: ${orderId}`);
+
+            // Find order by custom order ID
+            const order = await Order.findOne({ orderId: orderId });
+            if (!order) {
+                console.log(`❌ Order not found for TXN_CHARGED: ${orderId}`);
+                return;
+            }
+
+            // Update order status to processing if not already processed
+            if (order.paymentStatus !== "paid") {
+                const updateData = {
+                    paymentStatus: "paid",
+                    status: "processing",
+                    paymentResponse: txnData,
+                    paymentVerifiedAt: new Date(),
+                };
+
+                await Order.findByIdAndUpdate(order._id, updateData);
+                console.log(
+                    `📊 Updated order ${orderId} status to paid due to TXN_CHARGED`
+                );
+            } else {
+                console.log(`✅ Order ${orderId} already marked as paid`);
+            }
+        }
+
         // Additional transaction-specific processing can be added here
-        // For now, we primarily handle order events
     } catch (error) {
         console.error("❌ Transaction event processing failed:", error);
         throw error;
@@ -295,6 +360,10 @@ export const checkPaymentStatus = async (req, res) => {
 
             if (paymentStatus === "paid") {
                 updateData.status = "processing";
+            } else if (paymentStatus === "failed") {
+                updateData.status = "failed";
+                updateData.paymentFailureReason =
+                    "Payment failed (legacy check)";
             }
 
             await Order.findByIdAndUpdate(order._id, updateData);
@@ -394,6 +463,16 @@ export const verifyPayment = async (req, res) => {
                 "❌ Payment data verification failed:",
                 verification.errors
             );
+
+            // Update order status to failed
+            await Order.findByIdAndUpdate(order._id, {
+                paymentStatus: "failed",
+                status: "failed",
+                paymentResponse: paymentStatusResponse,
+                paymentVerifiedAt: new Date(),
+                paymentFailureReason: "Payment verification failed",
+            });
+
             return res.status(400).json({
                 success: false,
                 message: "Payment data verification failed",
@@ -452,6 +531,23 @@ export const verifyPayment = async (req, res) => {
         });
     } catch (error) {
         console.error("❌ Payment verification failed:", error);
+
+        // Try to update order status to failed
+        try {
+            const { orderId } = req.params;
+            const userId = req.user._id;
+            const order = await Order.findOne({ _id: orderId, user: userId });
+            if (order && order.paymentMethod !== "COD") {
+                await Order.findByIdAndUpdate(order._id, {
+                    paymentStatus: "failed",
+                    status: "failed",
+                    paymentFailureReason: "Payment processing error",
+                });
+            }
+        } catch (updateError) {
+            console.error("❌ Failed to update order status:", updateError);
+        }
+
         res.status(500).json({
             success: false,
             message: "Payment verification failed",
@@ -545,7 +641,7 @@ export const handleHdfcReturn = async (req, res) => {
         }
 
         // Find order by custom order ID
-        const order = await Order.findOne({ orderId: order_id });
+        let order = await Order.findOne({ orderId: order_id });
         if (!order) {
             console.log("❌ Order not found for return callback:", order_id);
             return res.redirect(
@@ -568,6 +664,16 @@ export const handleHdfcReturn = async (req, res) => {
                 "❌ Payment data verification failed in return callback:",
                 verification.errors
             );
+
+            // Update order status to failed
+            await Order.findByIdAndUpdate(order._id, {
+                paymentStatus: "failed",
+                status: "failed",
+                paymentResponse: paymentStatusResponse,
+                paymentVerifiedAt: new Date(),
+                paymentFailureReason: "Return callback verification failed",
+            });
+
             return res.redirect(
                 `${
                     process.env.FRONTEND_URL

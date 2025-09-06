@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema(
         paymentMethod: { type: String },
         paymentStatus: {
             type: String,
-            enum: ["pending", "paid", "failed"],
+            enum: ["pending", "paid", "failed", "cod"],
             default: "pending",
         },
         paymentInfo: { type: Object },
@@ -60,6 +60,7 @@ const orderSchema = new mongoose.Schema(
                 "delivered",
                 "cancelled",
                 "returned",
+                "failed",
             ],
             default: "pending",
         },
@@ -80,6 +81,7 @@ const orderSchema = new mongoose.Schema(
             discountValue: Number,
         },
         notes: { type: String },
+        paymentFailureReason: { type: String }, // Simple field to track why payment failed
     },
     { timestamps: true }
 );

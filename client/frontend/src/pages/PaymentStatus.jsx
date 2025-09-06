@@ -33,39 +33,38 @@ const PaymentStatus = () => {
                 if (errorType) {
                     // Handle backend error redirects with specific status types
                     let errorMessage =
-                        "An error occurred during payment processing.";
+                        "Something went wrong with your payment. Please try again.";
                     let specificStatus = "error";
 
                     switch (errorType) {
                         case "invalid_signature":
                             errorMessage =
-                                "Payment verification failed due to invalid signature.";
+                                "There was a security issue with your payment. Please try again.";
                             specificStatus = "signature_error";
                             break;
                         case "missing_order_id":
                             errorMessage =
-                                "Order ID is missing from the payment response.";
+                                "Payment information is incomplete. Please try placing your order again.";
                             specificStatus = "missing_data_error";
                             break;
                         case "order_not_found":
-                            errorMessage = "Order not found in our system.";
+                            errorMessage =
+                                "We couldn't find your order. Please check your order history or try again.";
                             specificStatus = "order_error";
                             break;
                         case "verification_failed":
-                            errorMessage = `Payment data verification failed. ${
-                                errorDetails
-                                    ? decodeURIComponent(errorDetails)
-                                    : ""
-                            }`;
+                            errorMessage =
+                                "Payment verification failed for security reasons. Please try again or contact support.";
                             specificStatus = "verification_error";
                             break;
                         case "processing_failed":
                             errorMessage =
-                                "Payment processing failed. Please contact support.";
+                                "Something went wrong while processing your payment. Please try again.";
                             specificStatus = "processing_error";
                             break;
                         default:
-                            errorMessage = `Payment error: ${errorType}`;
+                            errorMessage =
+                                "Something went wrong with your payment. Please try again.";
                             specificStatus = "error";
                     }
 
@@ -247,7 +246,7 @@ const PaymentStatus = () => {
                 return {
                     title: "Payment Failed",
                     message:
-                        "Your payment could not be processed. Please try again.",
+                        "We couldn't process your payment. Don't worry - your order hasn't been placed and you haven't been charged.",
                     icon: "❌",
                     color: "text-red-600",
                     bgColor: "bg-red-50",
@@ -293,9 +292,9 @@ const PaymentStatus = () => {
                 };
             case "signature_error":
                 return {
-                    title: "Security Verification Failed",
+                    title: "Security Check Failed",
                     message:
-                        "Payment signature verification failed. This may indicate a security issue.",
+                        "For your protection, we couldn't verify this payment. Please try again with a new payment.",
                     icon: "🔒",
                     color: "text-red-600",
                     bgColor: "bg-red-50",
@@ -313,17 +312,16 @@ const PaymentStatus = () => {
                 };
             case "verification_error":
                 return {
-                    title: "Payment Verification Failed",
+                    title: "Payment Verification Issue",
                     message:
-                        error ||
-                        "Payment data verification failed. This is a security measure to protect your transaction.",
+                        "We couldn't verify your payment details for security reasons. Please try again or use a different payment method.",
                     icon: "🛡️",
                     color: "text-red-600",
                     bgColor: "bg-red-50",
                     borderColor: "border-red-200",
                     actions: [
                         {
-                            text: "Start New Payment",
+                            text: "Try Again",
                             action: () => navigate("/checkout"),
                         },
                         {
@@ -336,7 +334,7 @@ const PaymentStatus = () => {
                 return {
                     title: "Order Not Found",
                     message:
-                        "The order associated with this payment could not be found in our system.",
+                        "We couldn't find your order details. You can check your order history or contact us for help.",
                     icon: "📋",
                     color: "text-orange-600",
                     bgColor: "bg-orange-50",
@@ -355,9 +353,9 @@ const PaymentStatus = () => {
                 };
             case "missing_data_error":
                 return {
-                    title: "Missing Payment Information",
+                    title: "Payment Information Incomplete",
                     message:
-                        "Required payment information is missing from the response.",
+                        "Some payment information is missing. Please try placing your order again.",
                     icon: "📄",
                     color: "text-yellow-600",
                     bgColor: "bg-yellow-50",
@@ -375,9 +373,9 @@ const PaymentStatus = () => {
                 };
             case "processing_error":
                 return {
-                    title: "Processing Error",
+                    title: "Payment Processing Issue",
                     message:
-                        "An error occurred while processing your payment. Our team has been notified.",
+                        "Something went wrong while processing your payment. Don't worry - our team has been notified and will help resolve this.",
                     icon: "⚡",
                     color: "text-red-600",
                     bgColor: "bg-red-50",
@@ -388,16 +386,16 @@ const PaymentStatus = () => {
                             action: () => navigate("/contact"),
                         },
                         {
-                            text: "Try Different Payment",
+                            text: "Try Again",
                             action: () => navigate("/checkout"),
                         },
                     ],
                 };
             case "error":
                 return {
-                    title: "Payment Error",
+                    title: "Payment Issue",
                     message:
-                        error || "An error occurred during payment processing.",
+                        "Something went wrong with your payment. Don't worry - you haven't been charged if the payment failed.",
                     icon: "⚠️",
                     color: "text-red-600",
                     bgColor: "bg-red-50",
@@ -416,8 +414,9 @@ const PaymentStatus = () => {
                 };
             default:
                 return {
-                    title: "Payment Status Unknown",
-                    message: error || "Unable to determine payment status.",
+                    title: "Unable to Check Payment Status",
+                    message:
+                        "We're having trouble checking your payment status. Please contact support for assistance.",
                     icon: "❓",
                     color: "text-gray-600",
                     bgColor: "bg-gray-50",
