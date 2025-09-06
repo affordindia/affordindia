@@ -30,6 +30,7 @@ app.use(
             "https://client-frontend-chi.vercel.app",
             "https://client-frontend-hw8c.onrender.com",
             "https://affordindia.vercel.app",
+            "https://affordindia-pg.vercel.app",
         ],
         credentials: true,
     })
