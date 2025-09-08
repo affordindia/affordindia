@@ -13,6 +13,8 @@ import {
     getProductAnalytics as getProductAnalyticsService,
     getLowStockProducts as getLowStockProductsService,
     bulkUpdateStock as bulkUpdateStockService,
+    getProductsByCategoryTree,
+    getProductsBySubcategory,
 } from "../services/product.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
@@ -21,7 +23,7 @@ import Product from "../models/product.model.js";
 export const createProduct = async (req, res) => {
     try {
         // Check for duplicate before uploading images
-        const { name, category } = req.body;
+        const { name, category, subcategories } = req.body;
         const existing = await Product.findOne({ name, category });
         if (existing) {
             return res.status(400).json({
@@ -66,6 +68,7 @@ export const getAllProducts = async (req, res) => {
         const filter = {
             search: req.query.search,
             category: req.query.category,
+            subcategories: req.query.subcategories,
             minPrice: req.query.minPrice,
             maxPrice: req.query.maxPrice,
             isFeatured: req.query.isFeatured,
@@ -87,7 +90,9 @@ export const getAllProducts = async (req, res) => {
         const options = {
             skip: req.query.skip ? parseInt(req.query.skip) : DEFAULT_SKIP,
             limit: req.query.limit ? parseInt(req.query.limit) : DEFAULT_LIMIT,
-            sort: req.query.sort ? JSON.parse(req.query.sort) : {},
+            sort: req.query.sort
+                ? JSON.parse(req.query.sort)
+                : { createdAt: -1 },
         };
         const products = await getAllProductsService(filter, options);
         res.json(products);
@@ -308,6 +313,60 @@ export const bulkUpdateStock = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to update stock",
+            error: error.message,
+        });
+    }
+};
+
+export const getProductsByCategoryHierarchy = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+        const options = {
+            skip: req.query.skip ? parseInt(req.query.skip) : DEFAULT_SKIP,
+            limit: req.query.limit ? parseInt(req.query.limit) : DEFAULT_LIMIT,
+            sort: req.query.sort
+                ? JSON.parse(req.query.sort)
+                : { createdAt: -1 },
+        };
+
+        const result = await getProductsByCategoryTree(categoryId, options);
+
+        res.json({
+            success: true,
+            ...result,
+            message: `Found ${result.products.length} products in category hierarchy`,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch products by category hierarchy",
+            error: error.message,
+        });
+    }
+};
+
+export const getProductsBySubcategoryController = async (req, res) => {
+    try {
+        const { subcategoryId } = req.params;
+        const options = {
+            skip: req.query.skip ? parseInt(req.query.skip) : DEFAULT_SKIP,
+            limit: req.query.limit ? parseInt(req.query.limit) : DEFAULT_LIMIT,
+            sort: req.query.sort
+                ? JSON.parse(req.query.sort)
+                : { createdAt: -1 },
+        };
+
+        const result = await getProductsBySubcategory(subcategoryId, options);
+
+        res.json({
+            success: true,
+            ...result,
+            message: `Found ${result.products.length} products in subcategory`,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch products by subcategory",
             error: error.message,
         });
     }

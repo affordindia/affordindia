@@ -11,6 +11,7 @@ export const getProducts = async (filter, options) => {
             .skip(options.skip)
             .limit(options.limit)
             .populate("category")
+            .populate("subcategories")
             .lean(),
         Product.countDocuments(filter),
     ]);
@@ -20,6 +21,7 @@ export const getProducts = async (filter, options) => {
 export const getProductById = async (id) => {
     return Product.findById(id)
         .populate("category")
+        .populate("subcategories")
         .populate({
             path: "reviews",
             populate: { path: "user", select: "name" },
@@ -32,6 +34,7 @@ export const getFeaturedProducts = async (limit = 10) => {
         .sort("-createdAt")
         .limit(limit)
         .populate("category")
+        .populate("subcategories")
         .lean();
 };
 
@@ -42,6 +45,7 @@ export const getNewProducts = async (limit = 10) => {
         .sort("-createdAt")
         .limit(limit)
         .populate("category")
+        .populate("subcategories")
         .lean();
 };
 
@@ -55,6 +59,7 @@ export const getPopularProducts = async (limit = 10) => {
         .sort("-views -salesCount")
         .limit(limit)
         .populate("category")
+        .populate("subcategories")
         .lean();
 };
 
@@ -71,6 +76,7 @@ export const getRelatedProducts = async (
         .sort("-createdAt")
         .limit(limit)
         .populate("category")
+        .populate("subcategories")
         .lean();
 };
 

@@ -1,9 +1,28 @@
 import Product from "../models/product.model.js";
 import Review from "../models/review.model.js";
+import Category from "../models/category.model.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
 import mongoose from "mongoose";
 
 export const createProduct = async (productData) => {
+    // Validate subcategories belong to category if both are provided
+    if (productData.subcategories && productData.subcategories.length > 0 && productData.category) {
+        for (let subcategoryId of productData.subcategories) {
+            const subcategory = await Category.findById(subcategoryId);
+            if (!subcategory) {
+                throw new Error(`Subcategory ${subcategoryId} not found`);
+            }
+            if (
+                !subcategory.parentCategory ||
+                subcategory.parentCategory.toString() !== productData.category.toString()
+            ) {
+                throw new Error(
+                    `Subcategory ${subcategory.name} must belong to the specified category`
+                );
+            }
+        }
+    }
+
     const product = new Product(productData);
     return await product.save();
 };
@@ -16,9 +35,18 @@ export const getAllProducts = async (filter = {}, options = {}) => {
         query.name = { $regex: filter.search, $options: "i" };
     }
 
-    // Category filter
+    // Category filter with subcategory support
     if (filter.category) {
         query.category = filter.category;
+    }
+
+    // Subcategories filter (support multiple subcategories)
+    if (filter.subcategories) {
+        if (Array.isArray(filter.subcategories)) {
+            query.subcategories = { $in: filter.subcategories };
+        } else {
+            query.subcategories = filter.subcategories;
+        }
     }
 
     // Price range filter
@@ -114,6 +142,7 @@ export const getAllProducts = async (filter = {}, options = {}) => {
     // Get paginated products
     const products = await Product.find(query)
         .populate("category")
+        .populate("subcategories")
         .skip(options.skip !== undefined ? options.skip : DEFAULT_SKIP)
         .limit(options.limit !== undefined ? options.limit : DEFAULT_LIMIT)
         .sort(options.sort || {});
@@ -125,11 +154,33 @@ export const getAllProducts = async (filter = {}, options = {}) => {
 };
 
 export const getProductById = async (id) => {
-    return await Product.findById(id).populate("category");
+    return await Product.findById(id)
+        .populate("category")
+        .populate("subcategories");
 };
 
 export const updateProduct = async (id, updateData) => {
-    return await Product.findByIdAndUpdate(id, updateData, { new: true });
+    // Validate subcategories belong to category if both are provided
+    if (updateData.subcategories && updateData.subcategories.length > 0 && updateData.category) {
+        for (let subcategoryId of updateData.subcategories) {
+            const subcategory = await Category.findById(subcategoryId);
+            if (!subcategory) {
+                throw new Error(`Subcategory ${subcategoryId} not found`);
+            }
+            if (
+                !subcategory.parentCategory ||
+                subcategory.parentCategory.toString() !== updateData.category.toString()
+            ) {
+                throw new Error(
+                    `Subcategory ${subcategory.name} must belong to the specified category`
+                );
+            }
+        }
+    }
+
+    return await Product.findByIdAndUpdate(id, updateData, { new: true })
+        .populate("category")
+        .populate("subcategories");
 };
 
 export const deleteProduct = async (id) => {
@@ -247,5 +298,56 @@ export const bulkUpdateStock = async (updates) => {
         modifiedCount: successfulUpdates.length,
         updatedProducts: successfulUpdates,
         totalRequested: updates.length,
+    };
+};
+
+// Get products by category including subcategories
+export const getProductsByCategoryTree = async (categoryId, options = {}) => {
+    // Get all subcategory IDs for this category
+    const subcategories = await Category.find({
+        parentCategory: categoryId,
+    }).select("_id");
+    const subcategoryIds = subcategories.map((sub) => sub._id);
+
+    // Query for products in this category or any of its subcategories
+    const query = {
+        $or: [
+            { category: categoryId, subcategories: { $size: 0 } }, // Products directly in category with no subcategories
+            { category: categoryId, subcategories: { $exists: false } }, // Products directly in category (undefined subcategories)
+            { subcategories: { $in: subcategoryIds } }, // Products in any subcategory
+        ],
+    };
+
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+        .populate("category")
+        .populate("subcategories")
+        .skip(options.skip !== undefined ? options.skip : DEFAULT_SKIP)
+        .limit(options.limit !== undefined ? options.limit : DEFAULT_LIMIT)
+        .sort(options.sort || {});
+
+    return {
+        products,
+        total,
+        categoryId,
+        subcategoryIds,
+    };
+};
+
+// Get products by specific subcategory
+export const getProductsBySubcategory = async (subcategoryId, options = {}) => {
+    const query = { subcategories: subcategoryId };
+
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+        .populate("category")
+        .populate("subcategories")
+        .skip(options.skip !== undefined ? options.skip : DEFAULT_SKIP)
+        .limit(options.limit !== undefined ? options.limit : DEFAULT_LIMIT)
+        .sort(options.sort || {});
+
+    return {
+        products,
+        total,
     };
 };

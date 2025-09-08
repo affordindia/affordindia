@@ -14,6 +14,8 @@ import {
     getProductAnalytics,
     getLowStockProducts,
     bulkUpdateStock,
+    getProductsByCategoryHierarchy,
+    getProductsBySubcategoryController,
 } from "../controllers/product.controller.js";
 import {
     verifyAdminAuth,
@@ -94,6 +96,20 @@ router.get(
     "/:id/analytics",
     requirePermission("analytics.view"),
     getProductAnalytics
+);
+
+// Category hierarchy products
+router.get(
+    "/category/:categoryId/hierarchy",
+    requirePermission("products.view"),
+    getProductsByCategoryHierarchy
+);
+
+// Subcategory products
+router.get(
+    "/subcategory/:subcategoryId",
+    requirePermission("products.view"),
+    getProductsBySubcategoryController
 );
 
 export default router;

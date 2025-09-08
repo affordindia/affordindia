@@ -6,6 +6,11 @@ import {
     disableCategoryService,
     restoreCategoryService,
     deleteCategoryService,
+    getCategoryTreeService,
+    getSubcategoriesService,
+    getParentCategoriesService,
+    getCategoryPathService,
+    getCategoryUsageService,
 } from "../services/category.service.js";
 import { uploadToCloudinary } from "../services/upload.service.js";
 import {
@@ -173,6 +178,66 @@ export const deleteCategory = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Failed to permanently delete category",
+            error: error.message,
+        });
+    }
+};
+
+export const getCategoryTree = async (req, res) => {
+    try {
+        const tree = await getCategoryTreeService();
+        res.json(tree);
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch category tree",
+            error: error.message,
+        });
+    }
+};
+
+export const getSubcategories = async (req, res) => {
+    try {
+        const subcategories = await getSubcategoriesService(req.params.id);
+        res.json(subcategories);
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch subcategories",
+            error: error.message,
+        });
+    }
+};
+
+export const getParentCategories = async (req, res) => {
+    try {
+        const parentCategories = await getParentCategoriesService();
+        res.json(parentCategories);
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch parent categories",
+            error: error.message,
+        });
+    }
+};
+
+export const getCategoryPath = async (req, res) => {
+    try {
+        const path = await getCategoryPathService(req.params.id);
+        res.json(path);
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch category path",
+            error: error.message,
+        });
+    }
+};
+
+export const getCategoryUsage = async (req, res) => {
+    try {
+        const usage = await getCategoryUsageService(req.params.id);
+        res.json(usage);
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch category usage",
             error: error.message,
         });
     }
