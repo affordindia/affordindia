@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
 import { getProducts } from "../../api/products.api.js";
-import { getCategories } from "../../api/categories.api.js";
+import { getCategories, getRootCategories } from "../../api/categories.api.js";
 import Loader from "../../components/common/Loader.jsx";
 import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
+import SubcategorySelector from "../../components/common/SubcategorySelector.jsx";
 
 const Products = () => {
     const location = useLocation();
@@ -22,6 +23,7 @@ const Products = () => {
     // Advanced filter states
     const [filters, setFilters] = useState({
         category: "",
+        subcategories: [],
         minPrice: "",
         maxPrice: "",
         isFeatured: "",
@@ -44,6 +46,7 @@ const Products = () => {
     // Applied filters (what's actually sent to API)
     const [appliedFilters, setAppliedFilters] = useState({
         category: "",
+        subcategories: [],
         minPrice: "",
         maxPrice: "",
         isFeatured: "",
@@ -104,7 +107,12 @@ const Products = () => {
             // Add applied filters
             Object.keys(appliedFilters).forEach((key) => {
                 const value = appliedFilters[key];
-                if (value !== "" && value !== false) {
+                if (key === "subcategories") {
+                    // Handle subcategories array - only add if not empty
+                    if (Array.isArray(value) && value.length > 0) {
+                        params[key] = value; // Axios will handle array serialization
+                    }
+                } else if (value !== "" && value !== false) {
                     // Convert boolean true to string for backend
                     if (value === true) {
                         params[key] = "true";
@@ -114,19 +122,12 @@ const Products = () => {
                 }
             });
 
-            console.log("Fetching products with params:", params);
             const result = await getProducts(params);
-            console.log("Products API result:", result);
 
             if (result.success) {
                 // Backend now returns {products: [], total: number, skip: number, limit: number}
                 setProducts(result.data.products || []);
                 setTotalProducts(result.data.total || 0);
-                console.log(
-                    "Products loaded:",
-                    result.data.products?.length || 0
-                );
-                console.log("Total products:", result.data.total || 0);
             } else {
                 console.error("Failed to fetch products:", result.error);
                 setError(result.error);
@@ -141,13 +142,10 @@ const Products = () => {
 
     const fetchCategories = async () => {
         try {
-            console.log("Fetching categories...");
-            const result = await getCategories();
-            console.log("Categories API result:", result);
+            const result = await getRootCategories(); // Only fetch root categories for main dropdown
 
             if (result.success) {
                 setCategories(result.data || []);
-                console.log("Categories loaded:", result.data?.length || 0);
             } else {
                 console.error("Failed to fetch categories:", result.error);
             }
@@ -169,6 +167,13 @@ const Products = () => {
         // Don't reset page here since filters haven't been applied yet
     };
 
+    const handleSubcategoriesChange = (subcategories) => {
+        setFilters((prev) => ({
+            ...prev,
+            subcategories,
+        }));
+    };
+
     const applyFilters = () => {
         setAppliedFilters(filters);
         setCurrentPage(1); // Reset to first page when applying filters
@@ -177,6 +182,7 @@ const Products = () => {
     const clearAllFilters = () => {
         const clearedFilters = {
             category: "",
+            subcategories: [],
             minPrice: "",
             maxPrice: "",
             isFeatured: "",
@@ -204,8 +210,13 @@ const Products = () => {
 
     const getActiveFiltersCount = () => {
         let count = 0;
-        Object.values(appliedFilters).forEach((value) => {
-            if (value !== "" && value !== false) count++;
+        Object.entries(appliedFilters).forEach(([key, value]) => {
+            if (key === "subcategories") {
+                // Only count subcategories if array has items
+                if (Array.isArray(value) && value.length > 0) count++;
+            } else if (value !== "" && value !== false) {
+                count++;
+            }
         });
         if (searchTerm) count++;
         return count;
@@ -342,6 +353,20 @@ const Products = () => {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+
+                            {/* Subcategories Filter */}
+                            <div className="space-y-2">
+                                <SubcategorySelector
+                                    selectedCategory={filters.category}
+                                    selectedSubcategories={
+                                        filters.subcategories
+                                    }
+                                    onSubcategoriesChange={
+                                        handleSubcategoriesChange
+                                    }
+                                    size="compact"
+                                />
                             </div>
 
                             {/* Price Range */}
@@ -642,7 +667,7 @@ const Products = () => {
                     <table className="w-full">
                         <thead className="bg-admin-bg border-b border-admin-border">
                             <tr>
-                                <th className="text-left px-6 py-4 font-semibold text-admin-text">
+                                <th className="text-left px-6 py-4 font-semibold text-admin-text w-1/3 max-w-xs">
                                     Product
                                 </th>
                                 <th className="text-left px-6 py-4 font-semibold text-admin-text">
@@ -669,9 +694,9 @@ const Products = () => {
                                     className="hover:bg-admin-bg transition-colors"
                                 >
                                     {/* Product Info */}
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-4 w-2/5 max-w-xs">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-16 h-16 bg-admin-bg rounded-lg flex items-center justify-center overflow-hidden">
+                                            <div className="w-16 h-16 bg-admin-bg rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                                                 {product.images &&
                                                 product.images[0] ? (
                                                     <img
@@ -685,25 +710,42 @@ const Products = () => {
                                                     </span>
                                                 )}
                                             </div>
-                                            <div>
+                                            <div className="min-w-0 flex-1">
                                                 <h3 className="font-medium text-admin-text">
                                                     {product.name}
                                                 </h3>
-                                                {product.brand && (
-                                                    <p className="text-sm text-admin-text-secondary">
-                                                        {product.brand}
-                                                    </p>
-                                                )}
                                             </div>
                                         </div>
                                     </td>
 
                                     {/* Category */}
                                     <td className="px-6 py-4">
-                                        <span className="text-admin-text">
-                                            {product.category?.name ||
-                                                "Uncategorized"}
-                                        </span>
+                                        <div className="space-y-1">
+                                            <span className="text-admin-text">
+                                                {product.category?.name ||
+                                                    "Uncategorized"}
+                                            </span>
+                                            {product.subcategories &&
+                                                product.subcategories.length >
+                                                    0 && (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {product.subcategories.map(
+                                                            (subcat) => (
+                                                                <span
+                                                                    key={
+                                                                        subcat._id
+                                                                    }
+                                                                    className="px-2 py-0.5 bg-admin-primary/10 text-admin-primary text-xs rounded-full"
+                                                                >
+                                                                    {
+                                                                        subcat.name
+                                                                    }
+                                                                </span>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                )}
+                                        </div>
                                     </td>
 
                                     {/* Price */}

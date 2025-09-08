@@ -67,6 +67,10 @@ router.get(
     getSubcategories
 );
 router.get("/:id/path", requirePermission("categories.view"), getCategoryPath);
-router.get("/:id/usage", requirePermission("categories.view"), getCategoryUsage);
+router.get(
+    "/:id/usage",
+    requirePermission("categories.view"),
+    getCategoryUsage
+);
 
 export default router;

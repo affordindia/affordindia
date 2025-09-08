@@ -117,7 +117,7 @@ export const deleteCategoryService = async (id) => {
             error: `Cannot delete category that contains ${productsInCategory.length} product(s). Move or delete products first.`,
         };
     }
-    
+
     // Check if this category is used as a subcategory in any products
     const productsWithSubcategory = await Product.find({ subcategories: id });
     if (productsWithSubcategory.length > 0) {
@@ -221,15 +221,24 @@ export const getCategoryPathService = async (categoryId) => {
 
 // Get category usage statistics
 export const getCategoryUsageService = async (categoryId) => {
-    const subcategoriesCount = await Category.countDocuments({ parentCategory: categoryId });
-    const productsInCategoryCount = await Product.countDocuments({ category: categoryId });
-    const productsWithSubcategoryCount = await Product.countDocuments({ subcategories: categoryId });
-    
+    const subcategoriesCount = await Category.countDocuments({
+        parentCategory: categoryId,
+    });
+    const productsInCategoryCount = await Product.countDocuments({
+        category: categoryId,
+    });
+    const productsWithSubcategoryCount = await Product.countDocuments({
+        subcategories: categoryId,
+    });
+
     return {
         subcategoriesCount,
         productsInCategoryCount,
         productsWithSubcategoryCount,
         totalProducts: productsInCategoryCount + productsWithSubcategoryCount,
-        canDelete: subcategoriesCount === 0 && productsInCategoryCount === 0 && productsWithSubcategoryCount === 0
+        canDelete:
+            subcategoriesCount === 0 &&
+            productsInCategoryCount === 0 &&
+            productsWithSubcategoryCount === 0,
     };
 };

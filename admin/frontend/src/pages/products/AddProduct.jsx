@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUpload, FaTrash, FaArrowLeft, FaSave } from "react-icons/fa";
 import { createProduct } from "../../api/products.api.js";
-import { getCategories } from "../../api/categories.api.js";
+import { getCategories, getRootCategories } from "../../api/categories.api";
 import Loader from "../../components/common/Loader.jsx";
+import SubcategorySelector from "../../components/common/SubcategorySelector.jsx";
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const AddProduct = () => {
         description: "",
         price: "",
         category: "",
+        subcategories: [],
         stock: "",
         discount: "",
         isFeatured: false,
@@ -30,7 +32,7 @@ const AddProduct = () => {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const result = await getCategories();
+            const result = await getRootCategories(); // Only fetch root categories
             if (result.success) {
                 setCategories(result.data || []);
             }
@@ -53,6 +55,35 @@ const AddProduct = () => {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
+            }));
+        }
+
+        // Clear subcategories when category changes
+        if (name === "category" && value !== formData.category) {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+                subcategories: [], // Reset subcategories when main category changes
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
+    };
+
+    const handleSubcategoriesChange = (subcategories) => {
+        setFormData((prev) => ({
+            ...prev,
+            subcategories,
+        }));
+
+        // Clear subcategories error if any
+        if (errors.subcategories) {
+            setErrors((prev) => ({
+                ...prev,
+                subcategories: "",
             }));
         }
     };
@@ -129,6 +160,12 @@ const AddProduct = () => {
                 price: parseFloat(formData.price),
                 stock: parseInt(formData.stock),
                 discount: formData.discount ? parseFloat(formData.discount) : 0,
+                // Ensure subcategories is always an array
+                subcategories: Array.isArray(formData.subcategories)
+                    ? formData.subcategories
+                    : formData.subcategories
+                    ? [formData.subcategories]
+                    : [],
                 images: images,
             };
 
@@ -137,9 +174,11 @@ const AddProduct = () => {
             if (result.success) {
                 navigate("/products");
             } else {
+                console.error("❌ Product creation failed:", result.error);
                 setErrors({ submit: result.error });
             }
         } catch (error) {
+            console.error("❌ Product creation exception:", error);
             setErrors({
                 submit: "Failed to create product. Please try again.",
             });
@@ -387,6 +426,18 @@ const AddProduct = () => {
                                     {errors.category}
                                 </p>
                             )}
+                        </div>
+
+                        {/* Subcategories */}
+                        <div>
+                            <SubcategorySelector
+                                selectedCategory={formData.category}
+                                selectedSubcategories={formData.subcategories}
+                                onSubcategoriesChange={
+                                    handleSubcategoriesChange
+                                }
+                                error={errors.subcategories}
+                            />
                         </div>
 
                         {/* Featured Toggle */}

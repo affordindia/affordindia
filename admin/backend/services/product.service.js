@@ -6,7 +6,11 @@ import mongoose from "mongoose";
 
 export const createProduct = async (productData) => {
     // Validate subcategories belong to category if both are provided
-    if (productData.subcategories && productData.subcategories.length > 0 && productData.category) {
+    if (
+        productData.subcategories &&
+        productData.subcategories.length > 0 &&
+        productData.category
+    ) {
         for (let subcategoryId of productData.subcategories) {
             const subcategory = await Category.findById(subcategoryId);
             if (!subcategory) {
@@ -14,7 +18,8 @@ export const createProduct = async (productData) => {
             }
             if (
                 !subcategory.parentCategory ||
-                subcategory.parentCategory.toString() !== productData.category.toString()
+                subcategory.parentCategory.toString() !==
+                    productData.category.toString()
             ) {
                 throw new Error(
                     `Subcategory ${subcategory.name} must belong to the specified category`
@@ -41,12 +46,12 @@ export const getAllProducts = async (filter = {}, options = {}) => {
     }
 
     // Subcategories filter (support multiple subcategories)
-    if (filter.subcategories) {
-        if (Array.isArray(filter.subcategories)) {
-            query.subcategories = { $in: filter.subcategories };
-        } else {
-            query.subcategories = filter.subcategories;
-        }
+    if (
+        filter.subcategories &&
+        Array.isArray(filter.subcategories) &&
+        filter.subcategories.length > 0
+    ) {
+        query.subcategories = { $in: filter.subcategories };
     }
 
     // Price range filter
@@ -161,7 +166,11 @@ export const getProductById = async (id) => {
 
 export const updateProduct = async (id, updateData) => {
     // Validate subcategories belong to category if both are provided
-    if (updateData.subcategories && updateData.subcategories.length > 0 && updateData.category) {
+    if (
+        updateData.subcategories &&
+        updateData.subcategories.length > 0 &&
+        updateData.category
+    ) {
         for (let subcategoryId of updateData.subcategories) {
             const subcategory = await Category.findById(subcategoryId);
             if (!subcategory) {
@@ -169,7 +178,8 @@ export const updateProduct = async (id, updateData) => {
             }
             if (
                 !subcategory.parentCategory ||
-                subcategory.parentCategory.toString() !== updateData.category.toString()
+                subcategory.parentCategory.toString() !==
+                    updateData.category.toString()
             ) {
                 throw new Error(
                     `Subcategory ${subcategory.name} must belong to the specified category`

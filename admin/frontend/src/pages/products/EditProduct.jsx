@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaUpload, FaTrash, FaArrowLeft, FaSave } from "react-icons/fa";
 import { getProduct, updateProduct } from "../../api/products.api.js";
-import { getCategories } from "../../api/categories.api.js";
+import { getCategories, getRootCategories } from "../../api/categories.api";
 import Loader from "../../components/common/Loader.jsx";
+import SubcategorySelector from "../../components/common/SubcategorySelector.jsx";
 
 const EditProduct = () => {
     const { id } = useParams();
@@ -15,6 +16,7 @@ const EditProduct = () => {
         description: "",
         price: "",
         category: "",
+        subcategories: [],
         stock: "",
         discount: "",
         isFeatured: false,
@@ -40,6 +42,8 @@ const EditProduct = () => {
                     description: product.description || "",
                     price: product.price?.toString() || "",
                     category: product.category?._id || "",
+                    subcategories:
+                        product.subcategories?.map((sub) => sub._id) || [],
                     stock: product.stock?.toString() || "",
                     discount: product.discount?.toString() || "",
                     isFeatured: product.isFeatured || false,
@@ -56,7 +60,7 @@ const EditProduct = () => {
 
     const fetchCategories = async () => {
         try {
-            const result = await getCategories();
+            const result = await getRootCategories(); // Only fetch root categories
             if (result.success) {
                 setCategories(result.data || []);
             }
@@ -69,16 +73,41 @@ const EditProduct = () => {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }));
 
         // Clear error for this field
         if (errors[name]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
+            }));
+        }
+
+        // Clear subcategories when category changes
+        if (name === "category" && value !== formData.category) {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: type === "checkbox" ? checked : value,
+                subcategories: [], // Reset subcategories when main category changes
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: type === "checkbox" ? checked : value,
+            }));
+        }
+    };
+
+    const handleSubcategoriesChange = (subcategories) => {
+        setFormData((prev) => ({
+            ...prev,
+            subcategories,
+        }));
+
+        // Clear subcategories error if any
+        if (errors.subcategories) {
+            setErrors((prev) => ({
+                ...prev,
+                subcategories: "",
             }));
         }
     };
@@ -159,6 +188,12 @@ const EditProduct = () => {
                 price: parseFloat(formData.price),
                 stock: parseInt(formData.stock),
                 discount: formData.discount ? parseFloat(formData.discount) : 0,
+                // Ensure subcategories is always an array
+                subcategories: Array.isArray(formData.subcategories)
+                    ? formData.subcategories
+                    : formData.subcategories
+                    ? [formData.subcategories]
+                    : [],
                 existingImages: existingImages,
                 images: newImages,
             };
@@ -168,9 +203,11 @@ const EditProduct = () => {
             if (result.success) {
                 navigate("/products");
             } else {
+                console.error("❌ Product update failed:", result.error);
                 setErrors({ submit: result.error });
             }
         } catch (error) {
+            console.error("❌ Product update exception:", error);
             setErrors({
                 submit: "Failed to update product. Please try again.",
             });
@@ -450,6 +487,18 @@ const EditProduct = () => {
                                     {errors.category}
                                 </p>
                             )}
+                        </div>
+
+                        {/* Subcategories */}
+                        <div>
+                            <SubcategorySelector
+                                selectedCategory={formData.category}
+                                selectedSubcategories={formData.subcategories}
+                                onSubcategoriesChange={
+                                    handleSubcategoriesChange
+                                }
+                                error={errors.subcategories}
+                            />
                         </div>
 
                         {/* Featured Toggle */}

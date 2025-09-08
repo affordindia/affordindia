@@ -22,6 +22,14 @@ import Product from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
     try {
+        // Handle subcategories array from FormData
+        if (req.body["subcategories[]"]) {
+            req.body.subcategories = Array.isArray(req.body["subcategories[]"])
+                ? req.body["subcategories[]"]
+                : [req.body["subcategories[]"]];
+            delete req.body["subcategories[]"];
+        }
+
         // Check for duplicate before uploading images
         const { name, category, subcategories } = req.body;
         const existing = await Product.findOne({ name, category });
@@ -45,9 +53,12 @@ export const createProduct = async (req, res) => {
             imageUrls = uploadResults.map((result) => result.secure_url);
         }
         const productData = { ...req.body, images: imageUrls };
+
         const product = await createProductService(productData);
         res.status(201).json(product);
     } catch (error) {
+        console.error("❌ Product Creation Error:", error.message);
+        console.error("❌ Full Error:", error);
         // Handle duplicate key error from MongoDB
         if (error.code === 11000) {
             return res.status(400).json({
@@ -64,11 +75,21 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
+        // Handle subcategories array from query params
+        let subcategories =
+            req.query.subcategories || req.query["subcategories[]"];
+        if (subcategories) {
+            // If it's a single value, convert to array
+            if (!Array.isArray(subcategories)) {
+                subcategories = [subcategories];
+            }
+        }
+
         // Support search/filter/pagination via query params
         const filter = {
             search: req.query.search,
             category: req.query.category,
-            subcategories: req.query.subcategories,
+            subcategories: subcategories,
             minPrice: req.query.minPrice,
             maxPrice: req.query.maxPrice,
             isFeatured: req.query.isFeatured,
@@ -87,6 +108,7 @@ export const getAllProducts = async (req, res) => {
             minDiscount: req.query.minDiscount,
             maxDiscount: req.query.maxDiscount,
         };
+
         const options = {
             skip: req.query.skip ? parseInt(req.query.skip) : DEFAULT_SKIP,
             limit: req.query.limit ? parseInt(req.query.limit) : DEFAULT_LIMIT,
@@ -120,6 +142,14 @@ export const getProductById = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
+        // Handle subcategories array from FormData
+        if (req.body["subcategories[]"]) {
+            req.body.subcategories = Array.isArray(req.body["subcategories[]"])
+                ? req.body["subcategories[]"]
+                : [req.body["subcategories[]"]];
+            delete req.body["subcategories[]"];
+        }
+
         let imageUrls = [];
         if (req.files && req.files.length > 0) {
             const uploadPromises = req.files.map((file) =>
@@ -136,11 +166,14 @@ export const updateProduct = async (req, res) => {
             imageUrls.length > 0
                 ? { ...req.body, images: imageUrls }
                 : req.body;
+
         const product = await updateProductService(req.params.id, updateData);
         if (!product)
             return res.status(404).json({ message: "Product not found" });
         res.json(product);
     } catch (error) {
+        console.error("❌ Product Update Error:", error.message);
+        console.error("❌ Full Error:", error);
         res.status(500).json({
             message: "Failed to update product",
             error: error.message,
