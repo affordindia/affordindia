@@ -83,27 +83,7 @@ export const listProducts = async (req, res, next) => {
 
         console.log("🔍 Product Filter:", JSON.stringify(filter, null, 2));
 
-        // Fetch products with filter
-        const { products, totalCount } = await getProducts(filter, {
-            skip,
-            limit,
-            sort,
-        });
-
-        // Calculate discounted price for each product
-        const productsWithDiscount = products.map((product) => {
-            const discount = product.discount || 0;
-            const discountedPrice =
-                discount > 0
-                    ? Math.round(product.price * (1 - discount / 100))
-                    : product.price;
-            return { ...product, discountedPrice };
-        });
-
-        // Filter by discounted price ranges (support multiple ranges)
-        let filteredProducts = productsWithDiscount;
-
-        // Handle multiple price ranges
+        // Handle price range filtering first to get accurate count
         if (req.query.priceRanges) {
             const priceRangeIndices = Array.isArray(req.query.priceRanges)
                 ? req.query.priceRanges.map((idx) => parseInt(idx))
@@ -121,50 +101,87 @@ export const listProducts = async (req, res, next) => {
             ];
 
             if (priceRangeIndices.length > 0) {
-                filteredProducts = filteredProducts.filter((product) => {
-                    const price = product.discountedPrice;
-                    return priceRangeIndices.some((idx) => {
-                        const range = priceRanges[idx];
-                        return (
-                            range && price >= range.min && price <= range.max
-                        );
-                    });
+                // For now, get all products first to filter by calculated price
+                // TODO: Optimize this with database aggregation
+                const { products: allProducts } = await getProducts(filter, {
+                    sort,
+                    skip: 0,
+                    limit: 10000, // Get more products for price filtering
+                });
+
+                // Calculate discounted price and filter
+                const productsWithDiscount = allProducts.map((product) => {
+                    const discount = product.discount || 0;
+                    const discountedPrice =
+                        discount > 0
+                            ? Math.round(product.price * (1 - discount / 100))
+                            : product.price;
+                    return { ...product, discountedPrice };
+                });
+
+                const priceFilteredProducts = productsWithDiscount.filter(
+                    (product) => {
+                        const price = product.discountedPrice;
+                        return priceRangeIndices.some((idx) => {
+                            const range = priceRanges[idx];
+                            return (
+                                range &&
+                                price >= range.min &&
+                                price <= range.max
+                            );
+                        });
+                    }
+                );
+
+                // Apply pagination to filtered results
+                const totalFiltered = priceFilteredProducts.length;
+                const paginatedProducts = priceFilteredProducts.slice(
+                    skip,
+                    skip + limit
+                );
+
+                console.log(
+                    `📊 Price filtered products: ${totalFiltered}, showing: ${paginatedProducts.length}`
+                );
+
+                return res.json({
+                    page,
+                    limit,
+                    count: paginatedProducts.length,
+                    total: totalFiltered,
+                    products: paginatedProducts,
                 });
             }
         }
-        // Fallback to single min/max price filters
-        else if (req.query.minPrice || req.query.maxPrice) {
-            filteredProducts = filteredProducts.filter((product) => {
-                const price = product.discountedPrice;
-                if (req.query.minPrice && price < Number(req.query.minPrice))
-                    return false;
-                if (req.query.maxPrice && price > Number(req.query.maxPrice))
-                    return false;
-                return true;
-            });
-        }
 
-        // Sort by discounted price if requested
-        if (req.query.sort === "price") {
-            filteredProducts = filteredProducts.sort(
-                (a, b) => a.discountedPrice - b.discountedPrice
-            );
-        } else if (req.query.sort === "-price") {
-            filteredProducts = filteredProducts.sort(
-                (a, b) => b.discountedPrice - a.discountedPrice
-            );
-        }
+        // Fetch products with filter (no price range filtering)
+        // Fetch products with filter (no price range filtering)
+        const { products, totalCount } = await getProducts(filter, {
+            skip,
+            limit,
+            sort,
+        });
+
+        // Calculate discounted price for each product
+        const productsWithDiscount = products.map((product) => {
+            const discount = product.discount || 0;
+            const discountedPrice =
+                discount > 0
+                    ? Math.round(product.price * (1 - discount / 100))
+                    : product.price;
+            return { ...product, discountedPrice };
+        });
 
         console.log(
-            `📊 Products found: ${filteredProducts.length}/${totalCount}`
+            `📊 Products found: ${productsWithDiscount.length}/${totalCount}`
         );
 
         res.json({
             page,
             limit,
-            count: filteredProducts.length,
-            totalCount,
-            products: filteredProducts,
+            count: productsWithDiscount.length,
+            total: totalCount,
+            products: productsWithDiscount,
         });
     } catch (err) {
         console.error("❌ Product listing error:", err);

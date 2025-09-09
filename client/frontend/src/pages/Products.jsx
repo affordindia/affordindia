@@ -19,7 +19,7 @@ const priceRanges = [
     { min: 5000, max: 10000, label: "₹5000 - ₹10,000" },
 ];
 
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 10;
 
 const Products = () => {
     const navigate = useNavigate();
@@ -85,6 +85,7 @@ const Products = () => {
                 if (search) params.search = search;
                 if (sort) params.sort = sort;
                 if (page > 1) params.page = page;
+                params.limit = DEFAULT_LIMIT; // Always pass the limit
 
                 // Handle categories
                 if (selectedCategories.length > 0) {
@@ -291,7 +292,7 @@ const Products = () => {
                             ) : (
                                 <>
                                     <ProductList products={products} />
-                                    {total > DEFAULT_LIMIT && (
+                                    {Math.ceil(total / DEFAULT_LIMIT) > 1 && (
                                         <ProductPagination
                                             currentPage={page}
                                             totalPages={Math.ceil(
