@@ -17,15 +17,73 @@ export const listProducts = async (req, res, next) => {
         );
         const skip = (page - 1) * limit;
         const sort = req.query.sort || "-createdAt";
-        // Advanced filters
-        const filter = {};
-        if (req.query.category) filter.category = req.query.category;
-        if (req.query.search)
-            filter.name = { $regex: req.query.search, $options: "i" };
-        if (req.query.brand) filter.brand = req.query.brand;
-        if (req.query.inStock === "true") filter.stock = { $gt: 0 };
 
-        // We'll filter by discounted price in-memory after fetching products
+        // Build MongoDB filter object
+        const filter = {};
+
+        // Single category filter (backward compatibility)
+        if (req.query.category) {
+            filter.category = req.query.category;
+        }
+
+        // Multiple categories filter - support both category names and IDs
+        if (req.query.categories) {
+            const categories = Array.isArray(req.query.categories)
+                ? req.query.categories
+                : req.query.categories.split(",").filter(Boolean);
+            if (categories.length > 0) {
+                // Check if they are ObjectIds or names
+                const isObjectIds = categories.every((cat) =>
+                    /^[0-9a-fA-F]{24}$/.test(cat.trim())
+                );
+
+                if (isObjectIds) {
+                    filter.categoryIds = categories;
+                } else {
+                    filter.categoryNames = categories;
+                }
+            }
+        }
+
+        // Subcategories filter - support arrays
+        if (req.query.subcategories) {
+            let subcategories;
+            if (Array.isArray(req.query.subcategories)) {
+                subcategories = req.query.subcategories;
+            } else if (typeof req.query.subcategories === "string") {
+                subcategories = req.query.subcategories
+                    .split(",")
+                    .filter(Boolean);
+            }
+
+            if (subcategories && subcategories.length > 0) {
+                filter.subcategories = { $in: subcategories };
+            }
+        }
+
+        // Search filter
+        if (req.query.search) {
+            filter.name = { $regex: req.query.search, $options: "i" };
+        }
+
+        // Brand filter
+        if (req.query.brand) {
+            filter.brand = req.query.brand;
+        }
+
+        // Stock filter
+        if (req.query.inStock === "true") {
+            filter.stock = { $gt: 0 };
+        }
+
+        // Featured filter
+        if (req.query.isFeatured === "true") {
+            filter.isFeatured = true;
+        }
+
+        console.log("🔍 Product Filter:", JSON.stringify(filter, null, 2));
+
+        // Fetch products with filter
         const { products, totalCount } = await getProducts(filter, {
             skip,
             limit,
@@ -42,9 +100,40 @@ export const listProducts = async (req, res, next) => {
             return { ...product, discountedPrice };
         });
 
-        // Filter by discounted price if requested
+        // Filter by discounted price ranges (support multiple ranges)
         let filteredProducts = productsWithDiscount;
-        if (req.query.minPrice || req.query.maxPrice) {
+
+        // Handle multiple price ranges
+        if (req.query.priceRanges) {
+            const priceRangeIndices = Array.isArray(req.query.priceRanges)
+                ? req.query.priceRanges.map((idx) => parseInt(idx))
+                : req.query.priceRanges
+                      .split(",")
+                      .map((idx) => parseInt(idx))
+                      .filter((idx) => !isNaN(idx));
+
+            // Define price ranges (should match frontend)
+            const priceRanges = [
+                { min: 0, max: 500 },
+                { min: 500, max: 1000 },
+                { min: 1000, max: 5000 },
+                { min: 5000, max: 10000 },
+            ];
+
+            if (priceRangeIndices.length > 0) {
+                filteredProducts = filteredProducts.filter((product) => {
+                    const price = product.discountedPrice;
+                    return priceRangeIndices.some((idx) => {
+                        const range = priceRanges[idx];
+                        return (
+                            range && price >= range.min && price <= range.max
+                        );
+                    });
+                });
+            }
+        }
+        // Fallback to single min/max price filters
+        else if (req.query.minPrice || req.query.maxPrice) {
             filteredProducts = filteredProducts.filter((product) => {
                 const price = product.discountedPrice;
                 if (req.query.minPrice && price < Number(req.query.minPrice))
@@ -66,6 +155,10 @@ export const listProducts = async (req, res, next) => {
             );
         }
 
+        console.log(
+            `📊 Products found: ${filteredProducts.length}/${totalCount}`
+        );
+
         res.json({
             page,
             limit,
@@ -74,6 +167,7 @@ export const listProducts = async (req, res, next) => {
             products: filteredProducts,
         });
     } catch (err) {
+        console.error("❌ Product listing error:", err);
         next(err);
     }
 };
