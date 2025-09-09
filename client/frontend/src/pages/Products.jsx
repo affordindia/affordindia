@@ -124,6 +124,14 @@ const Products = () => {
         page,
     ]);
 
+    // Utility function for smooth scroll to top
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
     // Handlers
     const updateQueryParams = (newParams) => {
         const params = new URLSearchParams(location.search);
@@ -154,27 +162,32 @@ const Products = () => {
             pathname: "/products",
             search: search ? `?search=${encodeURIComponent(search)}` : "",
         });
+        scrollToTop();
     };
 
     const handleSort = (e) => {
         setSort(e.target.value);
         updateQueryParams({ sort: e.target.value, page: 1 });
+        scrollToTop();
     };
 
     const handleCategoryChange = (categories) => {
         setSelectedCategories(categories);
         setSelectedSubcategories([]); // Reset subcategories when categories change
         updateQueryParams({ categories, subcategories: [], page: 1 });
+        scrollToTop();
     };
 
     const handleSubcategoryChange = (subcategories) => {
         setSelectedSubcategories(subcategories);
         updateQueryParams({ subcategories, page: 1 });
+        scrollToTop();
     };
 
     const handlePriceRangeChange = (priceRanges) => {
         setSelectedPriceRanges(priceRanges);
         updateQueryParams({ priceRanges, page: 1 });
+        scrollToTop();
     };
 
     // New handler for applying filters from desktop
@@ -189,11 +202,13 @@ const Products = () => {
             priceRanges,
             page: 1,
         });
+        scrollToTop();
     };
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
         updateQueryParams({ page: newPage });
+        scrollToTop();
     };
 
     // New handler for mobile controls to apply multiple filters simultaneously
@@ -212,6 +227,7 @@ const Products = () => {
             priceRanges: pendingPriceRanges,
             page: 1,
         });
+        scrollToTop();
     };
     if (loading) return <Loader fullScreen={true} />;
 
