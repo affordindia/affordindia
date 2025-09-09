@@ -128,10 +128,6 @@ export const placeOrder = async (
                 couponDiscount,
                 subtotal
             );
-            console.log(
-                "✅ Coupon usage recorded successfully:",
-                usageRecord._id
-            );
         } catch (error) {
             console.error("❌ Failed to record coupon usage:", error);
             // Don't fail the order if coupon usage recording fails

@@ -57,11 +57,6 @@ export const getProducts = async (filter, options) => {
         delete processedFilter.categoryNames;
     }
 
-    console.log(
-        "🔍 Processed MongoDB filter:",
-        JSON.stringify(processedFilter, null, 2)
-    );
-
     // Execute query with enhanced filter
     const [products, totalCount] = await Promise.all([
         Product.find(processedFilter)
@@ -74,9 +69,6 @@ export const getProducts = async (filter, options) => {
         Product.countDocuments(processedFilter),
     ]);
 
-    console.log(
-        `📊 Service: Found ${products.length} products, total: ${totalCount}`
-    );
     return { products, totalCount };
 };
 

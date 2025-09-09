@@ -81,8 +81,6 @@ export const listProducts = async (req, res, next) => {
             filter.isFeatured = true;
         }
 
-        console.log("🔍 Product Filter:", JSON.stringify(filter, null, 2));
-
         // Handle price range filtering first to get accurate count
         if (req.query.priceRanges) {
             const priceRangeIndices = Array.isArray(req.query.priceRanges)
@@ -140,10 +138,6 @@ export const listProducts = async (req, res, next) => {
                     skip + limit
                 );
 
-                console.log(
-                    `📊 Price filtered products: ${totalFiltered}, showing: ${paginatedProducts.length}`
-                );
-
                 return res.json({
                     page,
                     limit,
@@ -171,10 +165,6 @@ export const listProducts = async (req, res, next) => {
                     : product.price;
             return { ...product, discountedPrice };
         });
-
-        console.log(
-            `📊 Products found: ${productsWithDiscount.length}/${totalCount}`
-        );
 
         res.json({
             page,

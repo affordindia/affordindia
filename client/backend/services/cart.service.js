@@ -101,7 +101,6 @@ const recalculateAppliedCoupon = async (userId, cart) => {
         return updatedCart;
     } catch (error) {
         // If coupon is no longer valid, remove it from cart
-        console.log("Removing invalid coupon from cart:", error.message);
         await Cart.findOneAndUpdate(
             { user: userId },
             { $unset: { appliedCoupon: 1 } },
