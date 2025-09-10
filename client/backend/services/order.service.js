@@ -9,6 +9,8 @@ import { createPaymentSession } from "./paymentGateway.service.js";
 export const placeOrder = async (
     userId,
     shippingAddress,
+    billingAddress,
+    billingAddressSameAsShipping,
     paymentMethod,
     paymentInfo = {},
     userName = undefined,
@@ -114,6 +116,10 @@ export const placeOrder = async (
         user: userId,
         items: orderItems,
         shippingAddress,
+        billingAddress: billingAddressSameAsShipping
+            ? shippingAddress
+            : billingAddress,
+        billingAddressSameAsShipping,
         paymentMethod,
         paymentStatus,
         paymentInfo,

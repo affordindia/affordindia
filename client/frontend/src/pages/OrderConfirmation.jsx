@@ -257,6 +257,36 @@ const OrderConfirmation = () => {
                     </div>
                 </div>
 
+                {/* Billing Address */}
+                <div className="px-6 py-4 border-t">
+                    <h3 className="font-semibold text-[#404040] mb-3 flex items-center gap-2">
+                        <FaBox />
+                        Billing Address
+                    </h3>
+                    <div className="bg-gray-50 p-3 rounded">
+                        {order.billingAddressSameAsShipping ? (
+                            <p className="text-sm text-gray-600 italic">
+                                Same as shipping address
+                            </p>
+                        ) : (
+                            <p className="text-sm text-[#404040]">
+                                {order.billingAddress?.houseNumber},{" "}
+                                {order.billingAddress?.street}
+                                {order.billingAddress?.landmark &&
+                                    `, ${order.billingAddress.landmark}`}
+                                <br />
+                                {order.billingAddress?.area},{" "}
+                                {order.billingAddress?.city}
+                                <br />
+                                {order.billingAddress?.state} -{" "}
+                                {order.billingAddress?.pincode}
+                                <br />
+                                {order.billingAddress?.country}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
                 {/* Payment & Total */}
                 <div className="px-6 py-4 border-t bg-gray-50">
                     <div className="flex justify-between items-center mb-2">

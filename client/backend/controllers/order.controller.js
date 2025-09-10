@@ -11,6 +11,8 @@ export const createOrder = async (req, res, next) => {
     try {
         const {
             shippingAddress,
+            billingAddress,
+            billingAddressSameAsShipping,
             paymentMethod,
             paymentInfo,
             userName,
@@ -21,6 +23,8 @@ export const createOrder = async (req, res, next) => {
         const order = await placeOrder(
             req.user._id,
             shippingAddress,
+            billingAddress,
+            billingAddressSameAsShipping,
             paymentMethod,
             paymentInfo,
             userName,
@@ -90,6 +94,9 @@ export const returnOrderCtrl = async (req, res, next) => {
 
 export const validateCreateOrder = [
     body("shippingAddress").isObject().withMessage("Shipping address required"),
+    body("billingAddressSameAsShipping")
+        .isBoolean()
+        .withMessage("Billing address preference required"),
     body("paymentMethod").isString().withMessage("Payment method required"),
 ];
 

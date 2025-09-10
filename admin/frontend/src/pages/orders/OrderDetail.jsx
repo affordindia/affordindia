@@ -472,6 +472,44 @@ const OrderDetail = () => {
                                             "N/A"}
                                     </div>
                                 </div>
+                                <div>
+                                    <div className="text-sm text-admin-text-secondary">
+                                        Billing Address
+                                    </div>
+                                    <div className="font-medium text-admin-text">
+                                        {order.billingAddressSameAsShipping ? (
+                                            <span className="italic text-admin-text-secondary">
+                                                Same as shipping address
+                                            </span>
+                                        ) : (
+                                            (order.billingAddress?.street && (
+                                                <>
+                                                    {order.billingAddress
+                                                        .houseNumber &&
+                                                        `${order.billingAddress.houseNumber}, `}
+                                                    {
+                                                        order.billingAddress
+                                                            .street
+                                                    }
+                                                    <br />
+                                                    {order.billingAddress
+                                                        .area &&
+                                                        `${order.billingAddress.area}, `}
+                                                    {order.billingAddress.city},{" "}
+                                                    {order.billingAddress.state}{" "}
+                                                    {
+                                                        order.billingAddress
+                                                            .pincode
+                                                    }
+                                                    <br />
+                                                    {order.billingAddress
+                                                        .country || "India"}
+                                                </>
+                                            )) ||
+                                            "N/A"
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

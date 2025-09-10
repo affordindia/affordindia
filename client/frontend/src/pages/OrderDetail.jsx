@@ -451,6 +451,40 @@ const OrderDetail = () => {
                             </div>
                         </div>
 
+                        {/* Billing Address */}
+                        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                                <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
+                                    <FaBox />
+                                    Billing Address
+                                </h2>
+                            </div>
+                            <div className="p-4">
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                    {order.billingAddressSameAsShipping ? (
+                                        <p className="text-gray-600 text-sm italic">
+                                            Same as shipping address
+                                        </p>
+                                    ) : (
+                                        <p className="text-[#404040] text-sm leading-relaxed">
+                                            {order.billingAddress?.houseNumber}
+                                            ," "{order.billingAddress?.street}
+                                            {order.billingAddress?.landmark &&
+                                                `, ${order.billingAddress.landmark}`}
+                                            <br />
+                                            {order.billingAddress?.area}," "
+                                            {order.billingAddress?.city}
+                                            <br />
+                                            {order.billingAddress?.state} -" "
+                                            {order.billingAddress?.pincode}
+                                            <br />
+                                            {order.billingAddress?.country}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Order Status Timeline */}
                         {order.status === "shipped" && (
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">

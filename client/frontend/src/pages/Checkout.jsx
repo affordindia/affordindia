@@ -8,6 +8,7 @@ import { createOrder } from "../api/order.js";
 import { calculateShipping } from "../api/shipping.js";
 import OrderSummary from "../components/checkout/OrderSummary.jsx";
 import ShippingForm from "../components/checkout/ShippingForm.jsx";
+import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 
@@ -41,6 +42,18 @@ const Checkout = () => {
         pincode: "",
         country: "India",
     });
+    const [billingAddress, setBillingAddress] = useState({
+        houseNumber: "",
+        street: "",
+        landmark: "",
+        area: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: "India",
+    });
+    const [billingAddressSameAsShipping, setBillingAddressSameAsShipping] =
+        useState(true);
     const [paymentMethod, setPaymentMethod] = useState("ONLINE");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -80,6 +93,13 @@ const Checkout = () => {
             navigate("/cart");
         }
     }, [cart, navigate, orderProcessing]);
+
+    // Sync billing address with shipping address when option is selected
+    useEffect(() => {
+        if (billingAddressSameAsShipping) {
+            setBillingAddress(shippingAddress);
+        }
+    }, [shippingAddress, billingAddressSameAsShipping]);
 
     // Order calculations - matching cart logic
     const items = cart?.items || [];
@@ -166,6 +186,16 @@ const Checkout = () => {
                 );
             }
 
+            // Validate billing address if different from shipping
+            if (!billingAddressSameAsShipping) {
+                const billingErrors = validateAddress(billingAddress);
+                if (Object.keys(billingErrors).length > 0) {
+                    throw new Error(
+                        "Please fill all required billing address fields correctly"
+                    );
+                }
+            }
+
             // Validate user name
             const userNameErr = validateUserName(userName);
             setUserNameError(userNameErr);
@@ -218,6 +248,10 @@ const Checkout = () => {
             // Create order
             const orderData = {
                 shippingAddress,
+                billingAddress: billingAddressSameAsShipping
+                    ? shippingAddress
+                    : billingAddress,
+                billingAddressSameAsShipping,
                 paymentMethod,
                 paymentInfo: {},
                 userName,
@@ -485,6 +519,17 @@ const Checkout = () => {
                         )}
                     </div>
 
+                    {/* Billing Address Section */}
+                    <BillingForm
+                        billingAddress={billingAddress}
+                        onBillingChange={setBillingAddress}
+                        billingAddressSameAsShipping={
+                            billingAddressSameAsShipping
+                        }
+                        onSameAsShippingChange={setBillingAddressSameAsShipping}
+                        shippingAddress={shippingAddress}
+                    />
+
                     <PaymentMethod
                         selected={paymentMethod}
                         onChange={setPaymentMethod}
@@ -509,6 +554,9 @@ const Checkout = () => {
                             !shippingAddress.city ||
                             !shippingAddress.pincode ||
                             !userName.trim() ||
+                            (!billingAddressSameAsShipping &&
+                                (!billingAddress.city ||
+                                    !billingAddress.pincode)) ||
                             (isOrderingForSomeoneElse &&
                                 (!receiverName.trim() ||
                                     !validatePhoneNumber(receiverPhone)))
