@@ -60,6 +60,12 @@ export const PERMISSIONS = {
     "orders.cancel": 3,
     "orders.refund": 3,
 
+    // Invoices
+    "invoices.view": 2,
+    "invoices.generate": 2,
+    "invoices.download": 2,
+    "invoices.manage": 3,
+
     // Users (customers)
     "users.view": 2,
     "users.update": 3,

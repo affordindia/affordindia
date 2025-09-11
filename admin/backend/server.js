@@ -17,6 +17,7 @@ import configRoutes from "./routes/config.routes.js";
 import reviewRoutes from "./routes/reviews.routes.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import adminUsersRoutes from "./routes/adminUsers.routes.js";
+import invoiceRoutes from "./routes/invoice.routes.js";
 
 // Load env vars
 
@@ -57,6 +58,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/config", configRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/admin", invoiceRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
