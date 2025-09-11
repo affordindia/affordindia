@@ -175,7 +175,7 @@ const CouponSection = ({ cart, onCartUpdate }) => {
                         <button
                             onClick={handleShowCoupons}
                             disabled={loading}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#A86565]  text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#B76E79] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors"
                         >
                             <FaGift />
                             {showCoupons ? "Hide Coupons" : "Apply Coupon"}

@@ -12,6 +12,23 @@ import YouMightAlsoLike from "../components/home/YouMightAlsoLike.jsx";
 import { FaHeart } from "react-icons/fa6";
 
 const ProductDetail = () => {
+  // Desktop-only zoom effect on mouse hover
+  const [zoomStyle, setZoomStyle] = useState({});
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left) / width) * 100;
+    const y = ((e.pageY - top) / height) * 100;
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+      transform: "scale(2)",
+    });
+  };
+  const handleMouseLeave = () => {
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center center",
+    });
+  };
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +42,8 @@ const ProductDetail = () => {
   const { user } = useAuth();
   const [wishlistMsg, setWishlistMsg] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
+  // State for mobile image modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // New state to track "Add to Cart" button processing
   const [addingToCart, setAddingToCart] = useState(false);
@@ -126,11 +145,17 @@ const ProductDetail = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-4 py-8 flex flex-col md:flex-row md:items-start gap-8 md:gap-12 text-[#404040] dark:text-gray-200">
         {/* LEFT SECTION: IMAGE DISPLAY */}
         <div className="flex-shrink-0 w-full md:w-[440px]">
-          <div className="w-full aspect-square rounded-lg overflow-hidden border bg-white dark:bg-gray-900">
+          <div
+            className="w-full aspect-square rounded-lg overflow-hidden border bg-white dark:bg-gray-900 relative"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => setIsModalOpen(true)} // open modal on mobile
+          >
             <img
               src={selectedImage}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-300 ease-out"
+              style={zoomStyle}
             />
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
@@ -151,6 +176,7 @@ const ProductDetail = () => {
         </div>
 
         {/* RIGHT SECTION: DETAILS */}
+ 
         <div className="flex flex-col gap-3 flex-1 min-w-0 text-[#404040]">
           <h1 className="text-4xl font-semibold break-words">{product.name}</h1>
           {/* Only show ratings if there are actual reviews */}
@@ -236,6 +262,20 @@ const ProductDetail = () => {
                 : null}
             </div>
           </div>
+
+          {/* Product Details (after Description) */}
+          {product.productDescription && product.productDescription.trim() && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold mb-2">Product Details</h2>
+              <div className="text-sm leading-relaxed">
+                {product.productDescription.split(/\r?\n/).map((para, idx) =>
+                  para.trim() ? (
+                    <p key={idx} className="mb-2 last:mb-0">{para}</p>
+                  ) : null
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -247,6 +287,63 @@ const ProductDetail = () => {
       </div>
 
       <YouMightAlsoLike />
+      {/* MODAL FOR MOBILE IMAGE PREVIEW - Swipeable Gallery */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-lg mx-auto">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 bg-white text-black rounded-full px-3 py-1 shadow text-lg"
+              style={{ zIndex: 10 }}
+            >
+              ✕
+            </button>
+            <div className="flex items-center justify-center gap-4">
+              {/* Previous button */}
+              <button
+                className="bg-white/70 text-black rounded-full px-2 py-1 shadow text-xl"
+                style={{ zIndex: 10 }}
+                onClick={() => {
+                  const idx = product.images.indexOf(selectedImage);
+                  if (idx > 0) setSelectedImage(product.images[idx - 1]);
+                }}
+                disabled={product.images.indexOf(selectedImage) === 0}
+              >
+                &#8592;
+              </button>
+              <img
+                src={selectedImage}
+                alt={product.name}
+                className="max-w-full max-h-[80vh] object-contain rounded"
+              />
+              {/* Next button */}
+              <button
+                className="bg-white/70 text-black rounded-full px-2 py-1 shadow text-xl"
+                style={{ zIndex: 10 }}
+                onClick={() => {
+                  const idx = product.images.indexOf(selectedImage);
+                  if (idx < product.images.length - 1) setSelectedImage(product.images[idx + 1]);
+                }}
+                disabled={product.images.indexOf(selectedImage) === product.images.length - 1}
+              >
+                &#8594;
+              </button>
+            </div>
+            {/* Thumbnails */}
+            <div className="flex gap-2 mt-4 justify-center">
+              {product.images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`thumb-${idx}`}
+                  className={`w-12 h-12 rounded border cursor-pointer object-cover ${selectedImage === img ? 'ring-2 ring-[#404040]' : 'opacity-80 hover:opacity-100'}`}
+                  onClick={() => setSelectedImage(img)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

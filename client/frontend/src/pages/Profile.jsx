@@ -56,7 +56,7 @@ const Profile = () => {
                             <button
                                 onClick={handleAddNewAddress}
                                 disabled={loading}
-                                className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors disabled:opacity-50"
+                                className="flex items-center gap-2 bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50"
                             >
                                 <FaPlus className="text-sm" />
                                 Add Address

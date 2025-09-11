@@ -6,13 +6,13 @@ const PromoStrip = () => {
     return (
         <div className="bg-gray-100 border-b border-gray-200 text-gray-700 py-2 px-4">
             <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-sm md:text-base">
-                <FaGift className="text-[#C1B086]" />
+                <FaGift className="text-[#B76E79]" />
                 <span className="font-medium">
-                    Raksha Bandhan Sale is LIVE!
+                    Diwali Sale is LIVE!
                 </span>
                 <Link
                     to="/rakhi"
-                    className="bg-[#C1B086] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#B5A578] transition-colors text-xs md:text-sm ml-2 text-center"
+                    className="bg-[#B76E79] text-white px-3 py-1 rounded-lg font-semibold hover:bg-[#B5A578] transition-colors text-xs md:text-sm ml-2 text-center"
                 >
                     Shop Now
                 </Link>

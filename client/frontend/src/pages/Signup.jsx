@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PrivacyPolicy from "./static/PrivacyPolicy";
 import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import "../index.css";
 import bgImg from "../assets/otp-bg.png";
@@ -10,6 +11,8 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Signup = ({ onAuthSuccess }) => {
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  // Privacy policy modal/event logic removed
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -146,13 +149,12 @@ const Signup = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-start justify-center bg-gray-100">
       <div
-        className="p-10 rounded-lg shadow-lg w-full max-w-md text-center min-h-[500px] bg-cover bg-center"
+        className="mt-6 p-10 rounded-lg shadow-lg w-full max-w-2xl text-center min-h-[500px] bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImg})` }}
       >
         <div className="backdrop-blur-md p-6 rounded-lg">
-          {/* Logo Placeholder */}
           {/* Logo */}
           <img
             src={logo}
@@ -255,10 +257,35 @@ const Signup = ({ onAuthSuccess }) => {
 
           {/* Terms */}
           <p className="text-xs text-gray-500 mt-4">
-            By continuing, I agree to the{" "}
-            <span className="underline">Terms & Conditions</span> and{" "}
-            <span className="underline">Privacy Policy</span>.
+            By continuing, I agree to the
+            <button
+              className="underline text-blue-600 hover:text-blue-800 ml-1"
+              type="button"
+              onClick={() => setShowPrivacyModal(true)}
+            >
+              Privacy Policy
+            </button>.
           </p>
+
+          {showPrivacyModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+              <div
+                className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative flex flex-col"
+                style={{ minHeight: '500px', maxHeight: '500px', overflowY: 'auto' }}
+              >
+                <div className="flex-1 overflow-y-auto">
+                  <PrivacyPolicy />
+                </div>
+                <button
+                  className="mt-6 bg-[#B76E79] text-white px-6 py-2 rounded hover:bg-[#C68F98] font-semibold self-center"
+                  onClick={() => setShowPrivacyModal(false)}
+                  aria-label="Close"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

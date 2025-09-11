@@ -1,4 +1,5 @@
 import React from "react";
+import PrivacyPolicy from "./pages/static/PrivacyPolicy";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/common/Navbar.jsx";
 import Footer from "./components/common/Footer.jsx";
@@ -38,7 +39,10 @@ const App = () => {
       <PromoStrip />
       <Navbar />
       <main className="flex-1">
+
         <Routes>
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:material" element={<Products />} />

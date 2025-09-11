@@ -33,13 +33,7 @@ const ReturnPolicy = () => {
             </ul>
           </div>
 
-          {/* International Orders */}
-          <div className="p-6">
-            <p className="text-sm leading-relaxed">
-              <strong>Note for International Customers:</strong> Please refer to the “International Orders” section for return eligibility and process.
-            </p>
-          </div>
-
+         
         </div>
       </div>
     </div>

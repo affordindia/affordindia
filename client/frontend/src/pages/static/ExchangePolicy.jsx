@@ -17,8 +17,7 @@ const ExchangePolicy = () => {
           {/* Intro */}
           <div className="p-6">
             <p className="text-sm leading-relaxed">
-              At Afford India, your satisfaction is our top priority. We want you to feel absolutely delighted with every piece of silver jewellery you receive. 
-              But if something doesn’t feel quite right, we’re here to make your exchange experience smooth and worry-free.
+              At Afford India, your satisfaction is our top priority. We want you to feel absolutely delighted with every product you receive. And if something doesn’t feel quite right, we’re here to make your exchange experience smooth and worry-free
             </p>
           </div>
 
@@ -29,7 +28,12 @@ const ExchangePolicy = () => {
             </h2>
             <p className="text-sm leading-relaxed">
               No worries! You can request a replacement or return of the unused product. Simply follow the instructions provided in our 
-              <span className="font-medium text-blue-600"> Return Policy </span> 
+              <span
+                className="font-medium text-blue-600 cursor-pointer underline"
+                onClick={() => window.location.href = '/return-policy'}
+              >
+                Return Policy
+              </span>
               section, and the Afford India team will assist you every step of the way.
             </p>
             <p className="text-sm leading-relaxed mt-2">

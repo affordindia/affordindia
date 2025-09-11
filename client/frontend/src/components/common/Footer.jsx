@@ -73,6 +73,11 @@ const Footer = () => {
                 FAQs
               </Link>
             </li>
+            <li>
+              <Link to="/privacy-policy" onClick={scrollToTop} className="hover:underline">
+                Privacy Policy
+              </Link>
+            </li>
           </ul>
         </div>
 

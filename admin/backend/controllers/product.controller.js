@@ -20,8 +20,8 @@ import Product from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
     try {
-        // Check for duplicate before uploading images
-        const { name, category } = req.body;
+    // Check for duplicate before uploading images
+    const { name, category } = req.body;
         const existing = await Product.findOne({ name, category });
         if (existing) {
             return res.status(400).json({

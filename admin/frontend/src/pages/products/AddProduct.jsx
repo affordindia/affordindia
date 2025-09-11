@@ -10,8 +10,9 @@ const AddProduct = () => {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
-        name: "",
-        description: "",
+    name: "",
+    description: "",
+    productDescription: "",
         price: "",
         category: "",
         stock: "",
@@ -266,9 +267,22 @@ const AddProduct = () => {
                                 name="description"
                                 value={formData.description}
                                 onChange={handleInputChange}
+                                rows={2}
+                                className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
+                                placeholder="Enter short description"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-admin-text mb-2">
+                                Product Description
+                            </label>
+                            <textarea
+                                name="productDescription"
+                                value={formData.productDescription}
+                                onChange={handleInputChange}
                                 rows={4}
                                 className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
-                                placeholder="Enter product description"
+                                placeholder="Enter detailed product description"
                             />
                         </div>
 

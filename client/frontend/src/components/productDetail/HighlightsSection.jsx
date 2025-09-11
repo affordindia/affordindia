@@ -8,7 +8,7 @@ import { FaArrowRotateLeft } from "react-icons/fa6";
 const HighlightsSection = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 md:px-4 mt-8 mb-8">
-            <div className="flex flex-col sm:flex-row justify-between items-stretch gap-4 text-center text-xs text-[#404040]">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row justify-between items-stretch gap-4 text-center text-xs text-[#404040]">
                 <div className="flex-1 flex flex-col items-center justify-center p-3 bg-white/70 rounded-lg shadow-sm">
                     <GiRoundStar className="text-4xl mb-1" />
                     <div className="text-base font-semibold">

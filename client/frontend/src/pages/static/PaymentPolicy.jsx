@@ -17,13 +17,13 @@ const PaymentPolicy = () => {
           <p className="text-sm leading-relaxed">
             We accept the following payment methods:
           </p>
-          <ul className="list-disc list-inside text-sm leading-relaxed mt-2">
+          <ol className="list-decimal list-inside text-sm leading-relaxed mt-2">
             <li>Credit/Debit Cards</li>
             <li>Net Banking</li>
             <li>UPI (Google Pay, PhonePe, etc.)</li>
             <li>Wallets</li>
             <li>Cash on Delivery (India only)</li>
-          </ul>
+          </ol>
         </div>
 
         {/* COD */}
@@ -42,15 +42,10 @@ const PaymentPolicy = () => {
           </p>
         </div>
 
-        <div className="p-6">
-          <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">4. Is COD available for international orders?</h2>
-          <p className="text-sm leading-relaxed">
-            No, COD is not available outside India. International orders must be prepaid.
-          </p>
-        </div>
+        
 
         <div className="p-6">
-          <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">5. What currencies are accepted for COD?</h2>
+          <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">4. What currencies are accepted for COD?</h2>
           <p className="text-sm leading-relaxed">
             Only Indian Rupees (INR). Notes of ₹500 and ₹1,000 demonetized on 8th November 2016 will not be accepted.
           </p>
@@ -58,19 +53,14 @@ const PaymentPolicy = () => {
 
         {/* Refunds */}
         <div className="p-6">
-          <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">6. How will I receive a refund?</h2>
+          <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">5. How will I receive a refund?</h2>
           <p className="text-sm leading-relaxed">
             Refunds for prepaid orders are made to the original payment method within 7–10 business days.
           </p>
           <p className="text-sm leading-relaxed mt-2">For COD refunds:</p>
-          <ul className="list-disc list-inside text-sm leading-relaxed mt-2">
-            <li>
-              If you share a cancelled cheque, we’ll transfer the amount via NEFT within 7–15 business days.
-            </li>
-            <li>
-              If no cancelled cheque is available / provided, we will courier a cheque in your name within 30 business days.
-            </li>
-          </ul>
+          <p className="text-sm leading-relaxed mt-2">
+            For COD orders, refunds will be processed via NEFT/Bank Transfer. Once you share your bank details, the amount will be credited to your account within 7–15 business days.
+          </p>
         </div>
 
       </div>

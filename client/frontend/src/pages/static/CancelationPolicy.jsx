@@ -16,7 +16,7 @@ const CancellationPolicy = () => {
           {/* Customer Cancellation */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              3. Cancellation by You (The Customer)
+              1. Cancellation by You (The Customer)
             </h2>
             <p className="text-sm leading-relaxed mb-3">
               You can cancel your Afford India order before it has been shipped.
@@ -32,7 +32,7 @@ const CancellationPolicy = () => {
           {/* Company Cancellation */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              4. Cancellation by Afford India
+              2. Cancellation by Afford India
             </h2>
             <p className="text-sm leading-relaxed">
               Sometimes, we may need to cancel an order due to product
@@ -41,27 +41,16 @@ const CancellationPolicy = () => {
             </p>
           </div>
 
-          {/* Philosophy */}
-          <div className="p-6">
-            <p className="text-sm leading-relaxed">
-              At Afford India, we craft more than jewellery — we craft
-              experiences! We want you to be thrilled with your purchase. But
-              in the rare case that you change your mind or something isn’t
-              quite right, we’re here to make things easy and stress-free for
-              you.
-            </p>
-          </div>
-
+        
           {/* Return & Exchange */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Return & Exchange Made Simple
+              3. Return & Exchange Made Simple
             </h2>
-            <ul className="list-disc list-inside text-sm leading-relaxed space-y-1">
-              <li>You didn’t love what you received</li>
-              <li>You want a different piece/size or store credit</li>
-              <li>You received a damaged or incorrect item</li>
-            </ul>
+            {/* ...removed <ul> tag... */}
+              <p className="text-sm leading-relaxed">You didn’t love what you received</p>
+              <p className="text-sm leading-relaxed">You want a different piece/size or store credit</p>
+              <p className="text-sm leading-relaxed">You received a damaged or incorrect item</p>
             <p className="mt-3 text-sm leading-relaxed">
               <strong>Return Policy:</strong> We offer a 7-day return policy for
               all unused and unworn items — no questions asked. This does not
@@ -73,7 +62,7 @@ const CancellationPolicy = () => {
           {/* Return Process */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Return Process
+              4. Return Process
             </h2>
             <p className="text-sm leading-relaxed mb-2">
               You can initiate a return request from our website or contact our
@@ -83,11 +72,10 @@ const CancellationPolicy = () => {
             <p className="text-sm leading-relaxed mb-3">
               After passing the quality check, we will issue:
             </p>
-            <ul className="list-disc list-inside text-sm leading-relaxed space-y-1">
-              <li>A replacement</li>
-              <li>A full refund (prepaid orders to original payment method)</li>
-              <li>Store credit</li>
-            </ul>
+            {/* ...removed <ul> tag... */}
+              <p className="text-sm leading-relaxed">A replacement</p>
+              <p className="text-sm leading-relaxed">A full refund (prepaid orders to original payment method)</p>
+              <p className="text-sm leading-relaxed">Store credit</p>
             <p className="text-xs mt-3 text-gray-600">
               For COD orders: Refunds will be made to the bank account in the
               name mentioned on the original billing details. Only the product
@@ -99,7 +87,7 @@ const CancellationPolicy = () => {
           {/* Refunds */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Refunds
+              5. Refunds
             </h2>
             <p className="text-sm leading-relaxed">
               Refunds are processed once we receive the product in unused
@@ -112,25 +100,20 @@ const CancellationPolicy = () => {
           {/* Cancellations */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Cancellations
+              6. Cancellations
             </h2>
             <p className="text-sm leading-relaxed">
               To cancel an order, email us at{" "}
               <a
-                href="mailto:shopshyle@gmail.com"
+                href="mailto:techvcrafthem@gmail.com"
                 className="text-[#B76E79] underline"
               >
-                shopshyle@gmail.com
-              </a>{" "}
-              or WhatsApp us within 6 hours of placing the order.
+                techvcrafthem@gmail.com
+              </a>
             </p>
-            <ul className="list-disc list-inside text-sm leading-relaxed mt-2 space-y-1">
-              <li>If not dispatched: Full refund to original payment method</li>
-              <li>
-                If already shipped: Two-way shipping charges will be deducted,
-                and the remaining refund will be processed once returned.
-              </li>
-            </ul>
+            {/* ...removed <ul> tag... */}
+              <p className="text-sm leading-relaxed mt-2">If not dispatched: Full refund to original payment method.</p>
+              <p className="text-sm leading-relaxed mt-2">If already shipped: Two-way shipping charges will be deducted, and the remaining refund will be processed once returned.</p>
             <p className="text-sm text-red-600 mt-2">
               Customized or made-to-order items cannot be cancelled or refunded.
             </p>
@@ -139,7 +122,7 @@ const CancellationPolicy = () => {
           {/* Delivery Timelines */}
           <div className="p-6">
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Delivery Timelines
+              7. Delivery Timelines
             </h2>
             <p className="text-sm leading-relaxed">
               We usually ship all orders within 6–8 business days. For
@@ -147,6 +130,23 @@ const CancellationPolicy = () => {
               but we’ll keep you informed.
             </p>
           </div>
+
+          
+          {/* Wrong or Damaged Product */}
+          <div className="p-6">
+            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
+              8. Received the Wrong or Damaged Product?
+            </h2>
+            <p className="text-sm leading-relaxed">Contact Afford India within 3 days of receiving the order.</p>
+            <p className="text-sm leading-relaxed">Do not use the product.</p>
+            <p className="text-sm leading-relaxed">Send Order ID, clear photos, and issue details to <a href="mailto:techvcrafthem@gmail.com" className="text-[#B76E79] underline">techvcrafthem@gmail.com</a> </p>
+            <p className="text-sm leading-relaxed mt-2">
+              Once verified, we’ll offer a free return, replacement, or refund —
+              including shipping charges if it’s our mistake.
+            </p>
+          </div>
+
+        
 
           {/* Product Disclaimer */}
           <div className="p-6">
@@ -160,42 +160,6 @@ const CancellationPolicy = () => {
             </p>
           </div>
 
-          {/* Wrong or Damaged Product */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              Received the Wrong or Damaged Product?
-            </h2>
-            <ul className="list-disc list-inside text-sm leading-relaxed space-y-1">
-              <li>Contact Afford India within 3 days of receiving the order</li>
-              <li>Do not use the product</li>
-              <li>
-                Send Order ID, clear photos, and issue details to{" "}
-                <a
-                  href="mailto:shopshyle@gmail.com"
-                  className="text-[#B76E79] underline"
-                >
-                  shopshyle@gmail.com
-                </a>{" "}
-                or WhatsApp
-              </li>
-            </ul>
-            <p className="text-sm leading-relaxed mt-2">
-              Once verified, we’ll offer a free return, replacement, or refund —
-              including shipping charges if it’s our mistake.
-            </p>
-          </div>
-
-          {/* International Orders */}
-          <div className="p-6">
-            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">
-              International Orders
-            </h2>
-            <p className="text-sm leading-relaxed">
-              Customs duties and taxes for deliveries outside India are not
-              included in the product price. They are charged by your country’s
-              customs and must be paid directly by you.
-            </p>
-          </div>
 
           {/* Help Section */}
           <div className="p-6">
@@ -205,16 +169,12 @@ const CancellationPolicy = () => {
             <p className="text-sm leading-relaxed">
               Email:{" "}
               <a
-                href="mailto:shopshyle@gmail.com"
+                href="mailto:techvcrafthem@gmail.com"
                 className="text-[#B76E79] underline"
               >
-                shopshyle@gmail.com
+                techvcrafthem@gmail.com
               </a>
-              <br />
-              Call/WhatsApp:{" "}
-              <a href="tel:+918384069624" className="text-[#B76E79] underline">
-                +91 8384069624
-              </a>
+              
             </p>
           </div>
         </div>
