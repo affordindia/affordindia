@@ -63,293 +63,514 @@ const createInvoiceHTML = (data) => {
     <meta charset="UTF-8">
     <title>Invoice ${data.invoiceNumber}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: #333;
+        * {
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            color: #1f2937;
+            background: #ffffff;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        /* Header Section */
         .invoice-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #007bff;
+            align-items: flex-start;
+            margin-bottom: 25px;
             padding-bottom: 20px;
+            border-bottom: 3px solid #b76e79;
         }
+        
         .company-info h1 {
-            color: #007bff;
-            margin: 0;
+            color: #b76e79;
+            margin: 0 0 8px 0;
             font-size: 28px;
+            font-weight: 700;
         }
+        
+        .company-info p {
+            margin: 3px 0;
+            color: #718096;
+            font-size: 12px;
+        }
+        
         .invoice-details {
             text-align: right;
         }
+        
         .invoice-details h2 {
-            color: #007bff;
-            margin: 0;
+            color: #b76e79;
+            margin: 0 0 10px 0;
             font-size: 24px;
+            font-weight: 600;
         }
-        .section {
+        
+        .invoice-meta {
+            background: #fbf7f8;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #b76e79;
+        }
+        
+        .invoice-meta p {
+            margin: 3px 0;
+            font-size: 12px;
+        }
+        
+        /* Info Cards Section */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 25px;
         }
-        .section-title {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-left: 4px solid #007bff;
-            font-weight: bold;
-            margin-bottom: 15px;
+        
+        .info-card {
+            background: #fbf7f8;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
         }
-        .address-row {
+        
+        .info-card h3 {
+            color: #b76e79;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 600;
             display: flex;
-            justify-content: space-between;
-            gap: 30px;
+            align-items: center;
+            gap: 8px;
         }
-        .address-box {
-            flex: 1;
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #f9f9f9;
+        
+        .info-card .icon {
+            width: 16px;
+            height: 16px;
+            background: #b76e79;
+            border-radius: 50%;
+            display: inline-block;
         }
-        .address-box h4 {
-            margin-top: 0;
-            color: #007bff;
+        
+        .info-card p {
+            margin: 3px 0;
+            font-size: 12px;
         }
-        table {
+        
+        .info-card .name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+        
+        /* Items Table */
+        .items-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            color: #b76e79;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title .icon {
+            width: 18px;
+            height: 18px;
+            background: #b76e79;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #007bff;
+        
+        .items-table thead {
+            background: #b76e79;
             color: white;
-            font-weight: bold;
         }
-        .text-right {
+        
+        .items-table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .items-table th.text-center {
+            text-align: center;
+        }
+        
+        .items-table th.text-right {
             text-align: right;
         }
-        .totals-section {
-            margin-top: 30px;
-            display: flex;
-            justify-content: flex-end;
+        
+        .items-table tbody tr {
+            border-bottom: 1px solid #e2e8f0;
         }
-        .totals-table {
-            width: 400px;
+        
+        .items-table tbody tr:nth-child(even) {
+            background: #fbf7f8;
         }
-        .totals-table th {
-            background-color: #6c757d;
-        }
-        .grand-total {
-            background-color: #28a745 !important;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #666;
+        
+        .items-table td {
+            padding: 10px 8px;
             font-size: 12px;
+            vertical-align: top;
+        }
+        
+        .items-table .text-center {
+            text-align: center;
+        }
+        
+        .items-table .text-right {
+            text-align: right;
+        }
+        
+        /* Summary Section */
+        .summary-section {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .amount-summary {
+            background: #fbf7f8;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .summary-row.total {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2d3748;
+            padding-top: 8px;
+            border-top: 2px solid #b76e79;
+            margin-top: 12px;
+        }
+        
+        .summary-label {
+            color: #718096;
+        }
+        
+        .summary-value {
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .discount {
+            color: #48bb78 !important;
+        }
+        
+        /* Amount in Words */
+        .words-section {
+            background: #fbf7f8;
+            border: 1px solid #c68f98;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .words-section h3 {
+            color: #b76e79;
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .words-section p {
+            margin: 0;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 13px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 11px;
+        }
+        
+        .footer p {
+            margin: 3px 0;
+        }
+        
+        /* Print optimizations */
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+        
+        /* Utility classes */
+        .text-bold {
+            font-weight: 600;
+        }
+        
+        .text-primary {
+            color: #b76e79;
+        }
+        
+        .text-success {
+            color: #48bb78;
+        }
+        
+        .text-secondary {
+            color: #718096;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="invoice-header">
-        <div class="company-info">
-            <h1>${data.business.name}</h1>
-            <p>
-                ${data.business.address}<br>
-                ${data.business.city}, ${data.business.state} ${
-        data.business.pincode
-    }<br>
-                GSTIN: ${data.business.gstin}<br>
-                Phone: ${data.business.phone}<br>
-                Email: ${data.business.email}
-            </p>
-        </div>
-        <div class="invoice-details">
-            <h2>INVOICE</h2>
-            <p>
-                <strong>Invoice No:</strong> ${data.invoiceNumber}<br>
-                <strong>Date:</strong> ${data.invoiceDate}
-            </p>
-        </div>
-    </div>
-
-    <!-- Billing & Shipping Address -->
-    <div class="section">
-        <div class="section-title">BILLING & SHIPPING DETAILS</div>
-        <div class="address-row">
-            <div class="address-box">
-                <h4>Bill To:</h4>
-                <p>
-                    <strong>${data.customer.name}</strong><br>
-                    ${data.billingAddress.houseNumber}
-                    <br> 
-                    ${data.billingAddress.street}
-                    <br>
-                    ${
-                        data.billingAddress.landmark
-                            ? data.billingAddress.landmark + "<br>"
-                            : ""
-                    } 
-                    ${
-                        data.billingAddress.area
-                            ? data.billingAddress.area + "<br>"
-                            : ""
-                    }
-                    ${data.billingAddress.city}, 
-                    ${data.billingAddress.state}, 
-                    ${data.billingAddress.pincode}
-                    <br>
-                    Phone: ${data.customer.phone}<br>
-                    Email: ${data.customer.email}
-                </p>
+    <div class="container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <h1>${data.business.name}</h1>
+                <p><strong>Address:</strong> ${data.business.address}</p>
+                <p><strong>City:</strong> ${data.business.city}, ${
+        data.business.state
+    } ${data.business.pincode}</p>
+                <p><strong>GSTIN:</strong> ${data.business.gstin}</p>
+                <p><strong>Phone:</strong> ${data.business.phone}</p>
+                <p><strong>Email:</strong> ${data.business.email}</p>
             </div>
-            <div class="address-box">
-                <h4>Ship To:</h4>
-                <p>
-                    <strong>${data.customer.name}</strong><br>
-                    ${data.shippingAddress.houseNumber}
-                    <br> 
-                    ${data.shippingAddress.street}
-                    <br>
-                    ${
-                        data.shippingAddress.landmark
-                            ? data.shippingAddress.landmark + "<br>"
-                            : ""
-                    } 
-                    ${
-                        data.shippingAddress.area
-                            ? data.shippingAddress.area + "<br>"
-                            : ""
-                    }
-                    ${data.shippingAddress.city}, 
-                    ${data.shippingAddress.state}, 
-                    ${data.shippingAddress.pincode}
-                    <br>
-                    Phone: ${data.customer.phone}<br>
-                </p>
+            <div class="invoice-details">
+                <h2>INVOICE</h2>
+                <div class="invoice-meta">
+                    <p><strong>Invoice No:</strong> ${data.invoiceNumber}</p>
+                    <p><strong>Date:</strong> ${data.invoiceDate}</p>
+                    <p><strong>Order ID:</strong> ${
+                        data.order?.orderId || "N/A"
+                    }</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Items Table -->
-    <div class="section">
-        <div class="section-title">ITEMS</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>HSN Code</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${data.items
-                    .map(
-                        (item) => `
-                <tr>
-                    <td>${item.productName}</td>
-                    <td>${item.hsnCode}</td>
-                    <td>${item.quantity}</td>
-                    <td>₹${item.unitPrice}</td>
-                    <td>₹${item.totalPrice}</td>
-                </tr>
+        <!-- Customer & Business Info Cards -->
+        <div class="info-section">
+            <div class="info-card">
+                <h3><span class="icon"></span>Bill To</h3>
+                <p class="name">${data.customer.name}</p>
+                <p>${data.billingAddress.houseNumber}</p>
+                <p>${data.billingAddress.street}</p>
+                ${
+                    data.billingAddress.landmark
+                        ? `<p>${data.billingAddress.landmark}</p>`
+                        : ""
+                }
+                ${
+                    data.billingAddress.area
+                        ? `<p>${data.billingAddress.area}</p>`
+                        : ""
+                }
+                <p>${data.billingAddress.city}, ${data.billingAddress.state}, ${
+        data.billingAddress.pincode
+    }</p>
+                <p><strong>Phone:</strong> ${data.customer.phone}</p>
+                <p><strong>Email:</strong> ${data.customer.email}</p>
+            </div>
+            <div class="info-card">
+                <h3><span class="icon"></span>Ship To</h3>
+                <p class="name">${data.customer.name}</p>
+                <p>${data.shippingAddress.houseNumber}</p>
+                <p>${data.shippingAddress.street}</p>
+                ${
+                    data.shippingAddress.landmark
+                        ? `<p>${data.shippingAddress.landmark}</p>`
+                        : ""
+                }
+                ${
+                    data.shippingAddress.area
+                        ? `<p>${data.shippingAddress.area}</p>`
+                        : ""
+                }
+                <p>${data.shippingAddress.city}, ${
+        data.shippingAddress.state
+    }, ${data.shippingAddress.pincode}</p>
+                <p><strong>Phone:</strong> ${data.customer.phone}</p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="items-section">
+            <h3 class="section-title">
+                <span class="icon"></span>
+                Invoice Items (${data.items.length})
+            </h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">HSN Code</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Unit Price</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.items
+                        .map(
+                            (item) => `
+                    <tr>
+                        <td><strong>${item.productName}</strong></td>
+                        <td class="text-center">${item.hsnCode}</td>
+                        <td class="text-center">${item.quantity}</td>
+                        <td class="text-right">₹${Number(
+                            item.unitPrice || 0
+                        ).toLocaleString("en-IN")}</td>
+                        <td class="text-right">₹${Number(
+                            item.totalPrice || 0
+                        ).toLocaleString("en-IN")}</td>
+                    </tr>
+                    `
+                        )
+                        .join("")}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div></div>
+            <div class="amount-summary">
+                <h3 class="section-title">
+                    <span class="icon"></span>
+                    Amount Summary
+                </h3>
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal</span>
+                    <span class="summary-value">₹${Number(
+                        data.subtotal || 0
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                ${
+                    data.discount > 0
+                        ? `
+                <div class="summary-row">
+                    <span class="summary-label">Discount</span>
+                    <span class="summary-value discount">-₹${Number(
+                        data.discount
+                    ).toLocaleString("en-IN")}</span>
+                </div>
                 `
-                    )
-                    .join("")}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Totals -->
-    <div class="totals-section">
-        <table class="totals-table">
-            <tr>
-                <th>Subtotal</th>
-                <td class="text-right">₹${data.subtotal}</td>
-            </tr>
-            ${
-                data.discount
-                    ? `
-            <tr>
-                <th>Discount</th>
-                <td class="text-right">-₹${data.discount}</td>
-            </tr>
-            `
-                    : ""
-            }
-            ${
-                data.shippingCharges
-                    ? `
-            <tr>
-                <th>Shipping</th>
-                <td class="text-right">₹${data.shippingCharges}</td>
-            </tr>
-            `
-                    : ""
-            }
-            <tr>
-                <th>Taxable Amount</th>
-                <td class="text-right">₹${data.taxableAmount}</td>
-            </tr>
-            ${
-                data.cgst
-                    ? `
-            <tr>
-                <th>CGST (${data.cgstRate}%)</th>
-                <td class="text-right">₹${data.cgst}</td>
-            </tr>
-            <tr>
-                <th>SGST (${data.sgstRate}%)</th>
-                <td class="text-right">₹${data.sgst}</td>
-            </tr>
-            `
-                    : ""
-            }
-            ${
-                data.igst
-                    ? `
-            <tr>
-                <th>IGST (${data.igstRate}%)</th>
-                <td class="text-right">₹${data.igst}</td>
-            </tr>
-            `
-                    : ""
-            }
-            <tr>
-                <th>Total Tax</th>
-                <td class="text-right">₹${data.totalTax}</td>
-            </tr>
-            <tr class="grand-total">
-                <th>Grand Total</th>
-                <td class="text-right">₹${data.finalAmount}</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Amount in Words -->
-    <div class="section">
-        <div class="section-title">AMOUNT IN WORDS</div>
-        <div style="padding: 15px; background-color: #f9f9f9; border: 1px solid #ddd; font-weight: bold; font-size: 14px;">
-            ${data.totalInWords}
+                        : ""
+                }
+                ${
+                    data.shippingCharges > 0
+                        ? `
+                <div class="summary-row">
+                    <span class="summary-label">Shipping</span>
+                    <span class="summary-value">₹${Number(
+                        data.shippingCharges
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                `
+                        : ""
+                }
+                <div class="summary-row">
+                    <span class="summary-label">Taxable Amount</span>
+                    <span class="summary-value">₹${Number(
+                        data.taxableAmount || 0
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                ${
+                    data.cgst > 0
+                        ? `
+                <div class="summary-row">
+                    <span class="summary-label">CGST (${data.cgstRate}%)</span>
+                    <span class="summary-value">₹${Number(
+                        data.cgst
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">SGST (${data.sgstRate}%)</span>
+                    <span class="summary-value">₹${Number(
+                        data.sgst
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                `
+                        : ""
+                }
+                ${
+                    data.igst > 0
+                        ? `
+                <div class="summary-row">
+                    <span class="summary-label">IGST (${data.igstRate}%)</span>
+                    <span class="summary-value">₹${Number(
+                        data.igst
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                `
+                        : ""
+                }
+                <div class="summary-row">
+                    <span class="summary-label">Total Tax</span>
+                    <span class="summary-value">₹${Number(
+                        data.totalTax || 0
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+                <div class="summary-row total">
+                    <span class="summary-label">Grand Total</span>
+                    <span class="summary-value">₹${Number(
+                        data.finalAmount || 0
+                    ).toLocaleString("en-IN")}</span>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>Thank you for your business!</p>
-        <p>This is a computer generated invoice.</p>
+        <!-- Amount in Words -->
+        ${
+            data.totalInWords
+                ? `
+        <div class="words-section">
+            <h3>Amount in Words</h3>
+            <p>${data.totalInWords}</p>
+        </div>
+        `
+                : ""
+        }
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>We declare this invoice shows the actual price of the goods described and that all particulars are true and correct.</strong></p>
+            
+        </div>
     </div>
 </body>
 </html>

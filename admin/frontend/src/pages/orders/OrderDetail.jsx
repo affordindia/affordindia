@@ -13,16 +13,25 @@ import {
     FaMapMarkerAlt,
     FaCreditCard,
     FaShoppingCart,
+    FaFileInvoice,
+    FaPlus,
+    FaEye,
 } from "react-icons/fa";
 import {
     getOrderById,
     updateOrderStatus,
     deleteOrder,
 } from "../../api/orders.api.js";
+import {
+    checkInvoiceByOrderId,
+    generateInvoice,
+    getInvoiceDetailsByOrderId,
+} from "../../api/invoice.api.js";
 import Loader from "../../components/common/Loader.jsx";
 import OrderStatusBadge from "../../components/orders/OrderStatusBadge.jsx";
 import PaymentStatusBadge from "../../components/orders/PaymentStatusBadge.jsx";
 import ProtectedComponent from "../../components/common/ProtectedComponent.jsx";
+import InvoiceModal from "../../components/orders/InvoiceModal.jsx";
 
 const OrderDetail = () => {
     const { id } = useParams();
@@ -37,6 +46,12 @@ const OrderDetail = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [newStatus, setNewStatus] = useState("");
     const [newPaymentStatus, setNewPaymentStatus] = useState("");
+
+    // Invoice related state
+    const [invoice, setInvoice] = useState(null);
+    const [invoiceLoading, setInvoiceLoading] = useState(false);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [generatingInvoice, setGeneratingInvoice] = useState(false);
 
     const orderStatusOptions = [
         "pending",
@@ -60,6 +75,8 @@ const OrderDetail = () => {
             const response = await getOrderById(id);
             if (response.success) {
                 setOrder(response.order);
+                // Also check for invoice existence
+                checkInvoiceExists(id);
             } else {
                 setError(response.error || "Order not found");
             }
@@ -68,6 +85,23 @@ const OrderDetail = () => {
             setError("Failed to load order details");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const checkInvoiceExists = async (orderId) => {
+        try {
+            setInvoiceLoading(true);
+            const response = await checkInvoiceByOrderId(orderId);
+            if (response.success && response.invoice) {
+                setInvoice(response.invoice);
+            } else {
+                setInvoice(null);
+            }
+        } catch (err) {
+            console.error("Error checking invoice:", err);
+            setInvoice(null);
+        } finally {
+            setInvoiceLoading(false);
         }
     };
 
@@ -136,12 +170,47 @@ const OrderDetail = () => {
         }
     };
 
+    // Invoice handling functions
+    const handleGenerateInvoice = async () => {
+        try {
+            setGeneratingInvoice(true);
+            const response = await generateInvoice(id);
+            if (response.success) {
+                setInvoice(response.invoice);
+            } else {
+                alert(response.error || "Failed to generate invoice");
+            }
+        } catch (error) {
+            console.error("Error generating invoice:", error);
+            alert("Failed to generate invoice. Please try again.");
+        } finally {
+            setGeneratingInvoice(false);
+        }
+    };
+
+    const handleViewInvoice = async () => {
+        if (!invoice) return;
+
+        try {
+            setInvoiceLoading(true);
+            const response = await getInvoiceDetailsByOrderId(id);
+            if (response.success) {
+                setInvoice(response.invoice);
+                setShowInvoiceModal(true);
+            } else {
+                alert(response.error || "Failed to load invoice details");
+            }
+        } catch (error) {
+            console.error("Error loading invoice details:", error);
+            alert("Failed to load invoice details. Please try again.");
+        } finally {
+            setInvoiceLoading(false);
+        }
+    };
+
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-            minimumFractionDigits: 0,
-        }).format(amount);
+        const numAmount = Number(amount) || 0;
+        return `₹${numAmount.toLocaleString("en-IN")}`;
     };
 
     const formatDate = (date) => {
@@ -615,6 +684,83 @@ const OrderDetail = () => {
                         </div>
                     </div>
 
+                    {/* Invoice Section */}
+                    <div className="bg-admin-card rounded-lg p-6 border border-admin-border">
+                        <h2 className="text-lg font-semibold text-admin-text mb-4 flex items-center gap-2">
+                            <FaFileInvoice className="text-admin-primary" />
+                            Invoice
+                        </h2>
+                        {invoiceLoading ? (
+                            <div className="flex items-center justify-center py-4">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-admin-primary"></div>
+                                <span className="ml-2 text-sm text-admin-text-secondary">
+                                    Loading invoice...
+                                </span>
+                            </div>
+                        ) : invoice ? (
+                            <div className="space-y-4">
+                                <div className="bg-admin-bg rounded-lg p-4">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div>
+                                            <p className="text-sm text-admin-text-secondary">
+                                                Invoice Number
+                                            </p>
+                                            <p className="font-semibold text-admin-text">
+                                                {invoice.invoiceNumber}
+                                            </p>
+                                        </div>
+                                        <div className="w-8 h-8 bg-admin-success text-white rounded-full flex items-center justify-center">
+                                            <FaFileInvoice className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-admin-text-secondary">
+                                                Generated On
+                                            </p>
+                                            <p className="text-sm text-admin-text">
+                                                {formatDate(
+                                                    invoice.generatedAt
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ProtectedComponent permission="invoices.view">
+                                    <button
+                                        onClick={handleViewInvoice}
+                                        disabled={invoiceLoading}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-admin-primary text-white rounded-lg hover:bg-admin-primary-dark transition-colors disabled:opacity-50"
+                                    >
+                                        <FaEye className="w-4 h-4" />
+                                        {invoiceLoading
+                                            ? "Loading..."
+                                            : "View Invoice Details"}
+                                    </button>
+                                </ProtectedComponent>
+                            </div>
+                        ) : (
+                            <div className="text-center py-6">
+                                <FaFileInvoice className="w-12 h-12 text-admin-text-secondary mx-auto mb-3" />
+                                <p className="text-admin-text-secondary mb-4">
+                                    No invoice generated for this order
+                                </p>
+                                <ProtectedComponent permission="invoices.generate">
+                                    <button
+                                        onClick={handleGenerateInvoice}
+                                        disabled={generatingInvoice}
+                                        className="flex items-center gap-2 px-4 py-2 bg-admin-success text-white rounded-lg hover:bg-admin-success-dark transition-colors disabled:opacity-50 mx-auto"
+                                    >
+                                        <FaPlus className="w-4 h-4" />
+                                        {generatingInvoice
+                                            ? "Generating..."
+                                            : "Generate Invoice"}
+                                    </button>
+                                </ProtectedComponent>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Coupon Information */}
                     {(order.coupon?.code ||
                         order.couponCode ||
@@ -919,6 +1065,14 @@ const OrderDetail = () => {
                     </div>
                 </div>
             )}
+
+            {/* Invoice Modal */}
+            <InvoiceModal
+                invoice={invoice}
+                orderId={id}
+                isOpen={showInvoiceModal}
+                onClose={() => setShowInvoiceModal(false)}
+            />
         </div>
     );
 };
