@@ -387,43 +387,72 @@ const createInvoiceHTML = (data) => {
             <div class="info-card">
                 <h3><span class="icon"></span>Bill To</h3>
                 <p class="name">${data.customer.name}</p>
-                <p>${data.billingAddress.houseNumber}</p>
-                <p>${data.billingAddress.street}</p>
+                <p>${data.addresses.billing.houseNumber}</p>
+                <p>${data.addresses.billing.street}</p>
                 ${
-                    data.billingAddress.landmark
-                        ? `<p>${data.billingAddress.landmark}</p>`
+                    data.addresses.billing.landmark
+                        ? `<p>${data.addresses.billing.landmark}</p>`
                         : ""
                 }
                 ${
-                    data.billingAddress.area
-                        ? `<p>${data.billingAddress.area}</p>`
+                    data.addresses.billing.area
+                        ? `<p>${data.addresses.billing.area}</p>`
                         : ""
                 }
-                <p>${data.billingAddress.city}, ${data.billingAddress.state}, ${
-        data.billingAddress.pincode
-    }</p>
+                <p>${data.addresses.billing.city}, ${
+        data.addresses.billing.state
+    }, ${data.addresses.billing.pincode}</p>
                 <p><strong>Phone:</strong> ${data.customer.phone}</p>
                 <p><strong>Email:</strong> ${data.customer.email}</p>
             </div>
             <div class="info-card">
                 <h3><span class="icon"></span>Ship To</h3>
-                <p class="name">${data.customer.name}</p>
-                <p>${data.shippingAddress.houseNumber}</p>
-                <p>${data.shippingAddress.street}</p>
                 ${
-                    data.shippingAddress.landmark
-                        ? `<p>${data.shippingAddress.landmark}</p>`
-                        : ""
+                    data.addresses.isDifferentReceiver &&
+                    (data.receiverInfo?.name || data.receiverInfo?.phone)
+                        ? `
+                    <p class="name">${
+                        data.receiverInfo.name || data.customer.name
+                    }</p>
+                    <p>${data.addresses.shipping.houseNumber}</p>
+                    <p>${data.addresses.shipping.street}</p>
+                    ${
+                        data.addresses.shipping.landmark
+                            ? `<p>${data.addresses.shipping.landmark}</p>`
+                            : ""
+                    }
+                    ${
+                        data.addresses.shipping.area
+                            ? `<p>${data.addresses.shipping.area}</p>`
+                            : ""
+                    }
+                    <p>${data.addresses.shipping.city}, ${
+                              data.addresses.shipping.state
+                          }, ${data.addresses.shipping.pincode}</p>
+                    <p><strong>Phone:</strong> ${
+                        data.receiverInfo.phone || data.customer.phone
+                    }</p>
+                `
+                        : `
+                    <p class="name">${data.customer.name}</p>
+                    <p>${data.addresses.shipping.houseNumber}</p>
+                    <p>${data.addresses.shipping.street}</p>
+                    ${
+                        data.addresses.shipping.landmark
+                            ? `<p>${data.addresses.shipping.landmark}</p>`
+                            : ""
+                    }
+                    ${
+                        data.addresses.shipping.area
+                            ? `<p>${data.addresses.shipping.area}</p>`
+                            : ""
+                    }
+                    <p>${data.addresses.shipping.city}, ${
+                              data.addresses.shipping.state
+                          }, ${data.addresses.shipping.pincode}</p>
+                    <p><strong>Phone:</strong> ${data.customer.phone}</p>
+                `
                 }
-                ${
-                    data.shippingAddress.area
-                        ? `<p>${data.shippingAddress.area}</p>`
-                        : ""
-                }
-                <p>${data.shippingAddress.city}, ${
-        data.shippingAddress.state
-    }, ${data.shippingAddress.pincode}</p>
-                <p><strong>Phone:</strong> ${data.customer.phone}</p>
             </div>
         </div>
 

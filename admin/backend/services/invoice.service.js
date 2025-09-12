@@ -166,6 +166,8 @@ const createInvoiceDataSnapshot = async (order) => {
                 ? order.shippingAddress
                 : order.billingAddress,
             billingAddressSameAsShipping: order.billingAddressSameAsShipping,
+            // Flag to indicate if billing and shipping persons are different
+            isDifferentReceiver: !!(order.receiverName || order.receiverPhone),
         },
         pricing: {
             subtotal: subtotal,
@@ -414,9 +416,16 @@ export const createInvoicePDF = async (invoiceId) => {
                 phone: invoice.invoiceData.customer.phone,
             },
 
-            // Addresses
-            billingAddress: invoice.invoiceData.addresses.billing,
-            shippingAddress: invoice.invoiceData.addresses.shipping,
+            // Receiver information (for different shipping recipient)
+            receiverInfo: invoice.invoiceData.receiverInfo || null,
+
+            // Addresses with receiver logic
+            addresses: {
+                billing: invoice.invoiceData.addresses.billing,
+                shipping: invoice.invoiceData.addresses.shipping,
+                isDifferentReceiver:
+                    invoice.invoiceData.addresses.isDifferentReceiver || false,
+            },
 
             // Items
             items: invoice.invoiceData.items.map((item) => ({

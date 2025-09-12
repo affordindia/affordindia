@@ -8,6 +8,7 @@ import {
     FaUser,
     FaMapMarkerAlt,
     FaBox,
+    FaTruck,
     FaDollarSign,
 } from "react-icons/fa";
 import { downloadInvoicePDFByOrderId } from "../../api/invoice.api.js";
@@ -133,11 +134,11 @@ const InvoiceModal = ({ invoice, orderId, isOpen, onClose }) => {
 
                     {/* Customer & Business Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Customer Info */}
+                        {/* Billing Info */}
                         <div className="bg-admin-bg rounded-lg p-4">
                             <h3 className="text-lg font-semibold text-admin-text mb-3 flex items-center gap-2">
                                 <FaUser className="text-admin-primary w-4 h-4" />
-                                Customer Details
+                                Bill To
                             </h3>
                             <div className="space-y-2">
                                 <p className="font-medium text-admin-text">
@@ -151,28 +152,135 @@ const InvoiceModal = ({ invoice, orderId, isOpen, onClose }) => {
                                     Email:{" "}
                                     {invoiceData.customer?.email || "N/A"}
                                 </p>
+                                {invoiceData.addresses?.billing && (
+                                    <div className="mt-2 pt-2 border-t border-admin-border">
+                                        <p className="text-sm text-admin-text-secondary">
+                                            {
+                                                invoiceData.addresses.billing
+                                                    .houseNumber
+                                            }
+                                            ,{" "}
+                                            {
+                                                invoiceData.addresses.billing
+                                                    .street
+                                            }
+                                        </p>
+                                        {invoiceData.addresses.billing
+                                            .landmark && (
+                                            <p className="text-sm text-admin-text-secondary">
+                                                {
+                                                    invoiceData.addresses
+                                                        .billing.landmark
+                                                }
+                                            </p>
+                                        )}
+                                        <p className="text-sm text-admin-text-secondary">
+                                            {invoiceData.addresses.billing.city}
+                                            ,{" "}
+                                            {
+                                                invoiceData.addresses.billing
+                                                    .state
+                                            }{" "}
+                                            -{" "}
+                                            {
+                                                invoiceData.addresses.billing
+                                                    .pincode
+                                            }
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* Business Info */}
+                        {/* Shipping Info */}
                         <div className="bg-admin-bg rounded-lg p-4">
                             <h3 className="text-lg font-semibold text-admin-text mb-3 flex items-center gap-2">
-                                <FaMapMarkerAlt className="text-admin-primary w-4 h-4" />
-                                Business Details
+                                <FaTruck className="text-admin-primary w-4 h-4" />
+                                Ship To
                             </h3>
                             <div className="space-y-2">
                                 <p className="font-medium text-admin-text">
-                                    {invoiceData.business?.name || "N/A"}
+                                    {invoiceData.addresses
+                                        ?.isDifferentReceiver &&
+                                    invoiceData.receiverInfo?.name
+                                        ? invoiceData.receiverInfo.name
+                                        : invoiceData.customer?.name || "N/A"}
                                 </p>
                                 <p className="text-sm text-admin-text-secondary">
-                                    GSTIN:{" "}
-                                    {invoiceData.business?.gstin || "N/A"}
+                                    Phone:{" "}
+                                    {invoiceData.addresses
+                                        ?.isDifferentReceiver &&
+                                    invoiceData.receiverInfo?.phone
+                                        ? invoiceData.receiverInfo.phone
+                                        : invoiceData.customer?.phone || "N/A"}
                                 </p>
-                                <p className="text-sm text-admin-text-secondary">
-                                    Email:{" "}
-                                    {invoiceData.business?.email || "N/A"}
-                                </p>
+                                {invoiceData.addresses?.shipping && (
+                                    <div className="mt-2 pt-2 border-t border-admin-border">
+                                        <p className="text-sm text-admin-text-secondary">
+                                            {
+                                                invoiceData.addresses.shipping
+                                                    .houseNumber
+                                            }
+                                            ,{" "}
+                                            {
+                                                invoiceData.addresses.shipping
+                                                    .street
+                                            }
+                                        </p>
+                                        {invoiceData.addresses.shipping
+                                            .landmark && (
+                                            <p className="text-sm text-admin-text-secondary">
+                                                {
+                                                    invoiceData.addresses
+                                                        .shipping.landmark
+                                                }
+                                            </p>
+                                        )}
+                                        <p className="text-sm text-admin-text-secondary">
+                                            {
+                                                invoiceData.addresses.shipping
+                                                    .city
+                                            }
+                                            ,{" "}
+                                            {
+                                                invoiceData.addresses.shipping
+                                                    .state
+                                            }{" "}
+                                            -{" "}
+                                            {
+                                                invoiceData.addresses.shipping
+                                                    .pincode
+                                            }
+                                        </p>
+                                    </div>
+                                )}
+                                {invoiceData.addresses?.isDifferentReceiver && (
+                                    <div className="mt-2 pt-2 border-t border-admin-border">
+                                        <p className="text-xs text-admin-primary font-medium">
+                                            Different receiver for this order
+                                        </p>
+                                    </div>
+                                )}
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Business Info */}
+                    <div className="bg-admin-bg rounded-lg p-4">
+                        <h3 className="text-lg font-semibold text-admin-text mb-3 flex items-center gap-2">
+                            <FaMapMarkerAlt className="text-admin-primary w-4 h-4" />
+                            Business Details
+                        </h3>
+                        <div className="space-y-2">
+                            <p className="font-medium text-admin-text">
+                                {invoiceData.business?.name || "N/A"}
+                            </p>
+                            <p className="text-sm text-admin-text-secondary">
+                                GSTIN: {invoiceData.business?.gstin || "N/A"}
+                            </p>
+                            <p className="text-sm text-admin-text-secondary">
+                                Email: {invoiceData.business?.email || "N/A"}
+                            </p>
                         </div>
                     </div>
 

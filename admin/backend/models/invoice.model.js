@@ -99,6 +99,7 @@ const invoiceSchema = new mongoose.Schema(
                     country: String,
                 },
                 billingAddressSameAsShipping: Boolean,
+                isDifferentReceiver: Boolean, // Flag to indicate when receiver info differs from customer
             },
             pricing: {
                 subtotal: Number, // Before any discounts
