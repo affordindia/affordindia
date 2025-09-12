@@ -240,7 +240,7 @@ export const downloadInvoicePDFController = async (req, res, next) => {
         const pdfBuffer = await createInvoicePDF(invoice._id);
 
         // Record the download
-        await recordInvoiceDownload(invoice._id);
+        // await recordInvoiceDownload(invoice._id);
 
         // Set headers for PDF download
         res.setHeader("Content-Type", "application/pdf");

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
 import { verifyPaymentStatus } from "../api/payment.js";
+import { checkInvoiceExists, downloadInvoice } from "../api/invoice.js";
 import Loader from "../components/common/Loader.jsx";
 import {
     FaArrowLeft,
@@ -13,6 +14,7 @@ import {
     FaCheckCircle,
     FaTimesCircle,
     FaClock,
+    FaFileInvoice,
 } from "react-icons/fa";
 
 const OrderDetail = () => {
@@ -23,6 +25,11 @@ const OrderDetail = () => {
     const [error, setError] = useState("");
     const [verifyingPayment, setVerifyingPayment] = useState(false);
     const [verificationMessage, setVerificationMessage] = useState("");
+
+    // Invoice related state
+    const [invoice, setInvoice] = useState(null);
+    const [invoiceLoading, setInvoiceLoading] = useState(false);
+    const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -42,6 +49,28 @@ const OrderDetail = () => {
             fetchOrder();
         }
     }, [orderId]);
+
+    // Check for invoice when order is loaded
+    useEffect(() => {
+        const checkInvoice = async () => {
+            if (!order?._id) return;
+
+            try {
+                setInvoiceLoading(true);
+                const response = await checkInvoiceExists(order._id);
+                if (response.exists) {
+                    setInvoice(response.invoice);
+                }
+            } catch (error) {
+                console.error("Failed to check invoice:", error);
+                // Don't show error for invoice check as it's optional
+            } finally {
+                setInvoiceLoading(false);
+            }
+        };
+
+        checkInvoice();
+    }, [order?._id]);
 
     const handleVerifyPayment = async () => {
         try {
@@ -68,6 +97,30 @@ const OrderDetail = () => {
             );
         } finally {
             setVerifyingPayment(false);
+        }
+    };
+
+    const handleDownloadInvoice = async () => {
+        if (!order?._id || !invoice) return;
+
+        try {
+            setDownloadingInvoice(true);
+            const pdfBlob = await downloadInvoice(order._id);
+
+            // Create download link
+            const url = window.URL.createObjectURL(pdfBlob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Invoice-${invoice.invoiceNumber}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to download invoice:", error);
+            setError("Failed to download invoice. Please try again.");
+        } finally {
+            setDownloadingInvoice(false);
         }
     };
 
@@ -166,16 +219,47 @@ const OrderDetail = () => {
                                 )}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {getStatusIcon(order.status)}
-                            <span
-                                className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                    order.status
-                                )}`}
-                            >
-                                {order.status?.charAt(0).toUpperCase() +
-                                    order.status?.slice(1)}
-                            </span>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                {getStatusIcon(order.status)}
+                                <span
+                                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                                        order.status
+                                    )}`}
+                                >
+                                    {order.status?.charAt(0).toUpperCase() +
+                                        order.status?.slice(1)}
+                                </span>
+                            </div>
+
+                            {/* Invoice Button */}
+                            {invoice && (
+                                <button
+                                    onClick={handleDownloadInvoice}
+                                    disabled={downloadingInvoice}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                                >
+                                    {downloadingInvoice ? (
+                                        <>
+                                            <FaClock className="animate-spin" />
+                                            Downloading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaFileInvoice />
+                                            Invoice
+                                        </>
+                                    )}
+                                </button>
+                            )}
+
+                            {/* Loading state for invoice check */}
+                            {invoiceLoading && (
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    <FaClock className="animate-spin" />
+                                    Checking invoice...
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

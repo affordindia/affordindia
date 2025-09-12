@@ -16,6 +16,7 @@ import bannerRoutes from "./routes/banner.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import shippingRoutes from "./routes/shipping.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+import invoiceRoutes from "./routes/invoice.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
 
@@ -56,6 +57,7 @@ app.use("/api/banners", bannerRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/invoice", invoiceRoutes);
 
 // Error handler middleware
 app.use(errorHandler);
