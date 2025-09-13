@@ -4,6 +4,7 @@ import {
     getCategory,
     createCategory,
     updateCategory,
+    getCategories,
 } from "../../api/categories.api";
 import { FiArrowLeft, FiSave, FiUpload, FiX } from "react-icons/fi";
 import Loader from "../../components/common/Loader.jsx";
@@ -16,18 +17,32 @@ const AddEditCategory = () => {
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
+    const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
         status: "active",
         order: 0,
+        parentCategory: "",
     });
 
     useEffect(() => {
+        fetchCategories();
         if (isEdit) {
             fetchCategory();
         }
     }, [id]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await getCategories();
+            if (response.success) {
+                setCategories(response.data || []);
+            }
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    };
 
     const fetchCategory = async () => {
         try {
@@ -40,6 +55,7 @@ const AddEditCategory = () => {
                     description: category.description || "",
                     status: category.status || "active",
                     order: category.order || 0,
+                    parentCategory: category.parentCategory?._id || "",
                 });
                 if (category.image) {
                     setImagePreview(category.image);
@@ -95,6 +111,13 @@ const AddEditCategory = () => {
             submitFormData.append("description", formData.description);
             submitFormData.append("status", formData.status);
             submitFormData.append("order", formData.order);
+
+            if (formData.parentCategory) {
+                submitFormData.append(
+                    "parentCategory",
+                    formData.parentCategory
+                );
+            }
 
             if (imageFile) {
                 submitFormData.append("image", imageFile);
@@ -180,6 +203,39 @@ const AddEditCategory = () => {
                                 className="w-full border border-admin-border rounded-lg px-3 py-2 text-admin-text focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-admin-primary resize-none"
                                 placeholder="Enter category description"
                             />
+                        </div>
+
+                        {/* Parent Category */}
+                        <div>
+                            <label className="block text-sm font-medium text-admin-text mb-2">
+                                Parent Category (Optional)
+                            </label>
+                            <select
+                                name="parentCategory"
+                                value={formData.parentCategory}
+                                onChange={handleInputChange}
+                                className="w-full border border-admin-border rounded-lg px-3 py-2 text-admin-text focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-admin-primary"
+                            >
+                                <option value="">None (Main Category)</option>
+                                {categories
+                                    .filter(
+                                        (cat) =>
+                                            cat._id !== id &&
+                                            !cat.parentCategory
+                                    )
+                                    .map((category) => (
+                                        <option
+                                            key={category._id}
+                                            value={category._id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                            </select>
+                            <p className="text-sm text-admin-text-muted mt-1">
+                                Leave empty to create a main category, or select
+                                a parent to create a subcategory
+                            </p>
                         </div>
 
                         {/* Status and Order */}

@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/common/Navbar.jsx";
 import Footer from "./components/common/Footer.jsx";
 import PromoStrip from "./components/common/PromoStrip.jsx";
+import MaterialRedirect from "./components/MaterialRedirect.jsx";
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
@@ -42,7 +43,10 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />
-                    <Route path="/products/:material" element={<Products />} />
+                    <Route
+                        path="/products/:material"
+                        element={<MaterialRedirect />}
+                    />
                     <Route
                         path="/products/id/:id"
                         element={<ProductDetail />}

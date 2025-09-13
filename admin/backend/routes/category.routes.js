@@ -12,6 +12,11 @@ import {
     disableCategory,
     restoreCategory,
     deleteCategory,
+    getCategoryTree,
+    getSubcategories,
+    getParentCategories,
+    getCategoryPath,
+    getCategoryUsage,
 } from "../controllers/category.controller.js";
 
 const router = Router();
@@ -47,6 +52,25 @@ router.delete(
     "/:id/delete",
     requirePermission("categories.delete"),
     deleteCategory
+);
+
+// Hierarchical category operations
+router.get("/tree", requirePermission("categories.view"), getCategoryTree);
+router.get(
+    "/parents",
+    requirePermission("categories.view"),
+    getParentCategories
+);
+router.get(
+    "/:id/subcategories",
+    requirePermission("categories.view"),
+    getSubcategories
+);
+router.get("/:id/path", requirePermission("categories.view"), getCategoryPath);
+router.get(
+    "/:id/usage",
+    requirePermission("categories.view"),
+    getCategoryUsage
 );
 
 export default router;

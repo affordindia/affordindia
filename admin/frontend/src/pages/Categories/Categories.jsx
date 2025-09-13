@@ -195,7 +195,22 @@ const Categories = () => {
                                         {/* Name */}
                                         <td className="py-3 px-4">
                                             <div className="font-medium text-admin-text">
+                                                {category.parentCategory && (
+                                                    <span className="text-xs text-admin-text-muted mr-2">
+                                                        ↳
+                                                    </span>
+                                                )}
                                                 {category.name}
+                                                {category.parentCategory && (
+                                                    <div className="text-xs text-admin-text-muted mt-1">
+                                                        Subcategory of:{" "}
+                                                        {
+                                                            category
+                                                                .parentCategory
+                                                                .name
+                                                        }
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
 

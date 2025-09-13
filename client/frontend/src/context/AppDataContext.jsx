@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getBanners } from "../api/banner.js";
-import { getCategories } from "../api/category.js";
+import { getCategories, getAllSubcategories } from "../api/category.js";
 
 const AppDataContext = createContext();
 
@@ -8,21 +8,32 @@ export const AppDataProvider = ({ children }) => {
     const [banners, setBanners] = useState([]);
     const [categories, setCategories] = useState([]); // Filtered categories (silver, brass, wood)
     const [allCategories, setAllCategories] = useState([]); // All categories
+    const [subcategories, setSubcategories] = useState([]); // All subcategories
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const loadAppData = async () => {
             try {
-                // Load both banners and categories in parallel
-                const [bannersResponse, categoriesResponse] = await Promise.all(
-                    [getBanners(), getCategories()]
-                );
+                // Load banners, categories, and subcategories in parallel
+                const [
+                    bannersResponse,
+                    categoriesResponse,
+                    subcategoriesResponse,
+                ] = await Promise.all([
+                    getBanners(),
+                    getCategories(),
+                    getAllSubcategories(),
+                ]);
 
                 const bannersData =
                     bannersResponse?.banners || bannersResponse || [];
                 const categoriesData =
                     categoriesResponse?.categories || categoriesResponse || [];
+                const subcategoriesData =
+                    subcategoriesResponse?.subcategories ||
+                    subcategoriesResponse ||
+                    [];
 
                 // Sort banners by order
                 const sortedBanners = bannersData
@@ -38,12 +49,14 @@ export const AppDataProvider = ({ children }) => {
                 setBanners(sortedBanners);
                 setCategories(filteredCategories); // For navigation
                 setAllCategories(categoriesData); // Store all categories for special pages
+                setSubcategories(subcategoriesData); // Store all subcategories
             } catch (err) {
                 console.error("❌ Failed to load app data:", err);
                 setError(err.message || "Failed to load app data");
                 setBanners([]);
                 setCategories([]);
                 setAllCategories([]);
+                setSubcategories([]);
             } finally {
                 setLoading(false);
             }
@@ -72,6 +85,7 @@ export const AppDataProvider = ({ children }) => {
         banners,
         categories, // Filtered categories (silver, brass, wood) for navigation
         allCategories, // All categories including Rakhi for special pages
+        subcategories, // All subcategories
         loading,
         error,
         getBannersByMaterial,

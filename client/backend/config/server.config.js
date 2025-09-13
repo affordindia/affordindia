@@ -1,6 +1,6 @@
 const config = {
     pagination: {
-        defaultLimit: 20,
+        defaultLimit: 10,
         maxLimit: 100,
     },
     products: {

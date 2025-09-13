@@ -52,7 +52,15 @@ export const createProduct = async (productData) => {
         // Add basic product data
         Object.keys(productData).forEach((key) => {
             if (key !== "images") {
-                formData.append(key, productData[key]);
+                const value = productData[key];
+                // Handle arrays properly (especially subcategories)
+                if (Array.isArray(value)) {
+                    value.forEach((item) => {
+                        formData.append(`${key}[]`, item);
+                    });
+                } else {
+                    formData.append(key, value);
+                }
             }
         });
 
@@ -94,7 +102,15 @@ export const updateProduct = async (id, productData) => {
         // Add basic product data
         Object.keys(productData).forEach((key) => {
             if (key !== "images") {
-                formData.append(key, productData[key]);
+                const value = productData[key];
+                // Handle arrays properly (especially subcategories)
+                if (Array.isArray(value)) {
+                    value.forEach((item) => {
+                        formData.append(`${key}[]`, item);
+                    });
+                } else {
+                    formData.append(key, value);
+                }
             }
         });
 
