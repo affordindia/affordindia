@@ -5,7 +5,8 @@
     "scripts": {
         "server": "nodemon server.js",
         "start": "node server.js",
-        "create-superadmin": "node scripts/createSuperAdmin.js"
+        "create-superadmin": "node scripts/createSuperAdmin.js",
+        "postinstall": "npx puppeteer browsers install chrome"
     },
     "type": "module",
     "author": "",
