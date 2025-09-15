@@ -66,14 +66,14 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                 </div>
             )}
             {selected === "ONLINE" && (
-                <div className="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                    <div className="flex items-center gap-2 text-blue-500 mb-2">
+                <div className="p-3 sm:p-4 bg-[#F8E9ED] border border-[#B76E79] rounded-xl">
+                    <div className="flex items-center gap-2 text-[#B76E79] mb-2">
                         <FaCreditCard />
                         <span className="font-semibold">
                             Online Payment Selected
                         </span>
                     </div>
-                    <div className="text-xs sm:text-sm text-blue-500">
+                    <div className="text-xs sm:text-sm text-[#B76E79]">
                         <p>• Secure payment via HDFC SmartGateway</p>
                         <p>• Supports Credit/Debit Cards, UPI, Net Banking</p>
                         <p>• Complete payment to confirm your order</p>
@@ -90,7 +90,11 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
 
             {/* Future Payment Methods Preview */}
             <div className="mt-2 text-xs text-gray-400">
-                <p>Powered by HDFC SmartGateway - Your payments are secure</p>
+                {selected === "ONLINE" && (
+                    <p>
+                        Powered by HDFC SmartGateway - Your payments are secure
+                    </p>
+                )}
             </div>
         </div>
     );
