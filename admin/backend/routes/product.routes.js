@@ -24,6 +24,16 @@ import {
 import upload from "../middlewares/upload.middleware.js";
 
 const router = express.Router();
+// TEMPORARY DEBUG ROUTE: Get product name and productDescription
+import Product from '../models/product.model.js';
+router.get('/debug/product-descriptions', async (req, res) => {
+    try {
+        const products = await Product.find({}, { name: 1, productDescription: 1 }).limit(20);
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // All routes protected by admin auth
 router.use(verifyAdminAuth);

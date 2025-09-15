@@ -1,9 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/common/Navbar.jsx";
 import Footer from "./components/common/Footer.jsx";
 import PromoStrip from "./components/common/PromoStrip.jsx";
 import MaterialRedirect from "./components/MaterialRedirect.jsx";
+
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
@@ -18,18 +20,21 @@ import Profile from "./pages/Profile.jsx";
 import Orders from "./pages/Orders.jsx";
 import Reviews from "./pages/Reviews.jsx";
 import Rakhi from "./pages/Rakhi.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import { useAuth } from "./context/AuthContext.jsx";
+import ProductCare from "./pages/static/ProductCare.jsx";
+import PrivacyPolicy from "./pages/static/PrivacyPolicy";
 import ReturnPolicy from "./pages/static/ReturnPolicy.jsx";
 import OrderingProduct from "./pages/static/OrderingProduct.jsx";
 import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
-import ProductCare from "./pages/static/ProductCare.jsx";
 import ExchangePolicy from "./pages/static/ExchangePolicy.jsx";
 import PaymentPolicy from "./pages/static/PaymentPolicy.jsx";
 import Faq from "./pages/static/Faq.jsx";
 import AboutUs from "./pages/static/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import ShippingDelivery from "./pages/static/OrderingProduct.jsx";
+
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+
+import { useAuth } from "./context/AuthContext.jsx";
 
 const App = () => {
     const { login } = useAuth();
@@ -132,24 +137,26 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="/ordering" element={<OrderingProduct />} />
+
+                    {/* <Route path="/return-policy" element={<ReturnPolicy />} /> */}
+                    <Route path="/returnpolicy" element={<ReturnPolicy />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/exchange" element={<ExchangePolicy />} />
+                    <Route path="/cancel" element={<CancelationPolicy />} />
+                    <Route path="/shipping" element={<ShippingDelivery />} />
+                    <Route path="/payment" element={<PaymentPolicy />} />
+                    <Route path="/productcare" element={<ProductCare />} />
+
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/faqs" element={<Faq />} />
                     <Route
                         path="*"
                         element={
                             <div className="p-8 text-center">404 Not Found</div>
                         }
                     />
-                    <Route path="/exchange" element={<ExchangePolicy />} />
-                    <Route path="/returnpolicy" element={<ReturnPolicy />} />
-                    <Route path="/cancel" element={<CancelationPolicy />} />
-                    <Route path="/shipping" element={<ShippingDelivery />} />
-                    <Route path="/payment" element={<PaymentPolicy />} />
-                    <Route path="/productcare" element={<ProductCare />} />
-
-                    <Route path="/ordering" element={<OrderingProduct />} />
-
-                    <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/faqs" element={<Faq />} />
                 </Routes>
             </main>
             <Footer />

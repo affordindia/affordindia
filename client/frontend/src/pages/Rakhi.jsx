@@ -6,38 +6,38 @@ import Loader from "../components/common/Loader.jsx";
 import { useAppData } from "../context/AppDataContext.jsx";
 import { FaHeart, FaGift, FaStar } from "react-icons/fa";
 
-const Rakhi = () => {
+const Diwali = () => {
   const { allCategories, loading: contextLoading } = useAppData();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRakhiData = async () => {
+  const fetchDiwaliData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Find Rakhi category dynamically from context
-        const rakhiCategory = allCategories.find(
-          (category) => category.name?.toLowerCase() === "rakhi"
+        // Find Diwali category dynamically from context
+        const diwaliCategory = allCategories.find(
+          (category) => category.name?.toLowerCase() === "diwali"
         );
 
-        if (!rakhiCategory) {
-          console.warn("Rakhi category not found in allCategories");
+        if (!diwaliCategory) {
+          console.warn("Diwali category not found in allCategories");
           setProducts([]);
           return;
         }
 
-        // Fetch rakhi products using dynamic category ID
+        // Fetch diwali products using dynamic category ID
         const productsResponse = await getProducts({
-          category: rakhiCategory._id,
+          category: diwaliCategory._id,
         });
 
         setProducts(productsResponse.products || []);
       } catch (err) {
-        console.error("Error fetching Rakhi data:", err);
-        setError("Failed to load Rakhi products. Please try again later.");
+        console.error("Error fetching Diwali data:", err);
+        setError("Failed to load Diwali products. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -45,7 +45,7 @@ const Rakhi = () => {
 
     // Only fetch when context is loaded and categories are available
     if (!contextLoading && allCategories.length > 0) {
-      fetchRakhiData();
+      fetchDiwaliData();
     }
   }, [allCategories, contextLoading]);
 
@@ -73,44 +73,42 @@ const Rakhi = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Rakhi Banners - using material="rakhi" */}
-      <Banners material="rakhi" />
+      {/* Diwali Banners - using material="diwali" */}
+      <Banners material="diwali" />
 
-      {/* Rakhi Header Section */}
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 py-12">
+      {/* Diwali Header Section */}
+      <div className="bg-gradient-to-r from-yellow-50 to-orange-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <FaGift className="text-[#C1B086] text-4xl" />
               <h1 className="text-4xl md:text-5xl font-bold text-[#404040]">
-                Rakhi Collection
+                Diwali Collection
               </h1>
               <FaHeart className="text-red-500 text-4xl" />
             </div>
             <p className="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">
-              Celebrate the beautiful bond of love with our exquisite collection
-              of Rakhis. Each piece is crafted with love and tradition, perfect
-              for making this Raksha Bandhan memorable.
+              Celebrate the festival of lights with our exclusive Diwali collection. Discover gifts, decor, and more to make your Diwali truly special.
             </p>
             <div className="flex items-center justify-center gap-2 text-[#C1B086]">
               <FaStar />
-              <span className="text-sm font-medium">Handcrafted with Love</span>
+              <span className="text-sm font-medium">Handcrafted for Festivity</span>
               <FaStar />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Rakhi Products Section */}
+      {/* Diwali Products Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {products.length > 0 ? (
           <>
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-[#404040] mb-2">
-                Our Rakhi Collection
+                Our Diwali Collection
               </h2>
               <p className="text-gray-600">
-                Showing {products.length} beautiful Rakhi
+                Showing {products.length} beautiful Diwali
                 {products.length !== 1 ? "s" : ""}
               </p>
             </div>
@@ -126,10 +124,10 @@ const Rakhi = () => {
           <div className="text-center py-16">
             <div className="text-6xl mb-6">🎁</div>
             <h3 className="text-2xl font-semibold text-[#404040] mb-4">
-              No Rakhi Products Available
+              No Diwali Products Available
             </h3>
             <p className="text-gray-600 mb-6">
-              We're working on bringing you beautiful Rakhi collections. Please
+              We're working on bringing you beautiful Diwali collections. Please
               check back soon!
             </p>
             <a
@@ -142,21 +140,19 @@ const Rakhi = () => {
         )}
       </div>
 
-     
-      {/* Why Choose Silver Rakhis Section */}
+      {/* Why Choose Diwali Gifts Section */}
       <div className="bg-white py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#404040] mb-10">
-            Why Choose Silver Rakhis
+            Why Choose Diwali Gifts
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             <div className="bg-[#F5F4EF] p-6 rounded shadow text-center">
               <h3 className="text-lg font-semibold text-[#404040] mb-2">
-                Lasting Symbol
+                Lasting Memories
               </h3>
               <p className="text-gray-600 text-sm">
-                Unlike thread rakhis, silver rakhis are durable and can be
-                preserved as a lasting symbol of your bond.
+                Our Diwali gifts are designed to create lasting memories for you and your loved ones.
               </p>
             </div>
             <div className="bg-[#F5F4EF] p-6 rounded shadow text-center">
@@ -173,8 +169,8 @@ const Rakhi = () => {
                 Premium Gift
               </h3>
               <p className="text-gray-600 text-sm">
-                Silver rakhis make for an elegant and premium gift that your
-                brother will cherish for years to come.
+                Our Diwali gifts make for an elegant and premium present that your
+                loved ones will cherish for years to come.
               </p>
             </div>
           </div>
@@ -182,14 +178,13 @@ const Rakhi = () => {
       </div>
 
       {/* Traditional Quote Section */}
-      <div className="bg-gradient-to-r from-orange-50 to-red-50 py-12">
+      <div className="bg-gradient-to-r from-orange-50 to-yellow-100 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote className="text-2xl md:text-3xl font-medium text-[#404040] italic mb-4">
-            "A sister is a gift to the heart, a friend to the spirit, a golden
-            thread to the meaning of life."
+            "May the festival of lights fill your life with happiness, prosperity, and joy."
           </blockquote>
           <p className="text-lg text-gray-600">
-            Celebrate this beautiful bond with our special Rakhi collection
+            Celebrate Diwali with our special collection
           </p>
         </div>
       </div>
@@ -197,4 +192,4 @@ const Rakhi = () => {
   );
 };
 
-export default Rakhi;
+export default Diwali;

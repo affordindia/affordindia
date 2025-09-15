@@ -6,11 +6,10 @@ const Faq = () => {
 
   // Map category keys to display names
   const categoryTitles = {
-    ordering: "Ordering & Payment",
-    shipping: "Shipping & Returns",
-    product: "Product Care",
-    materials: "Materials & Craftsmanship",
-    custom: "Custom Orders",
+  ordering: "Ordering & Payment",
+  shipping: "Shipping & Returns",
+  materials: "Materials & Craftsmanship",
+  custom: "Custom Orders",
   };
 
   return (
@@ -33,14 +32,6 @@ const Faq = () => {
               className="text-left w-full hover:text-[#B76E79]"
             >
               Shipping & Returns
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setSelectedCategory("product")}
-              className="text-left w-full hover:text-[#B76E79]"
-            >
-              Product Care
             </button>
           </li>
           <li>

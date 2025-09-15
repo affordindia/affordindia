@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">6. Your Rights</h2>
             <p className="text-sm leading-relaxed">
               You have the right to access, correct, or delete your personal information. To exercise these rights, please contact us at{' '}
-              <span className="font-medium text-blue-600">support@example.com</span>.
+              <span className="font-medium text-blue-600">techvcrafthem@gmail.com</span>.
             </p>
           </div>
 
@@ -67,6 +67,14 @@ const PrivacyPolicy = () => {
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">7. Changes to This Policy</h2>
             <p className="text-sm leading-relaxed">
               We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date.
+            </p>
+          </div>
+
+           {/* 7. Children’s Privacy */}
+          <div className="p-6">
+            <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">7. Children’s Privacy</h2>
+            <p className="text-sm leading-relaxed">
+              Our service does not address anyone under the age of 16. We do not knowingly collect personally identifiable information from anyone under the age of 16. If you are a parent or guardian and you are aware that your child has provided us with personal data, please contact us. If we become aware that we have collected personal data from.anyone under the age of 16 without verification of parental consent, we take steps to remove that information from our servers.
             </p>
           </div>
         </div>

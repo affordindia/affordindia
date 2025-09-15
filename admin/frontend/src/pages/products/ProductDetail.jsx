@@ -272,6 +272,16 @@ const ProductDetail = () => {
                                     </p>
                                 </div>
                             )}
+                            {product.productDescription && (
+                                <div>
+                                    <label className="text-sm font-medium text-admin-text-secondary">
+                                        Product Description
+                                    </label>
+                                    <p className="text-admin-text">
+                                        {product.productDescription}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>

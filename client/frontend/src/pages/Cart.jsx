@@ -239,7 +239,7 @@ const Cart = () => {
                     <div className="flex flex-row md:flex-col gap-4">
                         <Link
                             to="/wishlist"
-                            className="bg-[#A86565] text-white px-4 py-2 rounded text-sm text-center hover:opacity-90 transition-colors w-full"
+                            className="bg-[#B76E79] text-white px-4 py-2 rounded text-sm text-center hover:opacity-90 transition-colors w-full"
                         >
                             Add More from Wishlist
                         </Link>
@@ -290,7 +290,7 @@ const Cart = () => {
                         </div>
                         <Link
                             to="/checkout"
-                            className="mt-6 w-full bg-[#A86565] text-white py-2 rounded hover:opacity-90 transition block text-center"
+                            className="mt-6 w-full bg-[#B76E79] text-white py-2 rounded hover:opacity-90 transition block text-center"
                         >
                             Proceed to Checkout
                         </Link>

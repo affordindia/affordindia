@@ -127,7 +127,7 @@ const OrderSummary = ({
             <button
                 onClick={onPlaceOrder}
                 disabled={loading || disabled}
-                className="w-full mt-6 bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full mt-6 bg-[#B76E79] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#C68F98] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                 {loading ? (
                     <div className="flex items-center justify-center gap-2">

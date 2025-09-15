@@ -380,7 +380,7 @@ const Checkout = () => {
                         <h3 className="text-base font-semibold text-blue-800 mb-2">
                             Your Details
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-blue-800 mb-1">
                                     Your Name *
@@ -442,7 +442,7 @@ const Checkout = () => {
                             </span>
                         </label>
                         {isOrderingForSomeoneElse && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div className="flex flex-col gap-4 mt-2">
                                 <div>
                                     <label className="block text-sm font-medium text-yellow-800 mb-1">
                                         Receiver Name *
