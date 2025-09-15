@@ -41,6 +41,7 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                             ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
                             : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
                     }`}
+                    onClick={() => onChange("ONLINE")}
                 >
                     <span className="inline-flex items-center gap-1">
                         <FaCreditCard className="text-lg" /> Online Payment
