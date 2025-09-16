@@ -41,9 +41,8 @@ const AddEditCoupon = () => {
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            console.log("AddEditCoupon - Categories API response:", response);
+
             if (response.success) {
-                console.log("AddEditCoupon - Categories data:", response.data);
                 setCategories(response.data || []);
             } else {
                 console.error("Error fetching categories:", response.error);

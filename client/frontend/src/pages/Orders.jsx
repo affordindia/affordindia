@@ -25,7 +25,6 @@ const Orders = () => {
         try {
             setLoading(true);
             const response = await getOrders();
-            console.log("Orders API response:", response);
 
             // Handle the API response format: { count: number, orders: array }
             if (response && Array.isArray(response.orders)) {

@@ -2,21 +2,21 @@ import axios from "./axios";
 
 // List reviews for a product
 export const getProductReviews = async (productId) => {
-    console.log("API CALL: getProductReviews", productId);
+    // console.log("API CALL: getProductReviews", productId);
     const res = await axios.get(`/products/${productId}/reviews`);
     return res.data;
 };
 
 // Get a single review for a product
 export const getProductReview = async (productId, reviewId) => {
-    console.log("API CALL: getProductReview", productId, reviewId);
+    // console.log("API CALL: getProductReview", productId, reviewId);
     const res = await axios.get(`/products/${productId}/reviews/${reviewId}`);
     return res.data;
 };
 
 // Get current user's review for a product
 export const getUserProductReview = async (productId) => {
-    console.log("API CALL: getUserProductReview", productId);
+    // console.log("API CALL: getUserProductReview", productId);
     const res = await axios.get(
         `/products/${productId}/reviews/user/my-review`
     );
@@ -29,7 +29,7 @@ export const createProductReview = async (
     reviewData,
     images = []
 ) => {
-    console.log("API CALL: createProductReview", productId, reviewData, images);
+    // console.log("API CALL: createProductReview", productId, reviewData, images);
 
     const formData = new FormData();
 
@@ -60,14 +60,14 @@ export const updateProductReview = async (
     images = [],
     imageAction = "add"
 ) => {
-    console.log(
-        "API CALL: updateProductReview",
-        productId,
-        reviewId,
-        reviewData,
-        images,
-        imageAction
-    );
+    // console.log(
+    //     "API CALL: updateProductReview",
+    //     productId,
+    //     reviewId,
+    //     reviewData,
+    //     images,
+    //     imageAction
+    // );
 
     const formData = new FormData();
 
@@ -103,7 +103,7 @@ export const updateProductReview = async (
 
 // Delete a review for a product
 export const deleteProductReview = async (productId, reviewId) => {
-    console.log("API CALL: deleteProductReview", productId, reviewId);
+    // console.log("API CALL: deleteProductReview", productId, reviewId);
     const res = await axios.delete(
         `/products/${productId}/reviews/${reviewId}`
     );
@@ -112,7 +112,7 @@ export const deleteProductReview = async (productId, reviewId) => {
 
 // Delete specific images from a review
 export const deleteReviewImages = async (productId, reviewId, imageIds) => {
-    console.log("API CALL: deleteReviewImages", productId, reviewId, imageIds);
+    // console.log("API CALL: deleteReviewImages", productId, reviewId, imageIds);
     const res = await axios.delete(
         `/products/${productId}/reviews/${reviewId}/images`,
         {

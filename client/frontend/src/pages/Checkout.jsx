@@ -295,11 +295,6 @@ const Checkout = () => {
                 // For online payment, check if we got a payment URL
                 const paymentUrl = order.paymentUrl || response.paymentUrl;
                 if (paymentUrl) {
-                    console.log(
-                        "🔄 Redirecting to payment gateway:",
-                        paymentUrl
-                    );
-
                     // Clear cart before redirecting to payment
                     await clearCart();
 
@@ -314,7 +309,6 @@ const Checkout = () => {
                 }
             } else {
                 // For COD, proceed normally
-                console.log("✅ COD order placed successfully");
 
                 // Clear cart and navigate to confirmation
                 await clearCart();

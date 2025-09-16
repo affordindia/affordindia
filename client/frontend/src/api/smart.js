@@ -10,10 +10,10 @@ export const setAppDataContext = (context) => {
 
 // Smart banner API - uses context if available, falls back to API
 export const getBanners = async (material = null) => {
-    console.log("🎯 Smart getBanners called:", {
-        material,
-        hasContext: !!appDataContext,
-    });
+    // console.log("🎯 Smart getBanners called:", {
+    //     material,
+    //     hasContext: !!appDataContext,
+    // });
 
     // If context is available and loaded, use it
     if (
@@ -21,7 +21,7 @@ export const getBanners = async (material = null) => {
         !appDataContext.bannersLoading &&
         !appDataContext.bannersError
     ) {
-        console.log("✅ Using cached banners from context");
+        // console.log("✅ Using cached banners from context");
         const banners = material
             ? appDataContext.getBannersByMaterial(material)
             : appDataContext.getBannersByMaterial("all");
@@ -31,15 +31,15 @@ export const getBanners = async (material = null) => {
     }
 
     // Fallback to original API
-    console.log("⚡ Falling back to API call");
+    // console.log("⚡ Falling back to API call");
     return originalGetBanners();
 };
 
 // Smart categories API - uses context if available, falls back to API
 export const getCategories = async () => {
-    console.log("🎯 Smart getCategories called:", {
-        hasContext: !!appDataContext,
-    });
+    // console.log("🎯 Smart getCategories called:", {
+    //     hasContext: !!appDataContext,
+    // });
 
     // If context is available and loaded, use it
     if (
@@ -47,7 +47,7 @@ export const getCategories = async () => {
         !appDataContext.categoriesLoading &&
         !appDataContext.categoriesError
     ) {
-        console.log("✅ Using cached categories from context");
+        // console.log("✅ Using cached categories from context");
         const categories = appDataContext.getCategoriesData();
 
         // Return in same format as API
@@ -55,7 +55,7 @@ export const getCategories = async () => {
     }
 
     // Fallback to original API
-    console.log("⚡ Falling back to API call");
+    // console.log("⚡ Falling back to API call");
     return originalGetCategories();
 };
 

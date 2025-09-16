@@ -97,15 +97,11 @@ const Orders = () => {
                 }
             });
 
-            console.log("Fetching orders with params:", params);
             const response = await getOrders(params);
-            console.log("Orders API result:", response);
 
             if (response.success) {
                 setOrders(response.orders || []);
                 setTotalOrders(response.total || 0);
-                console.log("Orders loaded:", response.orders?.length || 0);
-                console.log("Total orders:", response.total || 0);
             } else {
                 console.error("Failed to fetch orders:", response.error);
                 setError(response.error || "Failed to fetch orders");

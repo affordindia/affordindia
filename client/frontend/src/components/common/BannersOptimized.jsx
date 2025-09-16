@@ -60,16 +60,6 @@ const BannersOptimized = ({ material = "all" }) => {
     const goTo = (idx) =>
         instanceRef.current && instanceRef.current.moveToIdx(idx);
 
-    // Debug logging
-    useEffect(() => {
-        console.log(`🎯 BannersOptimized [${material}]:`, {
-            requested: material,
-            found: banners.length,
-            loading: bannersLoading,
-            error: bannersError,
-        });
-    }, [material, banners.length, bannersLoading, bannersError]);
-
     return (
         <section className="relative w-full">
             {bannersLoading ? (
