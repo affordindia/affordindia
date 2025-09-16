@@ -30,6 +30,9 @@ app.use(
             "http://localhost:5173",
             "http://localhost:5174",
             "https://admin-portal-affordindia.vercel.app",
+            "https://admin.affordindia.com",
+            "https://admin.affordindia.in",
+            "https://admin.affordindia.co.in",
         ],
         credentials: true,
     })
