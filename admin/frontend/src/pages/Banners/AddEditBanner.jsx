@@ -310,7 +310,8 @@ const AddEditBanner = () => {
                                             Click to upload desktop banner
                                         </p>
                                         <p className="text-admin-text-muted text-sm mt-1">
-                                            Optimal for large screens and desktop
+                                            Optimal for large screens and
+                                            desktop
                                         </p>
                                     </div>
                                 </div>
@@ -336,7 +337,8 @@ const AddEditBanner = () => {
                             Mobile Banner Image
                         </label>
                         <p className="text-sm text-admin-text-secondary mb-3">
-                            Optional: Upload a mobile-optimized version of the banner for better display on phones and tablets.
+                            Optional: Upload a mobile-optimized version of the
+                            banner for better display on phones and tablets.
                         </p>
                         <div className="space-y-4">
                             {mobileImagePreview ? (
@@ -361,7 +363,9 @@ const AddEditBanner = () => {
                                     className="w-full h-40 border-2 border-dashed border-admin-border rounded-lg flex items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
                                     onClick={() =>
                                         document
-                                            .getElementById("mobile-image-upload")
+                                            .getElementById(
+                                                "mobile-image-upload"
+                                            )
                                             .click()
                                     }
                                 >

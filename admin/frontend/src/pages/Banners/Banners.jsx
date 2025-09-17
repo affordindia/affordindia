@@ -200,21 +200,23 @@ const Banners = () => {
                                             />
                                         )}
                                         {/* Fallback: Show desktop image on mobile if no mobile image */}
-                                        {!banner.mobileImage && banner.image && (
-                                            <img
-                                                src={banner.image}
-                                                alt={banner.title}
-                                                className="w-full h-auto object-contain max-h-60 block md:hidden"
-                                            />
-                                        )}
+                                        {!banner.mobileImage &&
+                                            banner.image && (
+                                                <img
+                                                    src={banner.image}
+                                                    alt={banner.title}
+                                                    className="w-full h-auto object-contain max-h-60 block md:hidden"
+                                                />
+                                            )}
                                         {/* Fallback: Show mobile image on desktop if no desktop image */}
-                                        {!banner.image && banner.mobileImage && (
-                                            <img
-                                                src={banner.mobileImage}
-                                                alt={banner.title}
-                                                className="w-full h-auto object-contain max-h-80 hidden md:block"
-                                            />
-                                        )}
+                                        {!banner.image &&
+                                            banner.mobileImage && (
+                                                <img
+                                                    src={banner.mobileImage}
+                                                    alt={banner.title}
+                                                    className="w-full h-auto object-contain max-h-80 hidden md:block"
+                                                />
+                                            )}
                                     </div>
                                 ) : (
                                     <div className="w-full h-48 flex items-center justify-center text-gray-400 bg-gray-100">
@@ -256,7 +258,7 @@ const Banners = () => {
                                                         {banner.material}
                                                     </p>
                                                 )}
-                                                
+
                                                 {/* Image Information */}
                                                 <div className="flex flex-wrap gap-4 text-sm text-admin-text-secondary mb-3">
                                                     {banner.image && (
@@ -271,12 +273,14 @@ const Banners = () => {
                                                             Mobile Image
                                                         </span>
                                                     )}
-                                                    {!banner.mobileImage && banner.image && (
-                                                        <span className="flex items-center gap-1 text-yellow-600">
-                                                            <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                                                            Mobile uses desktop image
-                                                        </span>
-                                                    )}
+                                                    {!banner.mobileImage &&
+                                                        banner.image && (
+                                                            <span className="flex items-center gap-1 text-yellow-600">
+                                                                <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                                                Mobile uses
+                                                                desktop image
+                                                            </span>
+                                                        )}
                                                 </div>
                                             </div>
                                             <span className="text-admin-text-muted whitespace-nowrap lg:text-base">
