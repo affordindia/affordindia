@@ -22,6 +22,7 @@ const AddEditBanner = () => {
     const [formData, setFormData] = useState({
         title: "",
         image: null,
+        mobileImage: null,
         material: "",
         link: "",
         isActive: true,
@@ -31,6 +32,7 @@ const AddEditBanner = () => {
         order: 0,
     });
     const [imagePreview, setImagePreview] = useState(null);
+    const [mobileImagePreview, setMobileImagePreview] = useState(null);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
@@ -49,6 +51,7 @@ const AddEditBanner = () => {
                 setFormData({
                     title: banner.title || "",
                     image: null, // Keep as null for file input
+                    mobileImage: null, // Keep as null for file input
                     material: banner.material || "",
                     link: banner.link || "",
                     isActive: banner.isActive ?? true,
@@ -62,6 +65,7 @@ const AddEditBanner = () => {
                     order: banner.order || 0,
                 });
                 setImagePreview(banner.image);
+                setMobileImagePreview(banner.mobileImage);
             } else {
                 console.error("Error fetching banner:", response.error);
             }
@@ -138,6 +142,43 @@ const AddEditBanner = () => {
         if (fileInput) fileInput.value = "";
     };
 
+    const handleMobileImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData((prev) => ({
+                ...prev,
+                mobileImage: file,
+            }));
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = () => {
+                setMobileImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+
+            // Clear error
+            if (errors.mobileImage) {
+                setErrors((prev) => ({
+                    ...prev,
+                    mobileImage: "",
+                }));
+            }
+        }
+    };
+
+    const removeMobileImage = () => {
+        setFormData((prev) => ({
+            ...prev,
+            mobileImage: null,
+        }));
+        setMobileImagePreview(null);
+
+        // Reset file input
+        const fileInput = document.getElementById("mobile-image-upload");
+        if (fileInput) fileInput.value = "";
+    };
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -180,6 +221,10 @@ const AddEditBanner = () => {
 
             if (formData.image) {
                 submitData.append("image", formData.image);
+            }
+
+            if (formData.mobileImage) {
+                submitData.append("mobileImage", formData.mobileImage);
             }
 
             const response = isEditing
@@ -230,7 +275,7 @@ const AddEditBanner = () => {
                     {/* Banner Image */}
                     <div>
                         <label className="block text-sm font-medium text-admin-text mb-2">
-                            Banner Image *
+                            Desktop Banner Image *
                         </label>
                         <div className="space-y-4">
                             {imagePreview ? (
@@ -238,7 +283,7 @@ const AddEditBanner = () => {
                                     <div className="w-full bg-gray-50 rounded-lg overflow-hidden border border-admin-border">
                                         <img
                                             src={imagePreview}
-                                            alt="Banner preview"
+                                            alt="Desktop banner preview"
                                             className="w-full h-auto object-contain max-h-80"
                                         />
                                     </div>
@@ -262,11 +307,11 @@ const AddEditBanner = () => {
                                     <div className="text-center">
                                         <FiUpload className="w-12 h-12 text-admin-text-muted mx-auto mb-3" />
                                         <p className="text-admin-text-muted text-lg font-medium">
-                                            Click to upload banner image
+                                            Click to upload desktop banner
                                         </p>
                                         <p className="text-admin-text-muted text-sm mt-1">
-                                            Banners will be displayed at full
-                                            width
+                                            Optimal for large screens and
+                                            desktop
                                         </p>
                                     </div>
                                 </div>
@@ -281,6 +326,70 @@ const AddEditBanner = () => {
                             {errors.image && (
                                 <p className="text-red-500 text-sm">
                                     {errors.image}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Mobile Banner Image */}
+                    <div>
+                        <label className="block text-sm font-medium text-admin-text mb-2">
+                            Mobile Banner Image
+                        </label>
+                        <p className="text-sm text-admin-text-secondary mb-3">
+                            Optional: Upload a mobile-optimized version of the
+                            banner for better display on phones and tablets.
+                        </p>
+                        <div className="space-y-4">
+                            {mobileImagePreview ? (
+                                <div className="relative">
+                                    <div className="w-full bg-gray-50 rounded-lg overflow-hidden border border-admin-border">
+                                        <img
+                                            src={mobileImagePreview}
+                                            alt="Mobile banner preview"
+                                            className="w-full h-auto object-contain max-h-60"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={removeMobileImage}
+                                        className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                                    >
+                                        <FiX className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    className="w-full h-40 border-2 border-dashed border-admin-border rounded-lg flex items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
+                                    onClick={() =>
+                                        document
+                                            .getElementById(
+                                                "mobile-image-upload"
+                                            )
+                                            .click()
+                                    }
+                                >
+                                    <div className="text-center">
+                                        <FiUpload className="w-10 h-10 text-admin-text-muted mx-auto mb-2" />
+                                        <p className="text-admin-text-muted text-base font-medium">
+                                            Click to upload mobile banner
+                                        </p>
+                                        <p className="text-admin-text-muted text-xs mt-1">
+                                            Optimized for mobile devices
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                            <input
+                                id="mobile-image-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleMobileImageChange}
+                                className="hidden"
+                            />
+                            {errors.mobileImage && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.mobileImage}
                                 </p>
                             )}
                         </div>
