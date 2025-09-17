@@ -24,7 +24,7 @@ const DEFAULT_LIMIT = 10;
 const Products = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { categories: rawCategories } = useAppData();
+    const { categories: rawCategories, allCategories } = useAppData();
     const categories = rawCategories || []; // Ensure categories is always an array
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -51,6 +51,27 @@ const Products = () => {
     });
     const [page, setPage] = useState(urlPage);
     const [total, setTotal] = useState(0);
+
+    // Determine banner material based on selected category
+    const getBannerMaterial = () => {
+        // If no categories selected or multiple categories, show all banners
+        if (!selectedCategories.length || selectedCategories.length > 1) {
+            return "all";
+        }
+
+        // Find the selected category in allCategories
+        const selectedCategoryId = selectedCategories[0];
+        const selectedCategory = allCategories?.find(cat => cat._id === selectedCategoryId);
+        
+        // Return the category name as material (e.g., "silver", "brass", "wood")
+        if (selectedCategory) {
+            return selectedCategory.name.toLowerCase();
+        }
+
+        return "all";
+    };
+
+    const bannerMaterial = getBannerMaterial();
 
     // Sync state with URL params
     useEffect(() => {
@@ -233,7 +254,7 @@ const Products = () => {
 
     return (
         <div className="min-h-screen ">
-            <Banners />
+            <Banners material={bannerMaterial} />
 
             {/* Search Results Info */}
             {search && search.trim() !== "" && (
