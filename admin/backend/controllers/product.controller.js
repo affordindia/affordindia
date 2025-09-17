@@ -19,6 +19,7 @@ import {
 import { uploadToCloudinary } from "../services/upload.service.js";
 import { DEFAULT_SKIP, DEFAULT_LIMIT } from "../config/pagination.config.js";
 import Product from "../models/product.model.js";
+import { convertToBoolean } from "../utils/form.util.js";
 
 export const createProduct = async (req, res) => {
     try {
@@ -53,6 +54,11 @@ export const createProduct = async (req, res) => {
             imageUrls = uploadResults.map((result) => result.secure_url);
         }
         const productData = { ...req.body, images: imageUrls };
+        
+        // Convert checkbox values to boolean
+        if (productData.isFeatured !== undefined) {
+            productData.isFeatured = convertToBoolean(productData.isFeatured);
+        }
 
         const product = await createProductService(productData);
         res.status(201).json(product);
@@ -166,6 +172,11 @@ export const updateProduct = async (req, res) => {
             imageUrls.length > 0
                 ? { ...req.body, images: imageUrls }
                 : req.body;
+        
+        // Convert checkbox values to boolean
+        if (updateData.isFeatured !== undefined) {
+            updateData.isFeatured = convertToBoolean(updateData.isFeatured);
+        }
 
         const product = await updateProductService(req.params.id, updateData);
         if (!product)
@@ -230,7 +241,13 @@ export const updateProductStock = async (req, res) => {
 
 export const updateProductFeature = async (req, res) => {
     try {
-        const { isFeatured } = req.body;
+        let { isFeatured } = req.body;
+        
+        // Convert checkbox values to boolean
+        if (isFeatured !== undefined) {
+            isFeatured = convertToBoolean(isFeatured);
+        }
+        
         const product = await updateProductFeatureService(
             req.params.id,
             isFeatured
