@@ -61,8 +61,10 @@ const Products = () => {
 
         // Find the selected category in allCategories
         const selectedCategoryId = selectedCategories[0];
-        const selectedCategory = allCategories?.find(cat => cat._id === selectedCategoryId);
-        
+        const selectedCategory = allCategories?.find(
+            (cat) => cat._id === selectedCategoryId
+        );
+
         // Return the category name as material (e.g., "silver", "brass", "wood")
         if (selectedCategory) {
             return selectedCategory.name.toLowerCase();

@@ -21,9 +21,13 @@ function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
         function nextTimeout() {
             clearNextTimeout();
             if (isDestroyed || (mouseOver && pauseOnHover)) return;
-            
+
             timeout = setTimeout(() => {
-                if (!isDestroyed && slider && typeof slider.next === 'function') {
+                if (
+                    !isDestroyed &&
+                    slider &&
+                    typeof slider.next === "function"
+                ) {
                     slider.next();
                 }
             }, interval);
@@ -58,13 +62,13 @@ function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
         // Initialize autoplay
         slider.on("created", () => {
             if (isDestroyed) return;
-            
+
             const container = slider.container;
             if (container) {
                 container.addEventListener("mouseover", handleMouseOver);
                 container.addEventListener("mouseout", handleMouseOut);
             }
-            
+
             // Start autoplay after a reasonable delay
             setTimeout(() => {
                 if (!isDestroyed) {
@@ -94,7 +98,7 @@ function Autoplay({ interval = 3000, pauseOnHover = true } = {}) {
         slider.on("destroyed", () => {
             isDestroyed = true;
             clearNextTimeout();
-            
+
             const container = slider.container;
             if (container) {
                 container.removeEventListener("mouseover", handleMouseOver);
@@ -116,7 +120,7 @@ const Banners = ({ material = "all" }) => {
     const { getBannersByMaterial, loading } = useAppData();
     const banners = getBannersByMaterial(material);
     const isReady = Array.isArray(banners) && banners.length > 0 && !loading;
-    
+
     // Create stable autoplay plugin with proper dependencies
     const autoplayPlugin = useMemo(() => {
         if (!isReady || banners.length <= 1) return null;
@@ -131,7 +135,7 @@ const Banners = ({ material = "all" }) => {
     // Slider configuration with proper dependencies
     const sliderConfig = useMemo(() => {
         if (!isReady) return undefined;
-        
+
         return {
             loop: banners.length > 1,
             slides: { perView: 1 },
@@ -150,7 +154,10 @@ const Banners = ({ material = "all" }) => {
 
     // Stable goTo function
     const goTo = useCallback((idx) => {
-        if (instanceRef.current && typeof instanceRef.current.moveToIdx === 'function') {
+        if (
+            instanceRef.current &&
+            typeof instanceRef.current.moveToIdx === "function"
+        ) {
             instanceRef.current.moveToIdx(idx);
         }
     }, []);
@@ -166,18 +173,23 @@ const Banners = ({ material = "all" }) => {
         if (isReady && instanceRef.current && !isSliderReady) {
             // Single update when data becomes ready
             const timer = setTimeout(() => {
-                if (instanceRef.current && typeof instanceRef.current.update === 'function') {
+                if (
+                    instanceRef.current &&
+                    typeof instanceRef.current.update === "function"
+                ) {
                     instanceRef.current.update();
                 }
             }, 200);
-            
+
             return () => clearTimeout(timer);
         }
     }, [isReady, isSliderReady]);
 
     // Create a stable key for the slider container to force reinitialization when needed
     const sliderKey = useMemo(() => {
-        return `${material}-${banners.length}-${banners.map(b => b._id).join('-')}-${loading ? 'loading' : 'ready'}`;
+        return `${material}-${banners.length}-${banners
+            .map((b) => b._id)
+            .join("-")}-${loading ? "loading" : "ready"}`;
     }, [material, banners, loading]);
 
     return (
