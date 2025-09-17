@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const bannerSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
-        image: { type: String, required: true },
+        image: { type: String, required: true }, // Desktop/full-size image
+        mobileImage: { type: String }, // Mobile/phone-size image, optional
         material: { type: String }, // e.g., "silver", "brass", etc.
         link: { type: String },
         isActive: { type: Boolean, default: true },

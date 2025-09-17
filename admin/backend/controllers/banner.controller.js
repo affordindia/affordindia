@@ -11,18 +11,34 @@ import { uploadToCloudinary } from "../services/upload.service.js";
 export const createBanner = async (req, res) => {
     try {
         let imageUrl = req.body.image;
-        if (req.file) {
+        let mobileImageUrl = req.body.mobileImage;
+
+        // Handle desktop image upload
+        if (req.files && req.files.image && req.files.image[0]) {
             const uploadResult = await uploadToCloudinary(
-                `data:${req.file.mimetype};base64,${req.file.buffer.toString(
-                    "base64"
-                )}`,
-                "banners"
+                `data:${
+                    req.files.image[0].mimetype
+                };base64,${req.files.image[0].buffer.toString("base64")}`,
+                "banners/desktop"
             );
             imageUrl = uploadResult.secure_url;
         }
+
+        // Handle mobile image upload
+        if (req.files && req.files.mobileImage && req.files.mobileImage[0]) {
+            const uploadResult = await uploadToCloudinary(
+                `data:${
+                    req.files.mobileImage[0].mimetype
+                };base64,${req.files.mobileImage[0].buffer.toString("base64")}`,
+                "banners/mobile"
+            );
+            mobileImageUrl = uploadResult.secure_url;
+        }
+
         const banner = await createBannerService({
             ...req.body,
             image: imageUrl,
+            mobileImage: mobileImageUrl,
         });
         res.status(201).json(banner);
     } catch (err) {
@@ -65,15 +81,29 @@ export const getBannerById = async (req, res) => {
 export const updateBanner = async (req, res) => {
     try {
         let updateData = { ...req.body };
-        if (req.file) {
+
+        // Handle desktop image upload
+        if (req.files && req.files.image && req.files.image[0]) {
             const uploadResult = await uploadToCloudinary(
-                `data:${req.file.mimetype};base64,${req.file.buffer.toString(
-                    "base64"
-                )}`,
-                "banners"
+                `data:${
+                    req.files.image[0].mimetype
+                };base64,${req.files.image[0].buffer.toString("base64")}`,
+                "banners/desktop"
             );
             updateData.image = uploadResult.secure_url;
         }
+
+        // Handle mobile image upload
+        if (req.files && req.files.mobileImage && req.files.mobileImage[0]) {
+            const uploadResult = await uploadToCloudinary(
+                `data:${
+                    req.files.mobileImage[0].mimetype
+                };base64,${req.files.mobileImage[0].buffer.toString("base64")}`,
+                "banners/mobile"
+            );
+            updateData.mobileImage = uploadResult.secure_url;
+        }
+
         const banner = await updateBannerService(req.params.id, updateData);
         if (!banner)
             return res.status(404).json({ message: "Banner not found" });

@@ -52,7 +52,13 @@ export const createProduct = async (productData) => {
         // Add basic product data
         Object.keys(productData).forEach((key) => {
             if (key !== "images") {
-                const value = productData[key];
+                let value = productData[key];
+
+                // Convert boolean values to strings properly for FormData
+                if (typeof value === "boolean") {
+                    value = value.toString();
+                }
+
                 // Handle arrays properly (especially subcategories)
                 if (Array.isArray(value)) {
                     value.forEach((item) => {
@@ -102,7 +108,13 @@ export const updateProduct = async (id, productData) => {
         // Add basic product data
         Object.keys(productData).forEach((key) => {
             if (key !== "images") {
-                const value = productData[key];
+                let value = productData[key];
+
+                // Convert boolean values to strings properly for FormData
+                if (typeof value === "boolean") {
+                    value = value.toString();
+                }
+
                 // Handle arrays properly (especially subcategories)
                 if (Array.isArray(value)) {
                     value.forEach((item) => {
