@@ -54,7 +54,7 @@ export const createProduct = async (req, res) => {
             imageUrls = uploadResults.map((result) => result.secure_url);
         }
         const productData = { ...req.body, images: imageUrls };
-        
+
         // Convert checkbox values to boolean
         if (productData.isFeatured !== undefined) {
             productData.isFeatured = convertToBoolean(productData.isFeatured);
@@ -172,7 +172,7 @@ export const updateProduct = async (req, res) => {
             imageUrls.length > 0
                 ? { ...req.body, images: imageUrls }
                 : req.body;
-        
+
         // Convert checkbox values to boolean
         if (updateData.isFeatured !== undefined) {
             updateData.isFeatured = convertToBoolean(updateData.isFeatured);
@@ -242,12 +242,12 @@ export const updateProductStock = async (req, res) => {
 export const updateProductFeature = async (req, res) => {
     try {
         let { isFeatured } = req.body;
-        
+
         // Convert checkbox values to boolean
         if (isFeatured !== undefined) {
             isFeatured = convertToBoolean(isFeatured);
         }
-        
+
         const product = await updateProductFeatureService(
             req.params.id,
             isFeatured
