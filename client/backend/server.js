@@ -28,8 +28,10 @@ app.use(
         origin: [
             "http://localhost:5173",
             "http://localhost:5174",
+
             "https://affordindia.vercel.app",
-            "https://affordindia-pg.vercel.app",
+            "https://frontend-testing-nw7f.onrender.com",
+
             "https://affordindia.com",
             "https://www.affordindia.com",
             "https://affordindia.in",
