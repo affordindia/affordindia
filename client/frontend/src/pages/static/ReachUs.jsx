@@ -10,9 +10,9 @@ const ReachUs = () => {
             name: "Visit our Website",
             url: "https://affordindia.com",
             icon: (
-                <img 
-                    src="/favicon.png" 
-                    alt="Website" 
+                <img
+                    src="/favicon.png"
+                    alt="Website"
                     className="w-6 h-6 object-contain"
                 />
             ),
