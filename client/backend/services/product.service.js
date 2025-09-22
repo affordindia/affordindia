@@ -134,4 +134,26 @@ export const getRelatedProducts = async (
         .lean();
 };
 
+export const getProductsByIds = async (productIds) => {
+    const products = await Product.find({
+        _id: { $in: productIds },
+    })
+        .populate("category")
+        .populate("subcategories")
+        .populate({
+            path: "reviews",
+            populate: { path: "user", select: "name" },
+        })
+        .lean();
+
+    const foundIds = products.map((product) => product._id.toString());
+    const failedIds = productIds.filter((id) => !foundIds.includes(id));
+
+    return {
+        count: products.length,
+        products,
+        failedIds: failedIds.length > 0 ? failedIds : undefined,
+    };
+};
+
 // Add more product-related service functions as needed

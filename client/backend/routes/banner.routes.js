@@ -1,8 +1,12 @@
 import express from "express";
-import { getAllBanners } from "../controllers/banner.controller.js";
+import {
+    getAllBanners,
+    getBannersByIds,
+} from "../controllers/banner.controller.js";
 
 const router = express.Router();
 
 router.get("/", getAllBanners);
+router.post("/bulk", getBannersByIds);
 
 export default router;

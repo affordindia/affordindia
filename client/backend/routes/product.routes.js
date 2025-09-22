@@ -6,6 +6,7 @@ import {
     newProducts,
     popularProducts,
     relatedProducts,
+    getProductsByIds,
 } from "../controllers/product.controller.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import reviewRoutes from "./review.routes.js";
@@ -14,6 +15,7 @@ const router = express.Router();
 
 // Public product routes
 router.get("/", listProducts);
+router.post("/bulk", getProductsByIds);
 router.get("/featured", featuredProducts);
 router.get("/new", newProducts);
 router.get("/popular", popularProducts);

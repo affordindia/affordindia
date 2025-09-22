@@ -19,7 +19,7 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import Orders from "./pages/Orders.jsx";
 import Reviews from "./pages/Reviews.jsx";
-import Rakhi from "./pages/Rakhi.jsx";
+import FestiveSale from "./pages/FestiveSale.jsx";
 
 import ContactUs from "./pages/ContactUs.jsx";
 import ProductCare from "./pages/static/ProductCare.jsx";
@@ -73,7 +73,10 @@ const App = () => {
                                     path="/products/id/:id/reviews"
                                     element={<Reviews />}
                                 />
-                                <Route path="/rakhi" element={<Rakhi />} />
+                                <Route
+                                    path="/diwali-sale"
+                                    element={<FestiveSale />}
+                                />
                                 <Route
                                     path="/login"
                                     element={<Signup onAuthSuccess={login} />}
