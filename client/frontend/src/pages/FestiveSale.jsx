@@ -46,6 +46,47 @@ const CustomBanners = ({ banners }) => {
         return null;
     }
 
+    // If only one banner, render it directly without slider
+    if (banners.length === 1) {
+        const banner = banners[0];
+        return (
+            <div className="w-full">
+                <div className="relative">
+                    {banner.link ? (
+                        <Link to={banner.link}>
+                            <img
+                                src={banner.image}
+                                alt={banner.title || "Festival Banner"}
+                                className="w-full h-64 md:h-96 lg:h-[500px] object-cover"
+                                loading="lazy"
+                            />
+                        </Link>
+                    ) : (
+                        <img
+                            src={banner.image}
+                            alt={banner.title || "Festival Banner"}
+                            className="w-full h-64 md:h-96 lg:h-[500px] object-cover"
+                            loading="lazy"
+                        />
+                    )}
+                    {banner.title && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                            <h3 className="text-white text-xl font-semibold">
+                                {banner.title}
+                            </h3>
+                            {banner.description && (
+                                <p className="text-white/90 text-sm mt-1">
+                                    {banner.description}
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Multiple banners - use slider
     return (
         <div className="w-full">
             <div ref={sliderRef} className="keen-slider">
