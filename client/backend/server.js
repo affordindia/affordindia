@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
+import { verifyEmailConfig } from "./services/email.service.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
@@ -17,6 +18,7 @@ import couponRoutes from "./routes/coupon.routes.js";
 import shippingRoutes from "./routes/shipping.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import invoiceRoutes from "./routes/invoice.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
 
@@ -46,6 +48,13 @@ app.use(express.json());
 
 connectDB();
 
+// Verify email configuration on startup
+verifyEmailConfig().catch(() => {
+    console.warn(
+        "⚠️  Email service not configured properly. Contact form will not work until email settings are configured."
+    );
+});
+
 // Health check route
 app.get("/", (req, res) => {
     res.send("AffordIndia Client Backend Running");
@@ -64,6 +73,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Error handler middleware
 app.use(errorHandler);
