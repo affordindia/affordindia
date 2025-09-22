@@ -19,7 +19,7 @@ const priceRanges = [
     { min: 5000, max: 10000, label: "₹5000 - ₹10,000" },
 ];
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 16;
 
 const Products = () => {
     const navigate = useNavigate();
