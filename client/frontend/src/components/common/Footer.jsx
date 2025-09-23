@@ -1,4 +1,5 @@
 import React from "react";
+import { useAppData } from "../../context/AppDataContext.jsx";
 import {
     FaFacebookF,
     FaInstagram,
@@ -11,6 +12,7 @@ import logo from "../../assets/logo.png"; // Replace with actual path
 const Footer = () => {
     const scrollToTop = () => window.scrollTo(0, 0);
 
+    const { categories } = useAppData();
     return (
         <footer className="bg-[#ecece8] text-sm text-gray-800 py-10 px-4 mt-12">
             <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -125,51 +127,21 @@ const Footer = () => {
                 <div>
                     <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
                     <ul className="space-y-1">
-                        <li>
-                            <Link
-                                to="/products/1"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                1
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/products/2"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                2
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/products/3"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                3
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/products/4"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                4
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/products/5"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                5
-                            </Link>
-                        </li>
+                        {categories && categories.length > 0 ? (
+                            categories.map((cat) => (
+                                <li key={cat._id || cat.name}>
+                                    <Link
+                                        to={`/products?categories=${cat._id}`}
+                                        onClick={scrollToTop}
+                                        className="hover:underline capitalize"
+                                    >
+                                        {cat.name}
+                                    </Link>
+                                </li>
+                            ))
+                        ) : (
+                            <li>No products available</li>
+                        )}
                     </ul>
                 </div>
 

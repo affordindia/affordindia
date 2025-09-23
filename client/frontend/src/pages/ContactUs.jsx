@@ -20,11 +20,11 @@ const ContactUs = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <FaPhoneAlt className="text-lg" />
-              <span>+91 00000 00000</span>
+              <span>+91 92115 01006</span>
             </div>
             <div className="flex items-center gap-3">
               <FaEnvelope className="text-lg" />
-              <span>support@affordindia.com</span>
+              <span>contact@affordindia.com</span>
             </div>
             <div className="flex items-center gap-3">
               <FaClock className="text-lg" />
