@@ -5,9 +5,10 @@ This guide explains how to configure the email system to use Titan Mail from GoD
 ## Configuration Overview
 
 The system has been configured to use Titan Mail's SMTP servers for sending emails. This includes:
-- Contact form submissions
-- Admin notifications
-- User auto-replies
+
+-   Contact form submissions
+-   Admin notifications
+-   User auto-replies
 
 ## SMTP Settings for Titan Mail
 
@@ -49,9 +50,10 @@ Replace `your_titan_mail_password` in the `.env` file with the actual password f
 ### 2. Verify Email Account
 
 Ensure that:
-- The contact@affordindia.com email account is active in your GoDaddy Titan Mail
-- You can log in to the account via webmail
-- SMTP access is enabled (it should be by default)
+
+-   The contact@affordindia.com email account is active in your GoDaddy Titan Mail
+-   You can log in to the account via webmail
+-   SMTP access is enabled (it should be by default)
 
 ### 3. Test Configuration
 
@@ -62,18 +64,21 @@ After updating the password, restart your server and test the contact form to en
 If port 587 doesn't work, you can try these alternatives:
 
 ### Port 25 (Standard SMTP)
+
 ```env
 EMAIL_PORT=25
 EMAIL_SECURE=false
 ```
 
 ### Port 465 (SSL)
+
 ```env
 EMAIL_PORT=465
 EMAIL_SECURE=true
 ```
 
 ### Port 3535 (Alternative)
+
 ```env
 EMAIL_PORT=3535
 EMAIL_SECURE=false
@@ -84,17 +89,19 @@ EMAIL_SECURE=false
 ### Common Issues
 
 1. **Authentication Failed**
-   - Verify the email address and password are correct
-   - Ensure the email account is active in GoDaddy
-   - Try logging into the webmail interface first
+
+    - Verify the email address and password are correct
+    - Ensure the email account is active in GoDaddy
+    - Try logging into the webmail interface first
 
 2. **Connection Timeout**
-   - Check if your server's firewall allows outbound connections on port 587
-   - Try alternative ports (25, 465, 3535)
+
+    - Check if your server's firewall allows outbound connections on port 587
+    - Try alternative ports (25, 465, 3535)
 
 3. **SSL/TLS Errors**
-   - Ensure `EMAIL_SECURE=false` for port 587
-   - Use `EMAIL_SECURE=true` only for port 465
+    - Ensure `EMAIL_SECURE=false` for port 587
+    - Use `EMAIL_SECURE=true` only for port 465
 
 ### Testing Email Configuration
 
@@ -108,13 +115,14 @@ If you see an error, check your credentials and SMTP settings.
 
 ## Security Notes
 
-- Never commit your actual email password to version control
-- Use environment variables for all sensitive information
-- Consider using environment-specific .env files for different deployments
+-   Never commit your actual email password to version control
+-   Use environment variables for all sensitive information
+-   Consider using environment-specific .env files for different deployments
 
 ## Support
 
 If you continue to have issues:
+
 1. Verify your Titan Mail account is working via webmail
 2. Contact GoDaddy support for SMTP access issues
 3. Check server firewall settings for outbound email ports
