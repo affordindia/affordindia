@@ -71,22 +71,21 @@ const Faq = () => {
                 How do I place an order on your website?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                You can place an order by browsing our collections, selecting the
-                items you wish to purchase, and adding them to your cart...
+                Placing an order is simple! Browse our collections and select the items you wish to purchase. Click “Add to Cart” for each product. Once you’re ready, go to your cart and click “Checkout.” You’ll be guided through entering your shipping details and payment information. After confirming your order, you’ll receive an email confirmation with your order details and tracking information once shipped.
               </p>
 
               <h2 className="font-semibold italic text-gray-800 mb-1">
                 What payment methods do you accept?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                We accept all major credit cards (Visa, Mastercard...)...
+                We accept all major credit and debit cards (Visa, Mastercard, American Express, RuPay), UPI, Net Banking, and popular digital wallets. All payments are processed securely through trusted payment gateways.
               </p>
 
               <h2 className="font-semibold italic text-gray-800 mb-1">
                 Is it safe to use my credit card on your website?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                Yes, our website uses industry-standard SSL encryption...
+                Absolutely! Our website uses industry-standard SSL encryption to protect your personal and payment information. We do not store your card details, and all transactions are processed through secure, PCI-compliant payment gateways.
               </p>
             </section>
           )}
@@ -97,15 +96,10 @@ const Faq = () => {
                 Can I modify or cancel my order after it’s been placed?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                You can modify or cancel your order within 24 hours...
+                You may modify or cancel your order within 24 hours of placing it by contacting our customer support team. After this window, we begin processing your order to ensure timely delivery, and changes or cancellations may not be possible. For custom or made-to-order items, modifications or cancellations are not allowed once production has started.
               </p>
 
-              <h2 className="font-semibold italic text-gray-800 mb-1">
-                Do you offer international shipping?
-              </h2>
-              <p className="text-sm text-gray-700 mb-4">
-                Yes, we ship to most countries worldwide...
-              </p>
+             
             </section>
           )}
 
@@ -115,7 +109,7 @@ const Faq = () => {
                 How should I care for your products?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                Detailed care instructions will be included...
+                Each product comes with detailed care instructions. In general, we recommend storing your jewelry in a dry, cool place away from direct sunlight. Avoid contact with water, perfumes, and harsh chemicals. Clean your pieces gently with a soft cloth. For specific care tips, refer to the product page or the care card included with your order.
               </p>
             </section>
           )}
@@ -126,7 +120,7 @@ const Faq = () => {
                 What materials do you use?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                We use high-quality, sustainable materials...
+                We use only high-quality, ethically sourced materials, including 925 sterling silver, brass. Our artisans are committed to sustainable practices and exceptional craftsmanship. Each product description lists the specific materials used.
               </p>
             </section>
           )}
@@ -137,7 +131,7 @@ const Faq = () => {
                 Can I request a custom order?
               </h2>
               <p className="text-sm text-gray-700 mb-4">
-                Yes! We welcome custom order inquiries...
+                Yes! We love bringing your unique ideas to life. Please contact us with your design inspiration, preferred materials, and any special requests. Our team will work with you to create a one-of-a-kind piece, provide a quote, and guide you through the process from concept to delivery. Custom orders may require additional time for design and production.
               </p>
             </section>
           )}

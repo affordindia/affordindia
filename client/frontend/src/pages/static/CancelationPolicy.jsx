@@ -105,10 +105,10 @@ const CancellationPolicy = () => {
             <p className="text-sm leading-relaxed">
               To cancel an order, email us at{" "}
               <a
-                href="mailto:techvcrafthem@gmail.com"
+                href="mailto:contact@affordindia.com"
                 className="text-[#B76E79] underline"
               >
-                techvcrafthem@gmail.com
+                contact@affordindia.com
               </a>
             </p>
             {/* ...removed <ul> tag... */}
@@ -169,10 +169,10 @@ const CancellationPolicy = () => {
             <p className="text-sm leading-relaxed">
               Email:{" "}
               <a
-                href="mailto:techvcrafthem@gmail.com"
+                href="mailto:contact@affordindia.com"
                 className="text-[#B76E79] underline"
               >
-                techvcrafthem@gmail.com
+                contact@affordindia.com
               </a>
               
             </p>
