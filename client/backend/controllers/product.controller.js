@@ -5,6 +5,7 @@ import {
     getNewProducts,
     getPopularProducts,
     getRelatedProducts,
+    getProductsByIds as getProductsByIdsService,
 } from "../services/product.service.js";
 import config from "../config/server.config.js";
 
@@ -237,6 +238,46 @@ export const relatedProducts = async (req, res, next) => {
         );
         const products = await getRelatedProducts(req.params.id, limit);
         res.json({ count: products.length, products });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const getProductsByIds = async (req, res, next) => {
+    try {
+        const { productIds } = req.body;
+
+        if (!productIds || !Array.isArray(productIds)) {
+            return res.status(400).json({
+                message: "productIds array is required in request body",
+            });
+        }
+
+        if (productIds.length === 0) {
+            return res.json({ count: 0, products: [] });
+        }
+
+        if (productIds.length > 50) {
+            return res.status(400).json({
+                message: "Maximum 50 product IDs allowed per request",
+            });
+        }
+
+        // Validate ObjectId format
+        const invalidIds = productIds.filter(
+            (id) => !/^[0-9a-fA-F]{24}$/.test(id)
+        );
+        if (invalidIds.length > 0) {
+            return res.status(400).json({
+                message: "Invalid product ID format",
+                invalidIds,
+            });
+        }
+
+        // Use the service function that fetches all products in a single query
+        const result = await getProductsByIdsService(productIds);
+
+        res.json(result);
     } catch (err) {
         next(err);
     }

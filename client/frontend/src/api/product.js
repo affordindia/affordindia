@@ -41,3 +41,10 @@ export const getRelatedProducts = async (id) => {
     const res = await api.get(`/products/${id}/related`);
     return res.data;
 };
+
+// Get multiple products by IDs in a single request
+export const getProductsByIds = async (productIds) => {
+    console.log("API CALL: getProductsByIds", productIds);
+    const res = await api.post("/products/bulk", { productIds });
+    return res.data;
+};

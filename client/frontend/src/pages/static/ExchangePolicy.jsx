@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ExchangePolicy = () => {
   return (
@@ -28,18 +29,15 @@ const ExchangePolicy = () => {
             </h2>
             <p className="text-sm leading-relaxed">
               No worries! You can request a replacement or return of the unused product. Simply follow the instructions provided in our 
-              <span
+              <Link
+                to="/returnpolicy"
                 className="font-medium text-blue-600 cursor-pointer underline"
-                onClick={() => window.location.href = '/return-policy'}
               >
                 Return Policy
-              </span>
+              </Link>
               section, and the Afford India team will assist you every step of the way.
             </p>
-            <p className="text-sm leading-relaxed mt-2">
-              <strong>Note:</strong> Returns and replacements are not applicable for international orders, except under specific conditions. 
-              Please refer to the “International Orders” section in our Return Policy for more details.
-            </p>
+           
           </div>
 
           {/* 2. Received the wrong product? */}
@@ -55,9 +53,7 @@ const ExchangePolicy = () => {
               To ensure a smooth process, please record a clear video while repacking the product for return. This video must show the condition of the item and the packaging process 
               and should be shared with the Afford India team for review before pickup.
             </p>
-            <p className="text-sm leading-relaxed mt-2">
-              For international orders, please check the “International Orders” section under our Return Policy.
-            </p>
+          
           </div>
 
           {/* 3. Products not eligible for return */}
