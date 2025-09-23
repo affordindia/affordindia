@@ -1,12 +1,12 @@
 const getEmailConfig = () => ({
-    // Email service provider settings
-    service: process.env.EMAIL_SERVICE || "gmail", // gmail, outlook, yahoo, etc.
+    // Email service provider settings (using custom SMTP for Titan Mail)
+    service: process.env.EMAIL_SERVICE || "custom", // Using custom SMTP for Titan Mail
 
-    // SMTP settings (if not using service)
+    // SMTP settings for Titan Mail (GoDaddy)
     smtp: {
-        host: process.env.EMAIL_HOST,
+        host: process.env.EMAIL_HOST || "smtpout.secureserver.net",
         port: process.env.EMAIL_PORT || 587,
-        secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
+        secure: process.env.EMAIL_SECURE === "true", // false for 587, true for 465
     },
 
     // Authentication
@@ -19,11 +19,12 @@ const getEmailConfig = () => ({
     defaults: {
         from: {
             name: process.env.EMAIL_FROM_NAME || "Afford India",
-            address: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER,
+            address:
+                process.env.EMAIL_FROM_ADDRESS || "contact@affordindia.com",
         },
         to: {
-            support: process.env.EMAIL_SUPPORT || "support@affordindia.com",
-            admin: process.env.EMAIL_ADMIN || "admin@affordindia.com",
+            support: process.env.EMAIL_SUPPORT || "contact@affordindia.com",
+            admin: process.env.EMAIL_ADMIN || "contact@affordindia.com",
         },
     },
 

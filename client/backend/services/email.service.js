@@ -8,14 +8,18 @@ const createTransporter = () => {
         auth: emailConfig.auth,
     };
 
-    // Use service provider if specified
-    if (emailConfig.service) {
-        config.service = emailConfig.service;
-    } else {
-        // Use SMTP settings
+    // Use custom SMTP settings for Titan Mail or other providers
+    if (
+        emailConfig.service === "custom" ||
+        !emailConfig.service ||
+        emailConfig.service === "smtp"
+    ) {
         config.host = emailConfig.smtp.host;
         config.port = emailConfig.smtp.port;
         config.secure = emailConfig.smtp.secure;
+    } else {
+        // Use service provider (gmail, outlook, etc.)
+        config.service = emailConfig.service;
     }
 
     return nodemailer.createTransport(config);
