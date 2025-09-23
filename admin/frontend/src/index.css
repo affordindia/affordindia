@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+
+@import "tailwindcss";
+
+/* ===== AffordIndia Admin Design System (Tailwind v4) ===== */
+
+@theme {
+    /* Font Families */
+    --font-family-montserrat: "Montserrat", system-ui, sans-serif;
+    --font-family-playfair: "Playfair Display", serif;
+
+    /* Primary Brand Colors */
+    --color-admin-primary: #b76e79;
+    --color-admin-primary-light: #c68f98;
+    --color-admin-primary-dark: #a55b6b;
+    --color-admin-primary-bg: #fbf7f8;
+
+    /* Background Colors */
+    --color-admin-bg: #f5f5f5;
+    --color-admin-bg-secondary: #f6f2eb;
+    --color-admin-card: #ffffff;
+    --color-admin-sidebar: #2d3748;
+    --color-admin-navbar: #ffffff;
+
+    /* Status Colors */
+    --color-admin-success: #48bb78;
+    --color-admin-success-light: #9ae6b4;
+    --color-admin-warning: #ed8936;
+    --color-admin-warning-light: #f6ad55;
+    --color-admin-error: #e53e3e;
+    --color-admin-error-light: #fc8181;
+    --color-admin-info: #4299e1;
+    --color-admin-info-light: #90cdf4;
+
+    /* Text Colors */
+    --color-admin-text: #2d3748;
+    --color-admin-text-secondary: #718096;
+    --color-admin-text-muted: #a0aec0;
+    --color-admin-text-inverse: #ffffff;
+
+    /* Border Colors */
+    --color-admin-border: #e2e8f0;
+    --color-admin-border-hover: #cbd5e0;
+
+    /* Shadows */
+    --shadow-admin-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-admin-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-admin-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Global Styles */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
