@@ -348,9 +348,13 @@ const AddressModal = ({ isOpen, onClose, editingAddress = null }) => {
                             type="submit"
                             disabled={isSubmitting}
                             className="flex-1 px-4 py-3 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-                            style={{ backgroundColor: '#b76e79' }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = '#a15c68'}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = '#b76e79'}
+                            style={{ backgroundColor: "#b76e79" }}
+                            onMouseEnter={(e) =>
+                                (e.target.style.backgroundColor = "#a15c68")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.target.style.backgroundColor = "#b76e79")
+                            }
                         >
                             {isSubmitting ? (
                                 <div className="flex items-center justify-center gap-2">

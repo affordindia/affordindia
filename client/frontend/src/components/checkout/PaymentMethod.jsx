@@ -10,7 +10,7 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
     }, [selected, onStepChange]);
 
     return (
-        <div className="bg-white p-2 sm:p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
                 <FaCreditCard className="text-[#B76E79] text-xl" />

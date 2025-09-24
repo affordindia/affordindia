@@ -354,7 +354,7 @@ const Checkout = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
             {/* Progress Indicator - Commented out temporarily */}
             {/* <CheckoutProgress currentStep={step} /> */}
 
@@ -366,9 +366,9 @@ const Checkout = () => {
             )}
 
             {/* Main Content */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Left Section - Forms */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     <ShippingForm
                         address={shippingAddress}
                         onChange={setShippingAddress}
@@ -376,7 +376,7 @@ const Checkout = () => {
                     />
 
                     {/* Your Details Section */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">
                             Your Details
                         </h3>
@@ -426,7 +426,7 @@ const Checkout = () => {
                     </div>
 
                     {/* Ordering for someone else section */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
                         <label className="flex items-center gap-3 cursor-pointer">
                             <input
                                 type="checkbox"
@@ -541,7 +541,7 @@ const Checkout = () => {
 
                 {/* Right Section - Order Summary */}
                 <div className="lg:col-span-1">
-                    <div className="sticky top-24">
+                    <div className="lg:sticky lg:top-24">
                         <OrderSummary
                             items={items}
                             originalSubtotal={originalSubtotal}
