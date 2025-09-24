@@ -12,6 +12,10 @@ const api = axios.create({
 // Optional: log requests
 api.interceptors.request.use(
     (config) => {
+        // For FormData, let axios set the Content-Type automatically (including boundary)
+        if (config.data instanceof FormData) {
+            delete config.headers["Content-Type"];
+        }
         // Cookies sent automatically
         return config;
     },
