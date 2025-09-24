@@ -24,19 +24,6 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                 <button
                     type="button"
                     className={`flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base ${
-                        selected === "COD"
-                            ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
-                            : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
-                    }`}
-                    onClick={() => onChange("COD")}
-                >
-                    <span className="inline-flex items-center gap-1">
-                        <FaMoneyBillWave className="text-lg" /> Cash on Delivery
-                    </span>
-                </button>
-                <button
-                    type="button"
-                    className={`flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base ${
                         selected === "ONLINE"
                             ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
                             : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
@@ -45,6 +32,19 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                 >
                     <span className="inline-flex items-center gap-1">
                         <FaCreditCard className="text-lg" /> Online Payment
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    className={`flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base ${
+                        selected === "COD"
+                            ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
+                            : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
+                    }`}
+                    onClick={() => onChange("COD")}
+                >
+                    <span className="inline-flex items-center gap-1">
+                        <FaMoneyBillWave className="text-lg" /> Cash on Delivery
                     </span>
                 </button>
             </div>
