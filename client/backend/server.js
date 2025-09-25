@@ -37,6 +37,7 @@ app.use(
             "https://www.affordindia.in",
             "https://affordindia.co.in",
             "https://www.affordindia.co.in",
+            "https://affordindia-shiprocket-frontend-dbon.onrender.com",
         ],
         credentials: true,
     })

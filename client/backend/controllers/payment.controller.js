@@ -6,6 +6,7 @@ import {
     verifyWebhookSignature,
     verifyPaymentData,
 } from "../services/paymentGateway.service.js";
+import shiprocketOrderService from "../services/shiprocketOrder.service.js";
 
 /**
  * Verify HDFC webhook authentication
@@ -504,6 +505,28 @@ export const verifyPayment = async (req, res) => {
         }
 
         await Order.findByIdAndUpdate(order._id, updateData);
+
+        // --- ShipRocket Integration: Only after payment is paid ---
+        if (paymentStatus === "paid" && !order.shiprocket?.orderId) {
+            try {
+                // Refetch updated order with populated fields
+                const freshOrder = await Order.findById(order._id)
+                    .populate("items.product")
+                    .populate("user");
+                const shiprocketOrderData = shiprocketOrderService.formatOrderForShiprocket(freshOrder);
+                const shiprocketResponse = await shiprocketOrderService.createOrder(shiprocketOrderData);
+                // Update order with ShipRocket details
+                await Order.findByIdAndUpdate(order._id, {
+                    "shiprocket.orderId": shiprocketResponse.order_id,
+                    "shiprocket.shipmentId": shiprocketResponse.shipment_id,
+                    "shiprocket.lastSyncAt": new Date(),
+                    ...(shiprocketResponse.awb_code && { "shiprocket.awbCode": shiprocketResponse.awb_code, trackingNumber: shiprocketResponse.awb_code })
+                });
+                console.log("✅ ShipRocket order created after payment");
+            } catch (shiprocketError) {
+                console.error("❌ ShipRocket order creation failed after payment:", shiprocketError);
+            }
+        }
 
         console.log(
             `✅ Payment verification completed for order: ${orderId}, status: ${paymentStatus}`
