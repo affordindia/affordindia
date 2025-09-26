@@ -156,7 +156,7 @@ const Footer = () => {
                         <a href="https://x.com/teamAffordIndia" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
                             <FaXTwitter />
                         </a>
-                        <a href="https://www.linkedin.com/in/teamafford-india-969a23386/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                        <a href="https://www.linkedin.com/in/teamaffordindia-969a23386/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                             <FaLinkedinIn />
                         </a>
                     </div>
