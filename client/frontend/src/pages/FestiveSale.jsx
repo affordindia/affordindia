@@ -134,8 +134,25 @@ const CustomBanners = ({ banners }) => {
 const FestiveSale = () => {
     // FEATURED PRODUCTS - Replace with actual product IDs from your database
     const FEATURED_PRODUCT_IDS = [
-        "68bfeee7aabdeb3888680d65",
-        "68bfef52aabdeb3888680d6d",
+        "68d518292fbfd3095f3752b9",
+        "68d121d934c2828bbeb949e0",
+        "68d11d20fde61a0681e7505e",
+        "68d11b9dfde61a0681e75054",
+        "68d11a34fde61a0681e7504a",
+        "68d119a2fde61a0681e75040",
+        "68d11217c1d75f7effecdeee",
+        "68d11020c1d75f7effecded8",
+        "68d10d32c1d75f7effecdecd",
+        "68ce8ccb09036dd20614eee1",
+        "68ce7d774e0780ee5261d06c",
+        "68cd614c956ec9ec6bed2b4c",
+        "68cd5e21956ec9ec6bed2b00",
+        "68cab14355139789dbf64b82",
+        "68cabbbb55139789dbf64bbd",
+        "68cab6ca55139789dbf64b8d",
+        "68ca68ca119f63356f710629",
+        "68ca5e5ad4bbf7c81a83168c",
+        "68d518292fbfd3095f3752b9",
     ];
 
     // FEATURED BANNERS - Replace with actual banner IDs from your database

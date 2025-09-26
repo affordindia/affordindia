@@ -41,7 +41,7 @@ export const AppDataProvider = ({ children }) => {
                     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
                 // Filter categories to only include silver, brass, and wood for navigation
-                const allowedCategories = ["silver", "brass", "wood"];
+                const allowedCategories = ["silver", "brass", "aluminium"];
                 const filteredCategories = categoriesData.filter((category) =>
                     allowedCategories.includes(category.name?.toLowerCase())
                 );
