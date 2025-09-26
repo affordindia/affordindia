@@ -139,7 +139,7 @@ const CancellationPolicy = () => {
             </h2>
             <p className="text-sm leading-relaxed">Contact Afford India within 3 days of receiving the order.</p>
             <p className="text-sm leading-relaxed">Do not use the product.</p>
-            <p className="text-sm leading-relaxed">Send Order ID, clear photos, and issue details to <a href="mailto:techvcrafthem@gmail.com" className="text-[#B76E79] underline">techvcrafthem@gmail.com</a> </p>
+            <p className="text-sm leading-relaxed">Send Order ID, clear photos, and issue details to <a href="mailto:contact@affordindia.com" className="text-[#B76E79] underline">contact@affordindia.com</a> </p>
             <p className="text-sm leading-relaxed mt-2">
               Once verified, we’ll offer a free return, replacement, or refund —
               including shipping charges if it’s our mistake.
