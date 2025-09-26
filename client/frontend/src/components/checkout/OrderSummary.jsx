@@ -15,7 +15,7 @@ const OrderSummary = ({
     disabled,
 }) => {
     return (
-        <div className="bg-[#F7F4EF] p-4 sm:p-6 rounded-lg border border-gray-300">
+        <div className="bg-[#efeee5] p-4 sm:p-6 rounded-lg border border-gray-300">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
                 <FaShoppingBag className="text-[#404040]" />
