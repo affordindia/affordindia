@@ -354,7 +354,7 @@ const Checkout = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
             {/* Progress Indicator - Commented out temporarily */}
             {/* <CheckoutProgress currentStep={step} /> */}
 
@@ -366,9 +366,9 @@ const Checkout = () => {
             )}
 
             {/* Main Content */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Left Section - Forms */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     <ShippingForm
                         address={shippingAddress}
                         onChange={setShippingAddress}
@@ -376,13 +376,13 @@ const Checkout = () => {
                     />
 
                     {/* Your Details Section */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <h3 className="text-base font-semibold text-blue-800 mb-2">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
                             Your Details
                         </h3>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-blue-800 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Your Name *
                                 </label>
                                 <input
@@ -398,10 +398,10 @@ const Checkout = () => {
                                         )
                                     }
                                     placeholder="Enter your name"
-                                    className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                                    className={`w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm ${
                                         userNameError
-                                            ? "border-red-500"
-                                            : "border-blue-300"
+                                            ? "border-red-300"
+                                            : "border-gray-300"
                                     }`}
                                     required
                                 />
@@ -412,22 +412,22 @@ const Checkout = () => {
                                 )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-blue-800 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Your Phone
                                 </label>
                                 <input
                                     type="text"
                                     value={user?.phone || ""}
                                     disabled
-                                    className="w-full border border-blue-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-700"
+                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm cursor-not-allowed"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Ordering for someone else section */}
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                        <label className="flex items-center gap-2">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
+                        <label className="flex items-center gap-3 cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={isOrderingForSomeoneElse}
@@ -436,15 +436,17 @@ const Checkout = () => {
                                         e.target.checked
                                     )
                                 }
+                                className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
+                                style={{ accentColor: "#b76e79" }}
                             />
-                            <span className="font-medium text-yellow-800">
+                            <span className="font-medium text-gray-800">
                                 Ordering for someone else?
                             </span>
                         </label>
                         {isOrderingForSomeoneElse && (
-                            <div className="flex flex-col gap-4 mt-2">
+                            <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-gray-200">
                                 <div>
-                                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Receiver Name *
                                     </label>
                                     <input
@@ -463,10 +465,10 @@ const Checkout = () => {
                                             )
                                         }
                                         placeholder="Enter receiver's name"
-                                        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200 ${
+                                        className={`w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm ${
                                             receiverNameError
-                                                ? "border-red-500"
-                                                : "border-yellow-300"
+                                                ? "border-red-300"
+                                                : "border-gray-300"
                                         }`}
                                         required
                                     />
@@ -477,7 +479,7 @@ const Checkout = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Receiver Phone *
                                     </label>
                                     <input
@@ -500,10 +502,10 @@ const Checkout = () => {
                                             )
                                         }
                                         placeholder="Enter receiver's phone number"
-                                        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200 ${
+                                        className={`w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm ${
                                             receiverPhoneError
-                                                ? "border-red-500"
-                                                : "border-yellow-300"
+                                                ? "border-red-300"
+                                                : "border-gray-300"
                                         }`}
                                         pattern="[0-9]{10}"
                                         maxLength={10}
@@ -539,29 +541,31 @@ const Checkout = () => {
 
                 {/* Right Section - Order Summary */}
                 <div className="lg:col-span-1">
-                    <OrderSummary
-                        items={items}
-                        originalSubtotal={originalSubtotal}
-                        totalProductDiscount={totalProductDiscount}
-                        couponDiscount={couponDiscount}
-                        shippingFee={shippingInfo.shippingFee}
-                        shippingInfo={shippingInfo}
-                        total={total}
-                        paymentMethod={paymentMethod}
-                        onPlaceOrder={handlePlaceOrder}
-                        loading={loading}
-                        disabled={
-                            !shippingAddress.city ||
-                            !shippingAddress.pincode ||
-                            !userName.trim() ||
-                            (!billingAddressSameAsShipping &&
-                                (!billingAddress.city ||
-                                    !billingAddress.pincode)) ||
-                            (isOrderingForSomeoneElse &&
-                                (!receiverName.trim() ||
-                                    !validatePhoneNumber(receiverPhone)))
-                        }
-                    />
+                    <div className="lg:sticky lg:top-24">
+                        <OrderSummary
+                            items={items}
+                            originalSubtotal={originalSubtotal}
+                            totalProductDiscount={totalProductDiscount}
+                            couponDiscount={couponDiscount}
+                            shippingFee={shippingInfo.shippingFee}
+                            shippingInfo={shippingInfo}
+                            total={total}
+                            paymentMethod={paymentMethod}
+                            onPlaceOrder={handlePlaceOrder}
+                            loading={loading}
+                            disabled={
+                                !shippingAddress.city ||
+                                !shippingAddress.pincode ||
+                                !userName.trim() ||
+                                (!billingAddressSameAsShipping &&
+                                    (!billingAddress.city ||
+                                        !billingAddress.pincode)) ||
+                                (isOrderingForSomeoneElse &&
+                                    (!receiverName.trim() ||
+                                        !validatePhoneNumber(receiverPhone)))
+                            }
+                        />
+                    </div>
                 </div>
             </div>
         </div>

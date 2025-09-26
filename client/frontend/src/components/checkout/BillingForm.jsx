@@ -38,7 +38,7 @@ const BillingForm = ({
         }
     };
 
-    const inputClasses = `w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent text-sm ${
+    const inputClasses = `w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent text-sm ${
         billingAddressSameAsShipping ? "bg-gray-100 cursor-not-allowed" : ""
     }`;
 
@@ -57,8 +57,14 @@ const BillingForm = ({
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
-                    <FaCreditCard className="text-pink-600 text-sm" />
+                <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#f3ece8" }}
+                >
+                    <FaCreditCard
+                        className="text-sm"
+                        style={{ color: "#b76e79" }}
+                    />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">
                     Billing Address
@@ -72,7 +78,8 @@ const BillingForm = ({
                         type="checkbox"
                         checked={billingAddressSameAsShipping}
                         onChange={handleSameAsShippingChange}
-                        className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                        className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
+                        style={{ accentColor: "#b76e79" }}
                     />
                     <span className="text-sm font-medium text-gray-700">
                         Billing address is same as shipping address
@@ -84,166 +91,134 @@ const BillingForm = ({
                 </p>
             </div>
 
-            {/* Billing Address Form */}
-            <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            House/Flat Number *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.houseNumber}
-                            onChange={(e) =>
-                                handleInputChange("houseNumber", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("houseNumber")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="Enter house/flat number"
-                            disabled={billingAddressSameAsShipping}
-                        />
+            {/* Billing Address Form - Only show when different address is selected */}
+            {!billingAddressSameAsShipping && (
+                <div className="space-y-4 transition-all duration-300 ease-in-out">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                House/Flat Number *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.houseNumber}
+                                onChange={(e) =>
+                                    handleInputChange(
+                                        "houseNumber",
+                                        e.target.value
+                                    )
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="Enter house/flat number"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Street Address *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.street}
+                                onChange={(e) =>
+                                    handleInputChange("street", e.target.value)
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="Enter street address"
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Street Address *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.street}
-                            onChange={(e) =>
-                                handleInputChange("street", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("street")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="Enter street address"
-                            disabled={billingAddressSameAsShipping}
-                        />
-                    </div>
-                </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Landmark (Optional)
-                    </label>
-                    <input
-                        type="text"
-                        value={billingAddress.landmark}
-                        onChange={(e) =>
-                            handleInputChange("landmark", e.target.value)
-                        }
-                        className={inputClasses}
-                        placeholder="Near landmark"
-                        disabled={billingAddressSameAsShipping}
-                    />
-                </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Landmark (Optional)
+                        </label>
+                        <input
+                            type="text"
+                            value={billingAddress.landmark}
+                            onChange={(e) =>
+                                handleInputChange("landmark", e.target.value)
+                            }
+                            className={inputClasses}
+                            placeholder="Near landmark"
+                        />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Area/Locality *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.area}
-                            onChange={(e) =>
-                                handleInputChange("area", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("area")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="Enter area/locality"
-                            disabled={billingAddressSameAsShipping}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Area/Locality *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.area}
+                                onChange={(e) =>
+                                    handleInputChange("area", e.target.value)
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="Enter area/locality"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                City *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.city}
+                                onChange={(e) =>
+                                    handleInputChange("city", e.target.value)
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="Enter city"
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            City *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.city}
-                            onChange={(e) =>
-                                handleInputChange("city", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("city")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="Enter city"
-                            disabled={billingAddressSameAsShipping}
-                        />
-                    </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            State *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.state}
-                            onChange={(e) =>
-                                handleInputChange("state", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("state")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="Enter state"
-                            disabled={billingAddressSameAsShipping}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                State *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.state}
+                                onChange={(e) =>
+                                    handleInputChange("state", e.target.value)
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="Enter state"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                PIN Code *
+                            </label>
+                            <input
+                                type="text"
+                                value={billingAddress.pincode}
+                                onChange={(e) =>
+                                    handleInputChange("pincode", e.target.value)
+                                }
+                                className={`${inputClasses}`}
+                                placeholder="6-digit PIN code"
+                                maxLength="6"
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            PIN Code *
-                        </label>
-                        <input
-                            type="text"
-                            value={billingAddress.pincode}
-                            onChange={(e) =>
-                                handleInputChange("pincode", e.target.value)
-                            }
-                            className={`${inputClasses} ${
-                                !billingAddressSameAsShipping &&
-                                isFieldEmpty("pincode")
-                                    ? "border-red-300"
-                                    : ""
-                            }`}
-                            placeholder="6-digit PIN code"
-                            maxLength="6"
-                            disabled={billingAddressSameAsShipping}
-                        />
-                    </div>
-                </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Country
-                    </label>
-                    <input
-                        type="text"
-                        value={billingAddress.country}
-                        className={`${inputClasses} bg-gray-100 cursor-not-allowed`}
-                        disabled
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Country
+                        </label>
+                        <input
+                            type="text"
+                            value={billingAddress.country}
+                            className={`${inputClasses} bg-gray-100 cursor-not-allowed`}
+                            disabled
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Info message when different address is selected */}
             {!billingAddressSameAsShipping && (

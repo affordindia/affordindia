@@ -5,27 +5,52 @@ import { FaPlus, FaTimes } from "react-icons/fa";
 import Loader from "../components/common/Loader";
 import ProfileForm from "../components/profile/ProfileForm";
 import AddressCard from "../components/profile/AddressCard";
-import AddressForm from "../components/profile/AddressForm";
+import AddressModal from "../components/common/AddressModal";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 const Profile = () => {
     const { logout } = useAuth();
-    const { addresses, loading, error } = useProfile();
-    const [showAddressForm, setShowAddressForm] = useState(false);
+    const { addresses, loading, error, deleteAddress } = useProfile();
+    const [showAddressModal, setShowAddressModal] = useState(false);
     const [editingAddress, setEditingAddress] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingAddress, setDeletingAddress] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEditAddress = (address) => {
         setEditingAddress(address);
-        setShowAddressForm(true);
+        setShowAddressModal(true);
     };
 
-    const handleCloseAddressForm = () => {
-        setShowAddressForm(false);
+    const handleDeleteAddress = (address) => {
+        setDeletingAddress(address);
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseModals = () => {
+        setShowAddressModal(false);
+        setShowDeleteModal(false);
         setEditingAddress(null);
+        setDeletingAddress(null);
     };
 
     const handleAddNewAddress = () => {
         setEditingAddress(null);
-        setShowAddressForm(true);
+        setShowAddressModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deletingAddress) return;
+
+        setIsDeleting(true);
+        try {
+            await deleteAddress(deletingAddress._id);
+            handleCloseModals();
+        } catch (error) {
+            console.error("Failed to delete address:", error);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     return (
@@ -52,7 +77,7 @@ const Profile = () => {
                         <h2 className="text-lg font-semibold">
                             Saved Addresses
                         </h2>
-                        {!showAddressForm && (
+                        {!showAddressModal && (
                             <button
                                 onClick={handleAddNewAddress}
                                 disabled={loading}
@@ -64,40 +89,13 @@ const Profile = () => {
                         )}
                     </div>
 
-                    {/* Address Form - Shows inline when needed */}
-                    {showAddressForm && (
-                        <div
-                            className="mb-6 p-6 rounded-lg border border-gray-400"
-                            style={{ backgroundColor: "#E0E0E0" }}
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-semibold">
-                                    {editingAddress
-                                        ? "Edit Address"
-                                        : "Add New Address"}
-                                </h3>
-                                <button
-                                    onClick={handleCloseAddressForm}
-                                    className="p-2 hover:bg-gray-300 rounded-full transition-colors"
-                                >
-                                    <FaTimes />
-                                </button>
-                            </div>
-                            <AddressForm
-                                editingAddress={editingAddress}
-                                onClose={handleCloseAddressForm}
-                                inline={true}
-                            />
-                        </div>
-                    )}
-
                     {/* Loading State */}
-                    {loading && addresses.length === 0 && !showAddressForm && (
+                    {loading && addresses.length === 0 && !showAddressModal && (
                         <Loader />
                     )}
 
                     {/* Address List */}
-                    {!loading && addresses.length === 0 && !showAddressForm ? (
+                    {!loading && addresses.length === 0 && !showAddressModal ? (
                         <div className="text-center py-8 text-gray-600">
                             <p>
                                 No addresses saved yet. Use the "Add Address"
@@ -105,13 +103,14 @@ const Profile = () => {
                             </p>
                         </div>
                     ) : (
-                        !showAddressForm && (
+                        !showAddressModal && (
                             <div className="space-y-4">
                                 {addresses.map((address) => (
                                     <AddressCard
                                         key={address._id}
                                         address={address}
                                         onEdit={handleEditAddress}
+                                        onDelete={handleDeleteAddress}
                                     />
                                 ))}
                             </div>
@@ -128,6 +127,25 @@ const Profile = () => {
                         Logout
                     </button>
                 </div>
+
+                {/* Modals */}
+                <AddressModal
+                    isOpen={showAddressModal}
+                    onClose={handleCloseModals}
+                    editingAddress={editingAddress}
+                />
+
+                <ConfirmationModal
+                    isOpen={showDeleteModal}
+                    onClose={handleCloseModals}
+                    onConfirm={handleDeleteConfirm}
+                    title="Delete Address"
+                    message={`Are you sure you want to delete the address "${deletingAddress?.label}"? This action cannot be undone.`}
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                    type="danger"
+                    loading={isDeleting}
+                />
             </div>
         </div>
     );
