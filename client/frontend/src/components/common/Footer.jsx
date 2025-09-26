@@ -149,10 +149,16 @@ const Footer = () => {
                 <div className="flex flex-col items-start">
                     <h4 className="font-semibold mb-3">FOLLOW US</h4>
                     <div className="flex space-x-3 text-lg mb-4">
-                        <FaFacebookF />
-                        <FaInstagram />
-                        <FaXTwitter />
-                        <FaLinkedinIn />
+                        {/* Facebook icon left as placeholder, add link if needed */}
+                        <a href="https://www.instagram.com/teamaffordindia/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <FaInstagram />
+                        </a>
+                        <a href="https://x.com/teamAffordIndia" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                            <FaXTwitter />
+                        </a>
+                        <a href="https://www.linkedin.com/in/teamafford-india-969a23386/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <FaLinkedinIn />
+                        </a>
                     </div>
                     <img
                         src={logo}
@@ -164,11 +170,11 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-            <p className="text-lg text-center mt-4">
+            <p className="text-lg text-center mt-4 text-gray-500 font-light">
                 Developed and Maintained by{" "}
                 <a
                     href="https://etideas.com"
-                    className="font-medium text-gray-700"
+                    className="font-light text-gray-500"
                 >
                     ET Ideas
                 </a>
