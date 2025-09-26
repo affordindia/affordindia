@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
             <h2 className="font-semibold text-lg mb-2 text-[#4C4326]">6. Your Rights</h2>
             <p className="text-sm leading-relaxed">
               You have the right to access, correct, or delete your personal information. To exercise these rights, please contact us at{' '}
-              <span className="font-medium text-blue-600">techvcrafthem@gmail.com</span>.
+              <span className="font-medium text-blue-600">contact@affordindia.com</span>.
             </p>
           </div>
 
