@@ -26,16 +26,16 @@ const ExploreMaterials = () => {
             </div>
 
             {/* Category Cards Container */}
-            <div className="flex flex-row md:flex-wrap gap-4 md:gap-8 px-4 justify-center md:justify-center overflow-x-auto md:overflow-visible no-scrollbar">
+            <div className="flex flex-row md:flex-wrap gap-2 md:gap-8 px-4 justify-center md:justify-center overflow-hidden md:overflow-visible no-scrollbar-hide">
                 {categories.map((category, index) => (
                     <div
                         key={category._id}
                         onClick={() => handleClick(category, index)}
-                        className={`relative overflow-hidden rounded-lg shadow-md flex-shrink-0 
-              h-[120px] w-[100px] 
-              md:h-[300px] md:w-[230px] 
-              cursor-pointer transform transition-transform duration-200 ease-in-out 
-              ${activeIndex === index ? "scale-90" : "hover:scale-105"}`}
+                        className={`relative overflow-hidden rounded-lg shadow-md flex-shrink-0 h-[120px] w-[100px] md:h-[300px] md:w-[230px] cursor-pointer transform transition-transform duration-200 ease-in-out ${
+                            activeIndex === index
+                                ? "scale-90"
+                                : "hover:scale-105"
+                        }`}
                     >
                         <img
                             src={category.image || "/placeholder.jpg"}
