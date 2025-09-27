@@ -19,16 +19,31 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                 </h3>
             </div>
 
+            {/* Maintenance Notice */}
+            <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-orange-800">
+                    {/* <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div> */}
+                    <span>
+                        <strong>Notice:</strong> Online payment is temporarily
+                        under maintenance due to technical issues. Only Cash on
+                        Delivery is available at the moment.
+                    </span>
+                </div>
+            </div>
+
             {/* Tabbed Payment Options */}
             <div className="flex gap-2 mb-4">
                 <button
+                    disabled
                     type="button"
-                    className={`flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base ${
-                        selected === "ONLINE"
-                            ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
-                            : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
-                    }`}
-                    onClick={() => onChange("ONLINE")}
+                    // className={`flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base ${
+                    //     selected === "ONLINE"
+                    //         ? "border-[#B76E79] text-[#B76E79] bg-[#F8E9ED]"
+                    //         : "border-gray-200 text-gray-500 bg-white hover:bg-gray-50"
+                    // }`}
+                    // onClick={() => onChange("ONLINE")}
+                    className="flex-1 py-2 rounded-t-xl border-b-2 font-semibold transition-colors text-sm sm:text-base border-gray-200 text-gray-400 bg-gray-100 cursor-not-allowed opacity-60"
+                    title="Online payment is temporarily under maintenance"
                 >
                     <span className="inline-flex items-center gap-1">
                         <FaCreditCard className="text-lg" /> Online Payment
@@ -65,6 +80,7 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                     </div>
                 </div>
             )}
+            {/* COMMENTED OUT FOR MAINTENANCE - UNCOMMENT WHEN ONLINE PAYMENTS ARE RESTORED
             {selected === "ONLINE" && (
                 <div className="p-3 sm:p-4 bg-[#F8E9ED] border border-[#B76E79] rounded-xl">
                     <div className="flex items-center gap-2 text-[#B76E79] mb-2">
@@ -81,6 +97,7 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
                     </div>
                 </div>
             )}
+            */}
 
             {/* Security Notice */}
             <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
@@ -90,11 +107,17 @@ const PaymentMethod = ({ selected, onChange, onStepChange }) => {
 
             {/* Future Payment Methods Preview */}
             <div className="mt-2 text-xs text-gray-400">
+                {/* COMMENTED OUT FOR MAINTENANCE - UNCOMMENT WHEN ONLINE PAYMENTS ARE RESTORED
                 {selected === "ONLINE" && (
                     <p>
                         Powered by HDFC SmartGateway - Your payments are secure
                     </p>
                 )}
+                */}
+                <p>
+                    Currently only Cash on Delivery is available. Online
+                    payments will be restored soon.
+                </p>
             </div>
         </div>
     );

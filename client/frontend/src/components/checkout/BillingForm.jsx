@@ -72,7 +72,7 @@ const BillingForm = ({
             </div>
 
             {/* Same as shipping checkbox */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
                 <label className="flex items-center gap-3 cursor-pointer">
                     <input
                         type="checkbox"
@@ -222,14 +222,14 @@ const BillingForm = ({
 
             {/* Info message when different address is selected */}
             {!billingAddressSameAsShipping && (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
                     <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-yellow-600 text-sm" />
-                        <span className="text-sm font-medium text-yellow-800">
+                        <FaMapMarkerAlt className="text-sm" />
+                        <span className="text-sm font-medium text-gray-700">
                             Different Billing Address
                         </span>
                     </div>
-                    <p className="text-xs text-yellow-700 mt-1">
+                    <p className="text-xs mt-1 text-gray-500">
                         Please ensure all billing address fields are correctly
                         filled out
                     </p>
