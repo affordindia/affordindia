@@ -128,7 +128,11 @@ const Signup = ({ onAuthSuccess }) => {
       // Authentication completed successfully
     } catch (err) {
       console.error("OTP verification error:", err);
-      setError(err.message || "Invalid OTP");
+      if (err.code === "auth/invalid-verification-code") {
+        setError("You have entered a wrong OTP");
+      } else {
+        setError(err.message || "Invalid OTP");
+      }
     } finally {
       setLoading(false);
     }
