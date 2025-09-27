@@ -152,10 +152,25 @@ export const placeOrder = async (
         const shiprocketResp = await shiprocketOrderService.createOrder(shiprocketOrderData);
         console.log("[Shiprocket] Shiprocket API response:", shiprocketResp);
         // Update order with Shiprocket info
+        let awbCode = shiprocketResp.awb_code;
+        // If AWB code is missing, try to generate it immediately
+        if (!awbCode && shiprocketResp.shipment_id) {
+            try {
+                const awbResp = await shiprocketOrderService.generateAWB(shiprocketResp.shipment_id, shiprocketResp.courier_id);
+                if (awbResp && awbResp.awb_code) {
+                    awbCode = awbResp.awb_code;
+                    console.log(`[Shiprocket] AWB generated after order creation: ${awbCode}`);
+                } else {
+                    console.warn(`[Shiprocket] AWB not available after generation attempt.`);
+                }
+            } catch (awbErr) {
+                console.error(`[Shiprocket] Failed to generate AWB after order creation:`, awbErr.message);
+            }
+        }
         order.shiprocket = {
             orderId: shiprocketResp.order_id,
             shipmentId: shiprocketResp.shipment_id,
-            awbCode: shiprocketResp.awb_code,
+            awbCode: awbCode,
             courierId: shiprocketResp.courier_id,
             courierName: shiprocketResp.courier_name,
             pickupScheduled: !!shiprocketResp.pickup_scheduled,
