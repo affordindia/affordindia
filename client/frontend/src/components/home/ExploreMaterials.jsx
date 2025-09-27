@@ -32,7 +32,7 @@ const ExploreMaterials = () => {
                         key={category._id}
                         onClick={() => handleClick(category, index)}
                         className={`relative overflow-hidden rounded-lg shadow-md flex-shrink-0 
-              h-[120px] w-[125px] 
+              h-[120px] w-[100px] 
               md:h-[300px] md:w-[230px] 
               cursor-pointer transform transition-transform duration-200 ease-in-out 
               ${activeIndex === index ? "scale-90" : "hover:scale-105"}`}
