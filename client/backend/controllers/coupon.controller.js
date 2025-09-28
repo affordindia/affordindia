@@ -78,12 +78,13 @@ export const applyCouponToCart = async (req, res) => {
             });
         }
 
-        const cart = await applyCouponService(couponCode, userId);
+        const result = await applyCouponService(couponCode, userId);
 
         res.json({
             success: true,
             message: "Coupon applied to cart successfully",
-            cart,
+            cart: result.cart,
+            excludedItems: result.excludedItems, // Include excluded items for frontend
         });
     } catch (error) {
         console.error("Apply coupon error:", error);

@@ -12,6 +12,7 @@ const CouponSection = ({ cart, onCartUpdate }) => {
     const [availableCoupons, setAvailableCoupons] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingCoupons, setLoadingCoupons] = useState(false);
+    const [excludedItems, setExcludedItems] = useState([]); // Track excluded items from coupon application
 
     // Better check for applied coupon - ensure it has valid data
     const appliedCoupon =
@@ -35,6 +36,13 @@ const CouponSection = ({ cart, onCartUpdate }) => {
         return () =>
             window.removeEventListener("cartUpdated", handleCartUpdate);
     }, [showCoupons]);
+
+    // Clear excluded items when coupon is removed
+    useEffect(() => {
+        if (!appliedCoupon) {
+            setExcludedItems([]);
+        }
+    }, [appliedCoupon]);
 
     const loadCoupons = async () => {
         try {
@@ -62,8 +70,29 @@ const CouponSection = ({ cart, onCartUpdate }) => {
             const response = await applyCouponToCart(couponCode);
 
             if (response.success) {
+                // Store excluded items information for display
+                setExcludedItems(response.excludedItems || []);
+
                 toast.success(`Coupon ${couponCode} applied successfully!`);
                 setShowCoupons(false);
+
+                // Show exclusion message if any items were excluded
+                if (
+                    response.excludedItems &&
+                    response.excludedItems.length > 0
+                ) {
+                    const excludedCount = response.excludedItems.length;
+                    setTimeout(() => {
+                        toast.success(
+                            `Note: ${excludedCount} item${
+                                excludedCount > 1 ? "s are" : " is"
+                            } not eligible for this discount.`,
+                            {
+                                duration: 4000,
+                            }
+                        );
+                    }, 1000);
+                }
 
                 // Trigger cart refresh
                 if (onCartUpdate) {
@@ -89,6 +118,9 @@ const CouponSection = ({ cart, onCartUpdate }) => {
 
             if (response.success) {
                 toast.success("Coupon removed successfully!");
+
+                // Clear excluded items when coupon is removed
+                setExcludedItems([]);
 
                 // Trigger cart refresh
                 if (onCartUpdate) {
@@ -164,6 +196,37 @@ const CouponSection = ({ cart, onCartUpdate }) => {
                                 <FaTimes />
                             )}
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Excluded Items Display */}
+            {appliedCoupon && excludedItems && excludedItems.length > 0 && (
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="text-sm text-amber-800">
+                        <div className="font-medium mb-2 flex items-center gap-2">
+                            <span>⚠️ Items not eligible for discount:</span>
+                            <span className="text-xs bg-amber-200 px-2 py-1 rounded">
+                                {excludedItems.length} item
+                                {excludedItems.length > 1 ? "s" : ""}
+                            </span>
+                        </div>
+                        <div className="space-y-1">
+                            {excludedItems.map((item, index) => (
+                                <div
+                                    key={`${item.productId}-${index}`}
+                                    className="flex items-center justify-between text-xs bg-white p-2 rounded"
+                                >
+                                    <span className="font-medium">
+                                        • {appliedCoupon.code} not applicable on{" "}
+                                        {item.productName}
+                                    </span>
+                                    <span className="text-amber-600 font-semibold">
+                                        ₹{item.itemTotal}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}

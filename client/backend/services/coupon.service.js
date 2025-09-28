@@ -2,6 +2,15 @@ import Coupon from "../models/coupon.model.js";
 import CouponUsage from "../models/couponUsage.model.js";
 import Cart from "../models/cart.model.js";
 
+// List of product IDs that are excluded from coupon discounts
+// These products still count toward minimum order amounts but don't get discounted
+const COUPON_EXCLUDED_PRODUCTS = ["68c00518c7f966d7685a44c1"];
+
+// Function to check if a product is excluded from coupon discounts
+const isProductExcludedFromCoupons = (productId) => {
+    return COUPON_EXCLUDED_PRODUCTS.includes(productId.toString());
+};
+
 // Get user's cart with populated products (simpler version for coupon service)
 const getCartForCouponValidation = async (userId) => {
     return await Cart.findOne({ user: userId }).populate({
@@ -61,33 +70,50 @@ export const isCouponApplicableToProduct = (coupon, productId, categoryId) => {
 export const calculateCartTotals = (cart, coupon) => {
     let subtotal = 0;
     let applicableAmount = 0;
+    let excludedItems = []; // Track items excluded from coupon discount
 
     for (const item of cart.items) {
         const itemTotal = item.priceAtAdd * item.quantity;
         subtotal += itemTotal;
 
-        // Check if item is applicable for this coupon
-        const isApplicable = isCouponApplicableToProduct(
-            coupon,
-            item.product._id,
-            item.product.category
-        );
+        // Check if product is excluded from coupon discounts
+        const isExcluded = isProductExcludedFromCoupons(item.product._id);
 
-        if (isApplicable) {
-            applicableAmount += itemTotal;
+        if (isExcluded) {
+            // Add to excluded items list for frontend display
+            excludedItems.push({
+                productId: item.product._id,
+                productName: item.product.name,
+                quantity: item.quantity,
+                priceAtAdd: item.priceAtAdd,
+                itemTotal: itemTotal,
+            });
+        } else {
+            // Only check coupon applicability for non-excluded products
+            const isApplicable = isCouponApplicableToProduct(
+                coupon,
+                item.product._id,
+                item.product.category
+            );
+
+            if (isApplicable) {
+                applicableAmount += itemTotal;
+            }
         }
     }
 
     // For global coupons or coupons with no category restrictions, use full subtotal
     // For category-specific coupons, use only applicable amount
+    // Note: Excluded products still count toward minimum order amount but don't get discount
     const orderAmount =
         coupon.isGlobal ||
         !coupon.applicableCategories ||
         coupon.applicableCategories.length === 0
             ? subtotal
-            : applicableAmount;
+            : applicableAmount +
+              excludedItems.reduce((sum, item) => sum + item.itemTotal, 0);
 
-    return { subtotal, applicableAmount, orderAmount };
+    return { subtotal, applicableAmount, orderAmount, excludedItems };
 };
 
 // Validate coupon for a user
@@ -134,10 +160,8 @@ export const validateCouponForUser = async (couponCode, userId) => {
         }
 
         // Calculate totals
-        const { subtotal, orderAmount, applicableAmount } = calculateCartTotals(
-            cart,
-            coupon
-        );
+        const { subtotal, orderAmount, applicableAmount, excludedItems } =
+            calculateCartTotals(cart, coupon);
 
         // Check minimum order amount against the applicable amount for category-specific coupons
         const amountToCheck =
@@ -153,8 +177,16 @@ export const validateCouponForUser = async (couponCode, userId) => {
             );
         }
 
-        // Calculate discount on applicable amount only
-        const discountAmount = coupon.calculateDiscount(amountToCheck);
+        // Calculate discount amount - but exclude items that are not eligible for discounts
+        const discountableAmount =
+            coupon.isGlobal ||
+            !coupon.applicableCategories ||
+            coupon.applicableCategories.length === 0
+                ? subtotal -
+                  excludedItems.reduce((sum, item) => sum + item.itemTotal, 0) // For global coupons, discount on non-excluded items only
+                : applicableAmount; // For category coupons, discount on applicable items only (excluded items are already not included)
+
+        const discountAmount = coupon.calculateDiscount(discountableAmount);
         if (discountAmount === 0) {
             throw new Error(
                 "This coupon is not applicable to your current cart"
@@ -168,6 +200,7 @@ export const validateCouponForUser = async (couponCode, userId) => {
             applicableAmount,
             discountAmount: Math.round(discountAmount * 100) / 100,
             newTotal: Math.round((subtotal - discountAmount) * 100) / 100,
+            excludedItems, // Include excluded items information for frontend
         };
     } catch (error) {
         console.error("Error in validateCouponForUser:", error);
@@ -312,7 +345,11 @@ export const applyCouponToCart = async (couponCode, userId) => {
             select: "name price discountedPrice category images",
         });
 
-        return cart;
+        // Return cart with excluded items information
+        return {
+            cart,
+            excludedItems: validation.excludedItems || [],
+        };
     } catch (error) {
         console.error("Error in applyCouponToCart:", error);
         throw error;

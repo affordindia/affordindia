@@ -54,7 +54,7 @@ const Checkout = () => {
     });
     const [billingAddressSameAsShipping, setBillingAddressSameAsShipping] =
         useState(true);
-    const [paymentMethod, setPaymentMethod] = useState("ONLINE");
+    const [paymentMethod, setPaymentMethod] = useState("COD");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");

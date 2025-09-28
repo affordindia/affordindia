@@ -304,8 +304,8 @@ const Products = () => {
                     </div>
 
                     <div className="flex gap-8 items-start">
-                        {/* Sidebar Filters (Desktop Only) */}
-                        <aside className="hidden md:block w-48 flex-shrink-0 bg-[#F7F4EF] p-4 rounded-md">
+                        {/* Sidebar Filters (Desktop Only) - Sticky */}
+                        <aside className="hidden md:block w-48 flex-shrink-0 bg-[#F7F4EF] p-4 rounded-md sticky top-24 self-start max-h-[calc(100vh-2rem)] overflow-y-auto">
                             <ProductFilters
                                 categoryOptions={categories}
                                 selectedCategories={selectedCategories}
