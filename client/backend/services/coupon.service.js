@@ -177,8 +177,16 @@ export const validateCouponForUser = async (couponCode, userId) => {
             );
         }
 
-        // Calculate discount on applicable amount only
-        const discountAmount = coupon.calculateDiscount(amountToCheck);
+        // Calculate discount amount - but exclude items that are not eligible for discounts
+        const discountableAmount =
+            coupon.isGlobal ||
+            !coupon.applicableCategories ||
+            coupon.applicableCategories.length === 0
+                ? subtotal -
+                  excludedItems.reduce((sum, item) => sum + item.itemTotal, 0) // For global coupons, discount on non-excluded items only
+                : applicableAmount; // For category coupons, discount on applicable items only (excluded items are already not included)
+
+        const discountAmount = coupon.calculateDiscount(discountableAmount);
         if (discountAmount === 0) {
             throw new Error(
                 "This coupon is not applicable to your current cart"
