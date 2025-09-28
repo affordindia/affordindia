@@ -1,5 +1,8 @@
 import React from "react";
-import craft from "../../assets/crafts.webp"; // Assuming you have a craft image in your assets folder
+import craft from "../../assets/crafts.webp";
+import brass from "../../assets/brass-aboutus.png";
+import silver from "../../assets/silver-aboutus.png"; 
+import aluminium from "../../assets/aluminium-aboutus.png";
 
 const AboutUs = () => {
   return (
@@ -44,10 +47,10 @@ const AboutUs = () => {
         </div>
       </section>
 
-     {/* Core Values */}
+    {/* Core Values */}
 <section className="bg-[#f1f0ed] py-12 px-6 md:px-20 text-center">
   <h2 className="text-2xl font-semibold mb-12">Our Core Values</h2>
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
     {[
       {
         icon: "❤️",
@@ -80,6 +83,7 @@ const AboutUs = () => {
     ))}
   </div>
 </section>
+
 
 
       {/* Brand Personality */}
@@ -120,19 +124,19 @@ const AboutUs = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                title: "Silver Jewelry",
-                desc: "Elegant designs in silver, crafted with care and detail.",
-                img: craft,
+                title: "Brass Jewelry",
+                desc: "Elegant designs in brass, crafted with care and detail.",
+                img: brass,
               },
               {
-                title: "Brass Artifacts",
-                desc: "Timeless brass pieces that bring home a touch of art and soul.",
-                img: craft,
+                title: "Silver Artifacts",
+                desc: "Timeless silver pieces that bring home a touch of art and soul.",
+                img: silver,
               },
               {
-                title: "Wooden Home Décor",
+                title: "Aluminium Decor",
                 desc: "Intricately hand-carved décor pieces that breathe tradition.",
-                img: craft,
+                img: aluminium,
               },
             ].map((item, idx) => (
               <div key={idx} className="bg-[#f9f7f5] p-4 rounded shadow-md">
