@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { FaTimes } from "react-icons/fa";
 import ProductFilters from "./ProductFilters";
 
 const MobileProductControls = ({
@@ -14,9 +15,33 @@ const MobileProductControls = ({
 }) => {
     const [showFilterPanel, setShowFilterPanel] = useState(false);
     const [showSortSheet, setShowSortSheet] = useState(false);
+    const [navbarHeight, setNavbarHeight] = useState(56); // Default fallback
 
-    const openFilterPanel = () => {
-        setShowFilterPanel(true);
+    // Calculate actual navbar height dynamically
+    useEffect(() => {
+        const updateNavbarHeight = () => {
+            const navbar = document.querySelector('nav[class*="sticky"]');
+            if (navbar) {
+                const rect = navbar.getBoundingClientRect();
+                setNavbarHeight(rect.bottom); // This gives us the bottom position from viewport top
+            }
+        };
+
+        // Update on mount
+        updateNavbarHeight();
+
+        // Update on resize or scroll (in case promo strip disappears)
+        window.addEventListener("resize", updateNavbarHeight);
+        window.addEventListener("scroll", updateNavbarHeight);
+
+        return () => {
+            window.removeEventListener("resize", updateNavbarHeight);
+            window.removeEventListener("scroll", updateNavbarHeight);
+        };
+    }, []);
+
+    const toggleFilterPanel = () => {
+        setShowFilterPanel((prev) => !prev);
         setShowSortSheet(false);
     };
 
@@ -43,7 +68,7 @@ const MobileProductControls = ({
             >
                 <button
                     className="flex-1 py-3 border-t border-r border-gray-300 text-base font-medium"
-                    onClick={openFilterPanel}
+                    onClick={toggleFilterPanel}
                 >
                     Filters
                 </button>
@@ -60,47 +85,53 @@ const MobileProductControls = ({
 
             {/* Filter Panel */}
             <div
-                className={`fixed left-0 right-0 z-40 flex md:hidden ${
-                    showFilterPanel ? "" : "pointer-events-none"
+                className={`fixed left-0 right-0 bottom-0 z-40 flex md:hidden transition-opacity duration-300 ease-in-out ${
+                    showFilterPanel ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
                 style={{
-                    top: "56px",
-                    height: "calc(100vh - 56px - 56px)",
-                    visibility: showFilterPanel ? "visible" : "hidden",
+                    top: `${navbarHeight}px`,
                 }}
             >
                 <div
-                    className={`absolute inset-0 bg-white/10 backdrop-blur-sm transition-opacity duration-300 ${
+                    className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
                         showFilterPanel ? "opacity-100" : "opacity-0"
                     }`}
                     onClick={closeFilterPanel}
                 ></div>
                 <div className="relative w-full h-full flex">
                     <div
-                        className={`w-full h-full bg-white overflow-y-auto p-6 transform transition-transform duration-300 ease-out ${
+                        className={`w-full h-full bg-white overflow-y-auto transform transition-transform duration-300 ease-in-out ${
                             showFilterPanel
                                 ? "translate-x-0"
                                 : "-translate-x-full"
                         } pointer-events-auto`}
+                        style={{
+                            paddingBottom: "72px", // Add padding for bottom buttons (56px + some extra)
+                        }}
                     >
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold">Filters</h2>
-                            <button
-                                onClick={closeFilterPanel}
-                                className="text-2xl"
-                            >
-                                ×
-                            </button>
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-lg font-semibold">
+                                    Filters
+                                </h2>
+                                <button
+                                    onClick={closeFilterPanel}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    aria-label="Close filters"
+                                >
+                                    <FaTimes className="text-gray-600 text-lg" />
+                                </button>
+                            </div>
+                            <ProductFilters
+                                priceRanges={priceRanges}
+                                selectedPriceRanges={selectedPriceRanges}
+                                categoryOptions={categoryOptions}
+                                selectedCategories={selectedCategories}
+                                selectedSubcategories={selectedSubcategories}
+                                onApplyFilters={handleMobileApplyFilters}
+                                layout="vertical"
+                            />
                         </div>
-                        <ProductFilters
-                            priceRanges={priceRanges}
-                            selectedPriceRanges={selectedPriceRanges}
-                            categoryOptions={categoryOptions}
-                            selectedCategories={selectedCategories}
-                            selectedSubcategories={selectedSubcategories}
-                            onApplyFilters={handleMobileApplyFilters}
-                            layout="vertical"
-                        />
                     </div>
                 </div>
             </div>
@@ -129,9 +160,10 @@ const MobileProductControls = ({
                             <h2 className="text-lg font-semibold">Sort By</h2>
                             <button
                                 onClick={() => setShowSortSheet(false)}
-                                className="text-2xl"
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                aria-label="Close sort options"
                             >
-                                ×
+                                <FaTimes className="text-gray-600 text-lg" />
                             </button>
                         </div>
                         <form className="flex flex-col gap-3">
