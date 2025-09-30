@@ -4,7 +4,16 @@ import Cart from "../models/cart.model.js";
 
 // List of product IDs that are excluded from coupon discounts
 // These products still count toward minimum order amounts but don't get discounted
-const COUPON_EXCLUDED_PRODUCTS = ["68c00518c7f966d7685a44c1"];
+const COUPON_EXCLUDED_PRODUCTS = [
+    "68dc002584dfe8f456e1e408",
+    "68dbffd884dfe8f456e1e3f7",
+    "68dbfdbd84dfe8f456e1e3b3",
+    "68dbf92a84dfe8f456e1e390",
+    "68dbf7ec84dfe8f456e1e343",
+    "68d77c53029d8bb71e32ce8e",
+    "68d77bc5029d8bb71e32ce7c",
+    "68cab14355139789dbf64b82",
+];
 
 // Function to check if a product is excluded from coupon discounts
 const isProductExcludedFromCoupons = (productId) => {
