@@ -13,6 +13,7 @@ const COUPON_EXCLUDED_PRODUCTS = [
     "68d77c53029d8bb71e32ce8e",
     "68d77bc5029d8bb71e32ce7c",
     "68cab14355139789dbf64b82",
+    "68dbfa9484dfe8f456e1e3a1",
 ];
 
 // Function to check if a product is excluded from coupon discounts
