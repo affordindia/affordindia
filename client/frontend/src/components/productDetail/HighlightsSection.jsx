@@ -14,7 +14,7 @@ const HighlightsSection = () => {
                     <div className="text-base font-semibold">
                         Authentic 999 Silver
                     </div>
-                    <div className="text-sm">Certified Purity</div>
+                    <div className="text-sm">Crafted with Purity</div>
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center p-3 bg-white/70 rounded-lg shadow-sm">
