@@ -120,6 +120,15 @@ const Footer = () => {
                                 Privacy Policy
                             </Link>
                         </li>
+                        <li>
+                            <Link
+                                to="/terms-and-conditions"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                Terms & Conditions
+                            </Link>
+                        </li>
                     </ul>
                 </div>
 
