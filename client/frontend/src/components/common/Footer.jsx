@@ -41,6 +41,28 @@ const Footer = () => {
                     </ul>
                 </div>
 
+                 {/* SHOP PRODUCTS */}
+                <div>
+                    <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
+                    <ul className="space-y-1">
+                        {categories && categories.length > 0 ? (
+                            categories.map((cat) => (
+                                <li key={cat._id || cat.name}>
+                                    <Link
+                                        to={`/products?categories=${cat._id}`}
+                                        onClick={scrollToTop}
+                                        className="hover:underline capitalize"
+                                    >
+                                        {cat.name}
+                                    </Link>
+                                </li>
+                            ))
+                        ) : (
+                            <li>No products available</li>
+                        )}
+                    </ul>
+                </div>
+
                 {/* INFO */}
                 <div>
                     <h4 className="font-semibold mb-3">INFO</h4>
@@ -132,27 +154,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* SHOP PRODUCTS */}
-                <div>
-                    <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
-                    <ul className="space-y-1">
-                        {categories && categories.length > 0 ? (
-                            categories.map((cat) => (
-                                <li key={cat._id || cat.name}>
-                                    <Link
-                                        to={`/products?categories=${cat._id}`}
-                                        onClick={scrollToTop}
-                                        className="hover:underline capitalize"
-                                    >
-                                        {cat.name}
-                                    </Link>
-                                </li>
-                            ))
-                        ) : (
-                            <li>No products available</li>
-                        )}
-                    </ul>
-                </div>
+               
 
                 {/* FOLLOW US + Logo */}
                 <div className="flex flex-col items-start">
