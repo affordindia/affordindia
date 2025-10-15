@@ -25,6 +25,7 @@
         "nodemailer": "^7.0.6",
         "nodemon": "^3.1.10",
         "puppeteer": "^24.20.0",
+        "razorpay": "^2.9.6",
         "to-words": "^4.7.0"
     }
 }
