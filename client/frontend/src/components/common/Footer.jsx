@@ -16,53 +16,8 @@ const Footer = () => {
     return (
         <footer className="bg-[#ecece8] text-sm text-gray-800 py-10 px-4 mt-12">
             <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                {/* QUICK LINKS */}
-                <div>
-                    <h4 className="font-semibold mb-3">QUICK LINKS</h4>
-                    <ul className="space-y-1">
-                        <li>
-                            <Link
-                                to="/about"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                About Us
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/contact"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                Contact Us
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
 
-                 {/* SHOP PRODUCTS */}
-                <div>
-                    <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
-                    <ul className="space-y-1">
-                        {categories && categories.length > 0 ? (
-                            categories.map((cat) => (
-                                <li key={cat._id || cat.name}>
-                                    <Link
-                                        to={`/products?categories=${cat._id}`}
-                                        onClick={scrollToTop}
-                                        className="hover:underline capitalize"
-                                    >
-                                        {cat.name}
-                                    </Link>
-                                </li>
-                            ))
-                        ) : (
-                            <li>No products available</li>
-                        )}
-                    </ul>
-                </div>
-
+                
                 {/* INFO */}
                 <div>
                     <h4 className="font-semibold mb-3">INFO</h4>
@@ -153,6 +108,53 @@ const Footer = () => {
                         </li>
                     </ul>
                 </div>
+                {/* QUICK LINKS */}
+                <div>
+                    <h4 className="font-semibold mb-3">QUICK LINKS</h4>
+                    <ul className="space-y-1">
+                        <li>
+                            <Link
+                                to="/about"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                About Us
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/contact"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                Contact Us
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+
+                 {/* SHOP PRODUCTS */}
+                <div>
+                    <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
+                    <ul className="space-y-1">
+                        {categories && categories.length > 0 ? (
+                            categories.map((cat) => (
+                                <li key={cat._id || cat.name}>
+                                    <Link
+                                        to={`/products?categories=${cat._id}`}
+                                        onClick={scrollToTop}
+                                        className="hover:underline capitalize"
+                                    >
+                                        {cat.name}
+                                    </Link>
+                                </li>
+                            ))
+                        ) : (
+                            <li>No products available</li>
+                        )}
+                    </ul>
+                </div>
+
 
                
 
