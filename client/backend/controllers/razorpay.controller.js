@@ -105,15 +105,6 @@ export const createOrder = async (req, res, next) => {
         order.lastPaymentAttempt = new Date();
         order.canRetryPayment = true;
 
-        // Reserve stock if not already reserved
-        if (!order.stockReserved) {
-            order.stockReserved = true;
-            order.stockReservedAt = new Date();
-            order.stockReservationExpiry = new Date(
-                Date.now() + 20 * 60 * 1000
-            ); // 20 minutes buffer
-        }
-
         await order.save();
 
         console.log(
@@ -445,13 +436,6 @@ export const retryPayment = async (req, res, next) => {
         order.paymentAttempts = (order.paymentAttempts || 0) + 1;
         order.lastPaymentAttempt = new Date();
         order.paymentTimeoutAt = new Date(Date.now() + 15 * 60 * 1000);
-
-        // Extend stock reservation
-        if (order.stockReserved) {
-            order.stockReservationExpiry = new Date(
-                Date.now() + 20 * 60 * 1000
-            );
-        }
 
         await order.save();
 

@@ -60,10 +60,6 @@ export default {
         enableEMI: false, // Can be enabled later
     },
 
-    // Stock Management Integration
-    stockReservationTimeout: 15, // minutes
-    stockReservationBuffer: 2, // extra minutes for payment processing
-
     // Retry and Timeout Settings
     webhookRetryCount: 5,
     webhookRetryDelay: 30000, // 30 seconds

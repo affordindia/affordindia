@@ -4,13 +4,10 @@ import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
-
-// =================== PAYMENT PROVIDER IMPORTS ===================
-// Migration: Replaced HDFC with Razorpay as primary payment provider
-// Date: October 15, 2025
 import { createRazorpayOrder } from "./razorpay.service.js";
 
-// HDFC LEGACY IMPORT - PRESERVED FOR ROLLBACK
+// HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
+// PRESERVED FOR FUTURE ROLLBACK IF NEEDED
 // import { createPaymentSession } from "./paymentGateway.service.js";
 
 export const placeOrder = async (
@@ -137,8 +134,9 @@ export const placeOrder = async (
         paymentProvider, // New field for payment provider tracking
 
         // =================== LEGACY HDFC FIELD PRESERVATION ===================
+        // COMMENTED OUT - NO ONLINE ORDERS YET, PRESERVED FOR FUTURE ROLLBACK
         // Keep paymentGateway for backward compatibility with existing orders
-        paymentGateway: paymentMethod === "COD" ? "COD" : "HDFC", // Preserved for rollback
+        // paymentGateway: paymentMethod === "COD" ? "COD" : "HDFC", // Preserved for rollback
 
         status: "pending",
         subtotal,
@@ -175,8 +173,6 @@ export const placeOrder = async (
                 paymentTimeoutAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes timeout
             });
 
-            // Reserve stock for 15 minutes during payment
-            await order.reserveStock(15);
             await order.save();
 
             razorpayOrderData = razorpayResponse;
@@ -273,7 +269,8 @@ export const placeOrder = async (
             orderResponse.paymentTimeout = order.paymentTimeoutAt;
         }
 
-        // LEGACY HDFC SUPPORT - PRESERVED FOR ROLLBACK
+        // =================== HDFC LEGACY RESPONSE SUPPORT ===================
+        // COMMENTED OUT - NO ONLINE ORDERS YET, PRESERVED FOR FUTURE ROLLBACK
         /*
         if (paymentUrl) {
             orderResponse.paymentUrl = paymentUrl;
@@ -363,67 +360,7 @@ export const returnOrder = async (userId, orderId) => {
     return order;
 };
 
-// =================== RAZORPAY PAYMENT FUNCTIONS (NEW) ===================
-
-/**
- * Update order after successful Razorpay payment verification
- */
-export const updateOrderAfterPayment = async (orderId, paymentData) => {
-    const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found");
-
-    // Update order with payment details
-    order.paymentStatus = "paid";
-    order.status = "processing";
-    order.razorpayPaymentId = paymentData.razorpay_payment_id;
-    order.razorpaySignature = paymentData.razorpay_signature;
-    order.razorpayPaymentData = paymentData.paymentDetails;
-    order.paymentVerifiedAt = new Date();
-
-    // Release stock reservation (payment successful, order confirmed)
-    order.releaseStock();
-
-    await order.save();
-
-    console.log("✅ Order payment verified and updated:", orderId);
-    return order;
-};
-
-/**
- * Handle failed payment and stock management
- */
-export const handleFailedPayment = async (orderId, reason) => {
-    const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found");
-
-    // Update payment status
-    order.paymentStatus = "failed";
-    order.paymentFailureReason = reason;
-
-    // Check if retries are available
-    if (order.canRetryPayment()) {
-        // Keep order in pending state for retry
-        order.status = "pending";
-        console.log(
-            `💔 Payment failed for order ${orderId}, retries available`
-        );
-    } else {
-        // No more retries, cancel order and restock
-        order.status = "cancelled";
-        order.cancelledAt = new Date();
-
-        // Release stock reservation and restock items
-        order.releaseStock();
-        await restockOrderItems(order);
-
-        console.log(
-            `💔 Payment failed for order ${orderId}, order cancelled and restocked`
-        );
-    }
-
-    await order.save();
-    return order;
-};
+// =================== STOCK MANAGEMENT (ESSENTIAL ONLY) ===================
 
 /**
  * Restock items when order is cancelled or payment fails
@@ -441,87 +378,6 @@ export const restockOrderItems = async (order) => {
             `❌ Failed to restock items for order ${order._id}:`,
             error
         );
-        throw error;
-    }
-};
-
-/**
- * Clean up expired stock reservations
- */
-export const cleanupExpiredReservations = async () => {
-    try {
-        const expiredOrders = await Order.findExpiredReservations();
-
-        for (const order of expiredOrders) {
-            console.log(
-                `🧹 Cleaning up expired reservation for order: ${order._id}`
-            );
-
-            // Release reservation and restock if payment not completed
-            if (order.paymentStatus !== "paid") {
-                order.releaseStock();
-                await restockOrderItems(order);
-
-                // Cancel order if no payment received
-                order.status = "cancelled";
-                order.cancelledAt = new Date();
-                order.paymentFailureReason =
-                    "Payment timeout - stock reservation expired";
-            }
-
-            await order.save();
-        }
-
-        console.log(
-            `🧹 Cleaned up ${expiredOrders.length} expired reservations`
-        );
-        return expiredOrders.length;
-    } catch (error) {
-        console.error("❌ Failed to cleanup expired reservations:", error);
-        throw error;
-    }
-};
-
-/**
- * Retry payment for an order (Razorpay specific)
- */
-export const retryOrderPayment = async (orderId) => {
-    const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found");
-
-    if (!order.canRetryPayment()) {
-        throw new Error("Order cannot be retried");
-    }
-
-    try {
-        // Create new Razorpay order for retry
-        const razorpayResponse = await createRazorpayOrder(order);
-
-        // Update order with new payment attempt
-        order.razorpayOrderId = razorpayResponse.id;
-        order.razorpayOrderData = razorpayResponse;
-        order.paymentTimeoutAt = new Date(Date.now() + 15 * 60 * 1000);
-        order.paymentStatus = "pending";
-
-        // Increment attempt counter and reserve stock again
-        await order.incrementPaymentAttempt();
-        order.reserveStock(15);
-
-        await order.save();
-
-        console.log(`🔄 Payment retry initiated for order: ${orderId}`);
-
-        return {
-            orderId: order._id,
-            razorpayOrderId: razorpayResponse.id,
-            razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-            amount: razorpayResponse.amount,
-            currency: razorpayResponse.currency,
-            attempt: order.paymentAttempts,
-            timeoutAt: order.paymentTimeoutAt,
-        };
-    } catch (error) {
-        console.error(`❌ Payment retry failed for order ${orderId}:`, error);
         throw error;
     }
 };

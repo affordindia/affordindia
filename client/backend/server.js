@@ -5,7 +5,6 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import { verifyEmailConfig } from "./services/email.service.js";
-import { initializeScheduler } from "./services/scheduler.service.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
@@ -17,9 +16,8 @@ import categoryRoutes from "./routes/category.routes.js";
 import bannerRoutes from "./routes/banner.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import shippingRoutes from "./routes/shipping.routes.js";
-import paymentRoutes from "./routes/payment.routes.js";
+// import paymentRoutes from "./routes/payment.routes.js";
 import razorpayRoutes from "./routes/razorpay.routes.js";
-import stockRoutes from "./routes/stock.routes.js";
 import invoiceRoutes from "./routes/invoice.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 
@@ -74,9 +72,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/shipping", shippingRoutes);
-app.use("/api/payments", paymentRoutes);
+// app.use("/api/payments", paymentRoutes);
 app.use("/api/razorpay", razorpayRoutes);
-app.use("/api/stock", stockRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/contact", contactRoutes);
 
@@ -86,11 +83,4 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
     console.log(`Client Server running on port ${PORT}`);
-
-    // Initialize background job scheduler
-    if (process.env.NODE_ENV !== "test") {
-        setTimeout(() => {
-            initializeScheduler();
-        }, 10000); // Wait 10 seconds after server start
-    }
 });

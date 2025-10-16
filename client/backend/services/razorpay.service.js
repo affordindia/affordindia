@@ -388,9 +388,6 @@ async function handlePaymentFailed(payment) {
         // Release reserved stock if max attempts reached
         if (!order.canRetryPayment) {
             await releaseReservedStock(order._id);
-        } else {
-            // Extend stock reservation for retry
-            await extendStockReservation(order._id);
         }
 
         console.log("❌ Payment failure processed for order:", order.orderId);
@@ -511,66 +508,33 @@ async function confirmStockDeduction(orderId) {
         if (!order) return;
 
         console.log("📦 Confirming stock deduction for order:", order.orderId);
-
-        // Stock should already be reserved, just update the reservation status
-        order.stockReserved = false; // Stock now permanently deducted
-        await order.save();
-
-        console.log("✅ Stock deduction confirmed for order:", order.orderId);
+        // Stock is managed directly in payment success/failure logic
+        console.log("✅ Stock confirmed for order:", order.orderId);
     } catch (error) {
         console.error("❌ Failed to confirm stock deduction:", error);
     }
 }
 
 /**
- * Release reserved stock for failed/cancelled payments
+ * Restock items for failed/cancelled payments
  */
 async function releaseReservedStock(orderId) {
     try {
         const order = await Order.findById(orderId).populate("items.product");
-        if (!order || !order.stockReserved) return;
+        if (!order) return;
 
-        console.log("📦 Releasing reserved stock for order:", order.orderId);
+        console.log("📦 Restocking items for order:", order.orderId);
 
-        // Restore stock levels
+        // Restore stock levels (simple restock)
         for (const item of order.items) {
             await Product.findByIdAndUpdate(item.product._id, {
                 $inc: { stock: item.quantity },
             });
         }
 
-        // Update order status
-        order.stockReserved = false;
-        order.stockReservationExpiry = null;
-        await order.save();
-
-        console.log("✅ Reserved stock released for order:", order.orderId);
+        console.log("✅ Items restocked for order:", order.orderId);
     } catch (error) {
         console.error("❌ Failed to release reserved stock:", error);
-    }
-}
-
-/**
- * Extend stock reservation for payment retry
- */
-async function extendStockReservation(orderId) {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) return;
-
-        console.log("⏰ Extending stock reservation for order:", order.orderId);
-
-        // Extend reservation by another timeout period
-        order.stockReservationExpiry = new Date(
-            Date.now() +
-                razorpayConfig.orderTimeout +
-                razorpayConfig.stockReservationBuffer * 60 * 1000
-        );
-        await order.save();
-
-        console.log("✅ Stock reservation extended for order:", order.orderId);
-    } catch (error) {
-        console.error("❌ Failed to extend stock reservation:", error);
     }
 }
 

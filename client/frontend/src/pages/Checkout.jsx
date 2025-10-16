@@ -13,8 +13,8 @@ import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 
 // =================== PAYMENT PROVIDER MIGRATION ===================
-// Import Razorpay hook for new payment integration
-import useRazorpay from "../hooks/useRazorpay.js";
+// Import Razorpay API functions for payment integration
+import { verifyRazorpayPayment } from "../api/razorpay.js";
 import { toast } from "react-hot-toast";
 
 const Checkout = () => {
@@ -24,15 +24,6 @@ const Checkout = () => {
     const [userName, setUserName] = useState(user?.name || "");
     const [userNameError, setUserNameError] = useState("");
     const navigate = useNavigate();
-
-    // =================== RAZORPAY INTEGRATION ===================
-    // Initialize Razorpay payment hook
-    const {
-        initiatePayment,
-        loading: razorpayLoading,
-        error: razorpayError,
-        clearError,
-    } = useRazorpay();
 
     // Utility function to check if address already exists
     const isAddressAlreadySaved = (address, savedAddresses) => {
@@ -306,7 +297,7 @@ const Checkout = () => {
 
             // Handle different payment methods
             if (paymentMethod === "ONLINE") {
-                // =================== RAZORPAY PAYMENT FLOW (NEW) ===================
+                // =================== RAZORPAY PAYMENT FLOW (SIMPLIFIED) ===================
                 console.log(
                     "🔄 Initiating Razorpay payment for order:",
                     order._id
@@ -320,156 +311,122 @@ const Checkout = () => {
                     // Store order ID for status tracking
                     localStorage.setItem("pendingOrderId", order._id);
 
-                    // Prepare user details for Razorpay
-                    const userDetails = {
-                        name: userName || user?.name || receiverName,
-                        email: user?.email || "",
-                        phone: receiverPhone || user?.phone || "",
-                    };
+                    // Load Razorpay script if not already loaded
+                    if (!window.Razorpay) {
+                        const script = document.createElement("script");
+                        script.src =
+                            "https://checkout.razorpay.com/v1/checkout.js";
+                        document.body.appendChild(script);
+                        await new Promise(
+                            (resolve) => (script.onload = resolve)
+                        );
+                    }
 
-                    // Prepare payment data for Razorpay
-                    const paymentData = {
-                        orderId: order._id,
-                        razorpayOrderId: order.razorpayOrderId,
-                        razorpayKeyId: order.razorpayKeyId,
+                    // Razorpay options
+                    const options = {
+                        key: order.razorpayKeyId,
                         amount: order.amount,
                         currency: order.currency || "INR",
-                    };
-
-                    // Define payment success handler
-                    const handlePaymentSuccess = async (razorpayResponse) => {
-                        try {
-                            console.log(
-                                "✅ Payment successful, verifying...",
-                                razorpayResponse
-                            );
-
-                            // Verify payment with backend
-                            const verifyResponse = await fetch(
-                                "/api/razorpay/verify-payment",
-                                {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                        Authorization: `Bearer ${localStorage.getItem(
-                                            "token"
-                                        )}`,
-                                    },
-                                    body: JSON.stringify(razorpayResponse),
-                                }
-                            );
-
-                            if (!verifyResponse.ok) {
-                                const errorData = await verifyResponse.json();
-                                throw new Error(
-                                    errorData.message ||
-                                        "Payment verification failed"
+                        name: "AffordIndia",
+                        description: `Order Payment - ${order.orderId}`,
+                        image: "/favicon.png",
+                        order_id: order.razorpayOrderId,
+                        prefill: {
+                            name: userName || user?.name || receiverName,
+                            email: user?.email || "",
+                            contact: receiverPhone || user?.phone || "",
+                        },
+                        theme: {
+                            color: "#B76E79",
+                        },
+                        handler: async (response) => {
+                            try {
+                                console.log(
+                                    "✅ Payment successful, verifying...",
+                                    response
                                 );
+
+                                // Verify payment with backend
+                                const verifyData = await verifyRazorpayPayment({
+                                    razorpay_order_id:
+                                        response.razorpay_order_id,
+                                    razorpay_payment_id:
+                                        response.razorpay_payment_id,
+                                    razorpay_signature:
+                                        response.razorpay_signature,
+                                    orderId: order._id,
+                                });
+
+                                console.log(
+                                    "✅ Payment verified successfully:",
+                                    verifyData
+                                );
+
+                                // Clear pending order from localStorage
+                                localStorage.removeItem("pendingOrderId");
+
+                                // Show success message
+                                toast.success(
+                                    "Payment successful! Order confirmed."
+                                );
+
+                                // Navigate to payment status page
+                                navigate(`/payment/status/${order._id}`, {
+                                    replace: true,
+                                    state: { paymentSuccess: true },
+                                });
+                            } catch (error) {
+                                console.error(
+                                    "❌ Payment verification failed:",
+                                    error
+                                );
+                                toast.error(
+                                    "Payment verification failed. Please contact support."
+                                );
+
+                                // Navigate to payment status with error
+                                navigate(`/payment/status/${order._id}`, {
+                                    replace: true,
+                                    state: {
+                                        paymentError: true,
+                                        errorMessage: error.message,
+                                    },
+                                });
                             }
+                        },
+                        modal: {
+                            ondismiss: () => {
+                                console.log(
+                                    "🚫 Payment modal dismissed by user"
+                                );
+                                // Clear pending order from localStorage
+                                localStorage.removeItem("pendingOrderId");
+                                toast.error(
+                                    "Payment was cancelled. You can retry payment from your orders."
+                                );
 
-                            const verifyData = await verifyResponse.json();
-                            console.log(
-                                "✅ Payment verified successfully:",
-                                verifyData
-                            );
-
-                            // Clear pending order from localStorage
-                            localStorage.removeItem("pendingOrderId");
-
-                            // Show success message
-                            toast.success(
-                                "Payment successful! Order confirmed."
-                            );
-
-                            // Navigate to payment status page
-                            navigate(`/payment/status/${order._id}`, {
-                                replace: true,
-                                state: { paymentSuccess: true },
-                            });
-                        } catch (error) {
-                            console.error(
-                                "❌ Payment verification failed:",
-                                error
-                            );
-                            toast.error(
-                                "Payment verification failed. Please contact support."
-                            );
-
-                            // Navigate to payment status with error
-                            navigate(`/payment/status/${order._id}`, {
-                                replace: true,
-                                state: {
-                                    paymentError: true,
-                                    errorMessage: error.message,
-                                },
-                            });
-                        }
-                    };
-
-                    // Define payment failure handler
-                    const handlePaymentFailure = (errorData) => {
-                        console.error("❌ Payment failed:", errorData);
-
-                        // Clear pending order from localStorage
-                        localStorage.removeItem("pendingOrderId");
-
-                        // Show appropriate error message
-                        if (errorData.error === "PAYMENT_CANCELLED") {
-                            toast.error(
-                                "Payment was cancelled. You can retry payment from your orders."
-                            );
-                        } else {
-                            toast.error(
-                                errorData.message ||
-                                    "Payment failed. Please try again."
-                            );
-                        }
-
-                        // Navigate to payment status with error
-                        navigate(`/payment/status/${order._id}`, {
-                            replace: true,
-                            state: {
-                                paymentError: true,
-                                errorMessage: errorData.message,
-                                canRetry:
-                                    errorData.error !== "PAYMENT_CANCELLED",
+                                // Navigate to payment status with cancellation
+                                navigate(`/payment/status/${order._id}`, {
+                                    replace: true,
+                                    state: {
+                                        paymentError: true,
+                                        errorMessage:
+                                            "Payment was cancelled by user",
+                                        canRetry: true,
+                                    },
+                                });
                             },
-                        });
+                        },
                     };
 
-                    // Initiate Razorpay payment
-                    await initiatePayment(
-                        paymentData,
-                        userDetails,
-                        handlePaymentSuccess,
-                        handlePaymentFailure
-                    );
+                    // Create and open Razorpay checkout
+                    const rzp = new window.Razorpay(options);
+                    rzp.open();
 
                     return; // Stop execution here as payment is being processed
                 } else {
                     throw new Error("Payment data not received from server");
                 }
-
-                // =================== HDFC LEGACY CODE - PRESERVED FOR ROLLBACK ===================
-                /*
-                // For online payment, check if we got a payment URL
-                const paymentUrl = order.paymentUrl || response.paymentUrl;
-                if (paymentUrl) {
-                    console.log("🔄 Redirecting to payment gateway:", paymentUrl);
-
-                    // Clear cart before redirecting to payment
-                    await clearCart();
-
-                    // Store order ID in localStorage for return handling
-                    localStorage.setItem("pendingOrderId", order._id);
-
-                    // Redirect to HDFC payment gateway
-                    window.location.href = paymentUrl;
-                    return; // Stop execution here as we're redirecting
-                } else {
-                    throw new Error("Payment URL not received from server");
-                }
-                */
             } else {
                 // For COD, proceed normally
                 console.log("✅ COD order placed successfully");
@@ -710,7 +667,7 @@ const Checkout = () => {
                             total={total}
                             paymentMethod={paymentMethod}
                             onPlaceOrder={handlePlaceOrder}
-                            loading={loading || razorpayLoading}
+                            loading={loading}
                             disabled={
                                 !shippingAddress.city ||
                                 !shippingAddress.pincode ||
