@@ -330,8 +330,9 @@ async function handlePaymentCaptured(payment) {
             return;
         }
 
-        // Update order with payment success
+        // Update order with payment success AND ORDER STATUS
         order.paymentStatus = "paid";
+        order.status = "processing";
         order.razorpayPaymentId = payment.id;
         order.paymentVerifiedAt = new Date();
         order.paymentInfo = {
@@ -342,11 +343,11 @@ async function handlePaymentCaptured(payment) {
 
         await order.save();
 
-        // Confirm stock deduction (stock should already be reserved)
-        await confirmStockDeduction(order._id);
+        // Deduct stock only on successful payment
+        await deductStockForPayment(order);
 
         console.log(
-            "✅ Payment captured successfully processed for order:",
+            "✅ Payment captured and stock deducted for order:",
             order.orderId
         );
     } catch (error) {
@@ -371,10 +372,9 @@ async function handlePaymentFailed(payment) {
 
         // Update order with payment failure
         order.paymentStatus = "failed";
+        order.status = "pending"; // Keep pending for retry
         order.paymentAttempts = (order.paymentAttempts || 0) + 1;
-        order.lastPaymentAttempt = new Date();
-        order.canRetryPayment =
-            order.paymentAttempts < razorpayConfig.maxRetryAttempts;
+        order.lastPaymentAttemptAt = new Date();
         order.paymentFailureReason =
             payment.error_description || "Payment failed";
         order.paymentInfo = {
@@ -383,12 +383,16 @@ async function handlePaymentFailed(payment) {
             failedAt: new Date().toISOString(),
         };
 
-        await order.save();
-
-        // Release reserved stock if max attempts reached
-        if (!order.canRetryPayment) {
-            await releaseReservedStock(order._id);
+        // Cancel order if max attempts reached (no stock action needed)
+        const canRetry = order.paymentAttempts < order.maxPaymentAttempts;
+        if (!canRetry) {
+            order.status = "cancelled"; // Mark as cancelled
+            console.log(
+                `� Order cancelled after max attempts: ${order.orderId} (no stock to restock)`
+            );
         }
+
+        await order.save();
 
         console.log("❌ Payment failure processed for order:", order.orderId);
     } catch (error) {
@@ -409,13 +413,15 @@ async function handleOrderPaid(orderData) {
             return;
         }
 
-        // Double-check payment status
+        // Double-check payment status AND ORDER STATUS
         if (order.paymentStatus !== "paid") {
             order.paymentStatus = "paid";
+            order.status = "processing";
             order.paymentVerifiedAt = new Date();
             await order.save();
 
-            await confirmStockDeduction(order._id);
+            // Deduct stock only on successful payment
+            await deductStockForPayment(order);
         }
 
         console.log("✅ Order paid event processed:", order.orderId);
@@ -439,8 +445,8 @@ async function handlePaymentAuthorized(payment) {
             return;
         }
 
-        // Update order with authorized status
-        order.paymentStatus = "authorized";
+        // Update order with authorized status (NO ORDER STATUS CHANGE YET)
+        order.paymentStatus = "pending";
         order.razorpayPaymentId = payment.id;
         order.paymentInfo = {
             ...order.paymentInfo,
@@ -500,41 +506,125 @@ async function handlePaymentDispute(payment, dispute) {
 // =================== STOCK MANAGEMENT FUNCTIONS ===================
 
 /**
- * Confirm stock deduction after successful payment
+ * Deduct stock for successful payment
+ * Only called when payment is confirmed
  */
-async function confirmStockDeduction(orderId) {
+async function deductStockForPayment(order) {
     try {
-        const order = await Order.findById(orderId).populate("items.product");
-        if (!order) return;
+        console.log(
+            "📦 Deducting stock for successful payment:",
+            order.orderId
+        );
 
-        console.log("📦 Confirming stock deduction for order:", order.orderId);
-        // Stock is managed directly in payment success/failure logic
-        console.log("✅ Stock confirmed for order:", order.orderId);
+        for (const item of order.items) {
+            const product = await Product.findById(
+                item.product._id || item.product
+            );
+
+            if (!product) {
+                console.error(
+                    `❌ Product not found: ${item.product._id || item.product}`
+                );
+                continue;
+            }
+
+            if (product.stock < item.quantity) {
+                console.error(
+                    `❌ Insufficient stock for ${product.name}: required ${item.quantity}, available ${product.stock}`
+                );
+                throw new Error(`Insufficient stock for ${product.name}`);
+            }
+
+            await Product.findByIdAndUpdate(product._id, {
+                $inc: { stock: -item.quantity },
+            });
+
+            console.log(
+                `✅ Deducted ${item.quantity} units of ${
+                    product.name
+                } (remaining: ${product.stock - item.quantity})`
+            );
+        }
+
+        console.log("✅ Stock deducted successfully for order:", order.orderId);
     } catch (error) {
-        console.error("❌ Failed to confirm stock deduction:", error);
+        console.error("❌ Failed to deduct stock:", error);
+        throw error;
     }
 }
 
 /**
  * Restock items for failed/cancelled payments
+ * Restores stock that was deducted during successful payment
  */
-async function releaseReservedStock(orderId) {
+async function restockItemsForFailedPayment(order) {
     try {
-        const order = await Order.findById(orderId).populate("items.product");
-        if (!order) return;
+        console.log("🔄 Restocking items for failed payment:", order.orderId);
 
-        console.log("📦 Restocking items for order:", order.orderId);
-
-        // Restore stock levels (simple restock)
         for (const item of order.items) {
-            await Product.findByIdAndUpdate(item.product._id, {
+            const product = await Product.findById(
+                item.product._id || item.product
+            );
+
+            if (!product) {
+                console.error(
+                    `❌ Product not found: ${item.product._id || item.product}`
+                );
+                continue;
+            }
+
+            await Product.findByIdAndUpdate(product._id, {
                 $inc: { stock: item.quantity },
             });
+
+            console.log(
+                `🔄 Restocked ${item.quantity} units of ${
+                    product.name
+                } (new stock: ${product.stock + item.quantity})`
+            );
         }
 
         console.log("✅ Items restocked for order:", order.orderId);
     } catch (error) {
-        console.error("❌ Failed to release reserved stock:", error);
+        console.error("❌ Failed to restock items:", error);
+        throw error;
+    }
+}
+
+/**
+ * Check stock availability before payment retry
+ * Ensures stock is still available when user retries payment
+ */
+async function validateStockForRetry(order) {
+    try {
+        console.log(
+            "🔍 Validating stock availability for retry:",
+            order.orderId
+        );
+
+        for (const item of order.items) {
+            const product = await Product.findById(
+                item.product._id || item.product
+            );
+
+            if (!product) {
+                throw new Error(
+                    `Product not found: ${item.product._id || item.product}`
+                );
+            }
+
+            if (product.stock < item.quantity) {
+                throw new Error(
+                    `Insufficient stock for ${product.name}: required ${item.quantity}, available ${product.stock}`
+                );
+            }
+        }
+
+        console.log("✅ Stock validation passed for retry:", order.orderId);
+        return true;
+    } catch (error) {
+        console.error("❌ Stock validation failed for retry:", error);
+        throw error;
     }
 }
 
@@ -581,6 +671,9 @@ export function formatErrorMessage(errorCode, errorDescription) {
     );
 }
 
+// Export stock validation function for use in controllers
+export { validateStockForRetry };
+
 export default {
     createRazorpayOrder,
     verifyRazorpayPayment,
@@ -589,4 +682,5 @@ export default {
     getRazorpayOrderStatus,
     getPaymentMethodDetails,
     formatErrorMessage,
+    validateStockForRetry,
 };

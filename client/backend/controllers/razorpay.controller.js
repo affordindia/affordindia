@@ -16,6 +16,7 @@ import {
     getRazorpayPaymentStatus,
     getRazorpayOrderStatus,
     formatErrorMessage,
+    validateStockForRetry,
 } from "../services/razorpay.service.js";
 import Order from "../models/order.model.js";
 import { body, param, validationResult } from "express-validator";
@@ -415,6 +416,21 @@ export const retryPayment = async (req, res, next) => {
                 success: false,
                 message: "Maximum payment attempts reached",
                 errorCode: "MAX_ATTEMPTS_REACHED",
+            });
+        }
+
+        // Validate stock availability before retry
+        try {
+            await validateStockForRetry(order);
+        } catch (error) {
+            console.error(
+                "❌ Stock validation failed for retry:",
+                error.message
+            );
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+                errorCode: "INSUFFICIENT_STOCK",
             });
         }
 

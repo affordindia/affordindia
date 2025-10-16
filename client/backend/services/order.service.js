@@ -99,11 +99,19 @@ export const placeOrder = async (
     // Calculate final total: subtotal - product discounts - coupon discount + shipping
     const total = subtotal - totalDiscount - couponDiscount + shippingFee;
 
-    // Deduct stock
-    for (const item of cart.items) {
-        await Product.findByIdAndUpdate(item.product._id, {
-            $inc: { stock: -item.quantity },
-        });
+    // NEW STOCK MANAGEMENT: Only deduct stock for COD orders
+    // Online payment orders: stock deducted only on successful payment
+    if (paymentMethod === "COD") {
+        console.log("📦 Deducting stock for COD order");
+        for (const item of cart.items) {
+            await Product.findByIdAndUpdate(item.product._id, {
+                $inc: { stock: -item.quantity },
+            });
+        }
+    } else {
+        console.log(
+            "⏳ Stock will be deducted on successful payment for online order"
+        );
     }
 
     // Determine payment status and provider
@@ -164,7 +172,20 @@ export const placeOrder = async (
             console.log("🔢 Using Order ID for payment:", order.orderId);
 
             // Create Razorpay order (NEW IMPLEMENTATION)
-            const razorpayResponse = await createRazorpayOrder(order);
+            const razorpayResponse = await createRazorpayOrder({
+                orderId: order.orderId,
+                amount: order.total,
+                user: order.user,
+                notes: {
+                    customer_name: userName || order.user?.name,
+                    order_items: order.items.length,
+                    order_created_at: order.createdAt,
+                    subtotal: order.subtotal,
+                    discount: order.totalDiscount,
+                    coupon_discount: order.couponDiscount,
+                    shipping_fee: order.shippingFee,
+                },
+            });
 
             // Update order with Razorpay details
             await Order.findByIdAndUpdate(order._id, {
