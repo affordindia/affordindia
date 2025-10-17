@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState, useContext } from "react";
+import {
+    createContext,
+    useEffect,
+    useState,
+    useContext,
+    flushSync,
+} from "react";
 import { useAuth } from "./AuthContext.jsx";
 import * as cartApi from "../api/cart.js";
 
@@ -16,7 +22,7 @@ const getInitialCart = () => {
 export const CartProvider = ({ children }) => {
     const { user } = useAuth();
     const [cart, setCart] = useState(getInitialCart);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Start with loading true to prevent flash
 
     // On login: merge guest cart if needed, then fetch user cart
     useEffect(() => {
@@ -50,6 +56,7 @@ export const CartProvider = ({ children }) => {
             } else {
                 // Not logged in: use guest cart
                 setCart(getInitialCart());
+                setLoading(false); // Set loading to false for guest users
             }
         };
         syncCartOnLogin();
@@ -147,9 +154,32 @@ export const CartProvider = ({ children }) => {
         if (user) {
             await cartApi.clearCart();
             const dbCart = await cartApi.getCart();
-            setCart(dbCart);
+
+            // Use flushSync to ensure immediate state update
+            flushSync(() => {
+                setCart(dbCart);
+            });
+
+            // Return a Promise that resolves when the state update is complete
+            return new Promise((resolve) => {
+                // Wait for the next tick to ensure all context consumers are updated
+                setTimeout(() => {
+                    resolve();
+                }, 50);
+            });
         } else {
-            setCart({ items: [] });
+            // Use flushSync to ensure immediate state update for guest users
+            flushSync(() => {
+                setCart({ items: [] });
+            });
+            localStorage.removeItem("cart"); // Clear localStorage for guest users
+
+            // Return a Promise that resolves when the state update is complete
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 50);
+            });
         }
     };
 

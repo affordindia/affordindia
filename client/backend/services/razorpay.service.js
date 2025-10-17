@@ -14,6 +14,7 @@ import crypto from "crypto";
 import razorpayConfig from "../config/razorpay.config.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
+import Cart from "../models/cart.model.js";
 
 // Initialize Razorpay instance
 const razorpay = new Razorpay({
@@ -346,8 +347,28 @@ async function handlePaymentCaptured(payment) {
         // Deduct stock only on successful payment
         await deductStockForPayment(order);
 
+        // Clear cart on successful payment
+        try {
+            const cart = await Cart.findOne({ user: order.user });
+            if (cart) {
+                cart.items = [];
+                cart.appliedCoupon = undefined;
+                await cart.save();
+                console.log(
+                    "🛒 Cart cleared for successful payment:",
+                    order.orderId
+                );
+            }
+        } catch (cartError) {
+            console.error(
+                "❌ Failed to clear cart after payment success:",
+                cartError
+            );
+            // Don't fail the entire payment process if cart clearing fails
+        }
+
         console.log(
-            "✅ Payment captured and stock deducted for order:",
+            "✅ Payment captured, stock deducted, and cart cleared for order:",
             order.orderId
         );
     } catch (error) {

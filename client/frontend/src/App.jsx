@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import OrderDetail from "./pages/OrderDetail.jsx";
 import PaymentStatus from "./pages/PaymentStatus.jsx";
+import PaymentFailed from "./pages/PaymentFailed.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -127,7 +128,7 @@ const App = () => {
                                     }
                                 />
 
-                                {/* Unified Payment Status Page - handles success, failure, pending, and errors */}
+                                {/* Payment Status Pages */}
                                 <Route
                                     path="/payment/status/:orderId"
                                     element={
@@ -141,6 +142,16 @@ const App = () => {
                                     element={
                                         <ProtectedRoute>
                                             <PaymentStatus />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                {/* Payment Failed Page */}
+                                <Route
+                                    path="/payment-failed/:orderId"
+                                    element={
+                                        <ProtectedRoute>
+                                            <PaymentFailed />
                                         </ProtectedRoute>
                                     }
                                 />
@@ -163,7 +174,7 @@ const App = () => {
                                     path="/returnpolicy"
                                     element={<ReturnPolicy />}
                                 />
-                                
+
                                 <Route
                                     path="/privacy-policy"
                                     element={<PrivacyPolicy />}

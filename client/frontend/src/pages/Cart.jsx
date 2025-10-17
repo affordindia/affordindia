@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 import { calculateShipping } from "../api/shipping.js";
 
 const Cart = () => {
-    const { cart, updateCartItem, removeFromCart, loading, refreshCart } = useCart();
+    const { cart, updateCartItem, removeFromCart, loading, refreshCart } =
+        useCart();
     const items = cart?.items || [];
 
     // Shipping state
@@ -19,24 +20,26 @@ const Cart = () => {
     });
 
     // Discounts calculation
-    const { totalProductDiscount, originalSubtotal, discountedSubtotal } = items.reduce(
-        (acc, { product, quantity }) => {
-            const hasDiscount = product.discount && product.discount > 0;
-            const discountedPrice = hasDiscount
-                ? Math.round(product.price * (1 - product.discount / 100))
-                : product.price;
+    const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
+        items.reduce(
+            (acc, { product, quantity }) => {
+                const hasDiscount = product.discount && product.discount > 0;
+                const discountedPrice = hasDiscount
+                    ? Math.round(product.price * (1 - product.discount / 100))
+                    : product.price;
 
-            acc.originalSubtotal += product.price * quantity;
-            acc.discountedSubtotal += discountedPrice * quantity;
-            acc.totalProductDiscount += (product.price - discountedPrice) * quantity;
-            return acc;
-        },
-        {
-            totalProductDiscount: 0,
-            originalSubtotal: 0,
-            discountedSubtotal: 0,
-        }
-    );
+                acc.originalSubtotal += product.price * quantity;
+                acc.discountedSubtotal += discountedPrice * quantity;
+                acc.totalProductDiscount +=
+                    (product.price - discountedPrice) * quantity;
+                return acc;
+            },
+            {
+                totalProductDiscount: 0,
+                originalSubtotal: 0,
+                discountedSubtotal: 0,
+            }
+        );
 
     const couponDiscount = cart?.couponDiscount || 0;
 
@@ -49,7 +52,9 @@ const Cart = () => {
                         0,
                         discountedSubtotal - couponDiscount
                     );
-                    const shipping = await calculateShipping(orderAmountAfterCoupon);
+                    const shipping = await calculateShipping(
+                        orderAmountAfterCoupon
+                    );
                     setShippingInfo(shipping);
                 } catch (error) {
                     console.error("Error calculating shipping:", error);
@@ -59,7 +64,8 @@ const Cart = () => {
         fetchShipping();
     }, [discountedSubtotal, couponDiscount]);
 
-    const total = discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
+    const total =
+        discountedSubtotal - couponDiscount + shippingInfo.shippingFee;
 
     const handleCartUpdate = async () => {
         await refreshCart();
@@ -72,8 +78,36 @@ const Cart = () => {
 
     if (!items.length) {
         return (
-            <div className="p-6 text-center text-xl text-gray-600">
-                Your cart is empty.
+            <div className="max-w-4xl mx-auto px-4 py-16">
+                <div className="text-center">
+                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg
+                            className="w-12 h-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6M7 13h10m0 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6z"
+                            />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                        Your Cart is Empty
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        Looks like you haven't added any items to your cart yet.
+                    </p>
+                    <Link
+                        to="/"
+                        className="inline-block bg-[#B76E79] text-white px-8 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium"
+                    >
+                        Start Shopping
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -102,17 +136,23 @@ const Cart = () => {
                         <div className="flex items-start gap-4 flex-[2]">
                             <Link to={`/products/id/${product._id}`}>
                                 <img
-                                    src={product.images?.[0] || "/placeholder.png"}
+                                    src={
+                                        product.images?.[0] ||
+                                        "/placeholder.png"
+                                    }
                                     alt={product.name}
                                     className="w-20 h-20 object-cover rounded-sm cursor-pointer hover:opacity-90 transition"
                                 />
                             </Link>
                             <div className="flex flex-col flex-1">
-                                <span className="text-sm font-medium">{product.name}</span>
+                                <span className="text-sm font-medium">
+                                    {product.name}
+                                </span>
 
                                 {/* Mobile Price & Subtotal */}
                                 <div className="mt-2 md:hidden text-sm">
-                                    {product.discount && product.discount > 0 ? (
+                                    {product.discount &&
+                                    product.discount > 0 ? (
                                         <>
                                             <span className="line-through text-gray-400 mr-1 text-xs">
                                                 ₹{product.price}
@@ -120,7 +160,10 @@ const Cart = () => {
                                             <span className="font-semibold">
                                                 ₹
                                                 {Math.round(
-                                                    product.price * (1 - product.discount / 100)
+                                                    product.price *
+                                                        (1 -
+                                                            product.discount /
+                                                                100)
                                                 )}
                                             </span>
                                         </>
@@ -129,10 +172,14 @@ const Cart = () => {
                                     )}
                                     <div className="text-xs text-gray-500">
                                         Subtotal:{" "}
-                                        {product.discount && product.discount > 0
+                                        {product.discount &&
+                                        product.discount > 0
                                             ? `₹${
                                                   Math.round(
-                                                      product.price * (1 - product.discount / 100)
+                                                      product.price *
+                                                          (1 -
+                                                              product.discount /
+                                                                  100)
                                                   ) * quantity
                                               }`
                                             : `₹${product.price * quantity}`}
@@ -152,7 +199,8 @@ const Cart = () => {
                                         <span>
                                             ₹
                                             {Math.round(
-                                                product.price * (1 - product.discount / 100)
+                                                product.price *
+                                                    (1 - product.discount / 100)
                                             )}
                                         </span>
                                     </>
@@ -168,7 +216,10 @@ const Cart = () => {
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center"
                                     onClick={async () => {
-                                        await updateCartItem(product._id, quantity - 1);
+                                        await updateCartItem(
+                                            product._id,
+                                            quantity - 1
+                                        );
                                         await handleCartUpdate();
                                     }}
                                 >
@@ -180,7 +231,10 @@ const Cart = () => {
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center"
                                     onClick={async () => {
-                                        await updateCartItem(product._id, quantity + 1);
+                                        await updateCartItem(
+                                            product._id,
+                                            quantity + 1
+                                        );
                                         await handleCartUpdate();
                                     }}
                                 >
@@ -207,7 +261,8 @@ const Cart = () => {
                                     <>
                                         ₹
                                         {Math.round(
-                                            product.price * (1 - product.discount / 100)
+                                            product.price *
+                                                (1 - product.discount / 100)
                                         ) * quantity}
                                     </>
                                 ) : (
@@ -248,7 +303,10 @@ const Cart = () => {
 
                 {/* Summary */}
                 <div className="w-full md:max-w-md md:ml-auto">
-                    <CouponSection cart={cart} onCartUpdate={handleCartUpdate} />
+                    <CouponSection
+                        cart={cart}
+                        onCartUpdate={handleCartUpdate}
+                    />
 
                     <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
                         <div className="flex justify-between mb-2">
@@ -259,14 +317,18 @@ const Cart = () => {
                         {totalProductDiscount > 0 && (
                             <div className="flex justify-between mb-2">
                                 <span>Product Discount</span>
-                                <span className="text-green-600">-₹{totalProductDiscount}</span>
+                                <span className="text-green-600">
+                                    -₹{totalProductDiscount}
+                                </span>
                             </div>
                         )}
 
                         {couponDiscount > 0 && (
                             <div className="flex justify-between mb-2">
                                 <span>Coupon Discount</span>
-                                <span className="text-green-600">-₹{couponDiscount}</span>
+                                <span className="text-green-600">
+                                    -₹{couponDiscount}
+                                </span>
                             </div>
                         )}
 
@@ -281,7 +343,8 @@ const Cart = () => {
                         {!shippingInfo.isFreeShipping &&
                             shippingInfo.remainingForFreeShipping > 0 && (
                                 <div className="text-xs text-gray-600 mb-2">
-                                    Add ₹{shippingInfo.remainingForFreeShipping} more for free shipping
+                                    Add ₹{shippingInfo.remainingForFreeShipping}{" "}
+                                    more for free shipping
                                 </div>
                             )}
                         <div className="flex justify-between font-bold text-base mt-4">

@@ -11,6 +11,7 @@ import ShippingForm from "../components/checkout/ShippingForm.jsx";
 import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
+import Loader from "../components/common/Loader.jsx";
 
 // =================== PAYMENT PROVIDER MIGRATION ===================
 // Import Razorpay API functions for payment integration
@@ -19,7 +20,7 @@ import { toast } from "react-hot-toast";
 
 const Checkout = () => {
     const { user } = useAuth();
-    const { cart, clearCart } = useCart();
+    const { cart, clearCart, refreshCart, loading: cartLoading } = useCart();
     const { addresses, addAddress, refreshUserData } = useProfile();
     const [userName, setUserName] = useState(user?.name || "");
     const [userNameError, setUserNameError] = useState("");
@@ -64,6 +65,7 @@ const Checkout = () => {
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");
     const [orderProcessing, setOrderProcessing] = useState(false);
+    const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -92,12 +94,17 @@ const Checkout = () => {
         return "";
     };
 
-    // Redirect if cart is empty (but not during order processing)
+    // Redirect if cart is empty (but not during loading or processing)
     useEffect(() => {
-        if (!orderProcessing && (!cart?.items || cart.items.length === 0)) {
+        if (
+            !cartLoading &&
+            !orderProcessing &&
+            !paymentProcessing &&
+            (!cart?.items || cart.items.length === 0)
+        ) {
             navigate("/cart");
         }
-    }, [cart, navigate, orderProcessing]);
+    }, [cart, navigate, orderProcessing, paymentProcessing, cartLoading]);
 
     // Sync billing address with shipping address when option is selected
     useEffect(() => {
@@ -305,13 +312,14 @@ const Checkout = () => {
 
                 // Check if we got Razorpay payment data
                 if (order.razorpayOrderId && order.razorpayKeyId) {
-                    // Clear cart before starting payment process
-                    await clearCart();
+                    // Show payment processing loader
+                    setPaymentProcessing(true);
 
                     // Store order ID for status tracking
                     localStorage.setItem("pendingOrderId", order._id);
 
-                    // Load Razorpay script if not already loaded
+                    // Show loading message
+                    toast.loading("Initializing payment gateway..."); // Load Razorpay script if not already loaded
                     if (!window.Razorpay) {
                         const script = document.createElement("script");
                         script.src =
@@ -321,6 +329,12 @@ const Checkout = () => {
                             (resolve) => (script.onload = resolve)
                         );
                     }
+
+                    // Brief delay to ensure smooth UI transition
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+
+                    // Dismiss loading toast
+                    toast.dismiss();
 
                     // Razorpay options
                     const options = {
@@ -341,6 +355,11 @@ const Checkout = () => {
                         },
                         handler: async (response) => {
                             try {
+                                // Hide payment processing loader and reset all loading states
+                                setPaymentProcessing(false);
+                                setLoading(false);
+                                setOrderProcessing(false);
+
                                 console.log(
                                     "✅ Payment successful, verifying...",
                                     response
@@ -365,17 +384,56 @@ const Checkout = () => {
                                 // Clear pending order from localStorage
                                 localStorage.removeItem("pendingOrderId");
 
-                                // Show success message
+                                // Show success message first
                                 toast.success(
                                     "Payment successful! Order confirmed."
                                 );
 
-                                // Navigate to payment status page
-                                navigate(`/payment/status/${order._id}`, {
+                                // Clear cart immediately on frontend since we know payment succeeded
+                                // The backend webhook will also clear it, this ensures immediate UI update
+                                try {
+                                    await clearCart(); // This will clear the cart in both frontend context and backend
+                                    window.dispatchEvent(
+                                        new CustomEvent("cartUpdated")
+                                    );
+                                    console.log(
+                                        "✅ Cart cleared immediately after payment success"
+                                    );
+                                } catch (cartClearError) {
+                                    console.warn(
+                                        "⚠️ Failed to clear cart after payment success:",
+                                        cartClearError
+                                    );
+                                    // If clearCart fails, fall back to refresh approach
+                                    try {
+                                        await refreshCart();
+                                        window.dispatchEvent(
+                                            new CustomEvent("cartUpdated")
+                                        );
+                                    } catch (refreshError) {
+                                        console.warn(
+                                            "⚠️ Failed to refresh cart as fallback:",
+                                            refreshError
+                                        );
+                                    }
+                                }
+
+                                // Cart context update is now complete (clearCart returns a Promise that resolves when done)
+
+                                // Navigate directly to order confirmation page
+                                navigate(`/order-confirmation/${order._id}`, {
                                     replace: true,
-                                    state: { paymentSuccess: true },
+                                    state: {
+                                        paymentSuccess: true,
+                                        paymentData: verifyData,
+                                    },
                                 });
                             } catch (error) {
+                                // Hide payment processing loader and reset all loading states
+                                setPaymentProcessing(false);
+                                setLoading(false);
+                                setOrderProcessing(false);
+
                                 console.error(
                                     "❌ Payment verification failed:",
                                     error
@@ -384,34 +442,38 @@ const Checkout = () => {
                                     "Payment verification failed. Please contact support."
                                 );
 
-                                // Navigate to payment status with error
-                                navigate(`/payment/status/${order._id}`, {
+                                // Navigate directly to payment failed page
+                                navigate(`/payment-failed/${order._id}`, {
                                     replace: true,
                                     state: {
-                                        paymentError: true,
-                                        errorMessage: error.message,
+                                        error: error.message,
+                                        canRetry: true,
                                     },
                                 });
                             }
                         },
                         modal: {
                             ondismiss: () => {
+                                // Hide payment processing loader and reset all loading states
+                                setPaymentProcessing(false);
+                                setLoading(false);
+                                setOrderProcessing(false);
+
                                 console.log(
                                     "🚫 Payment modal dismissed by user"
                                 );
                                 // Clear pending order from localStorage
                                 localStorage.removeItem("pendingOrderId");
-                                toast.error(
-                                    "Payment was cancelled. You can retry payment from your orders."
+                                toast.dismiss(); // Clear any pending toasts
+                                toast.info(
+                                    "Payment cancelled. You can complete payment anytime from My Orders."
                                 );
 
-                                // Navigate to payment status with cancellation
-                                navigate(`/payment/status/${order._id}`, {
+                                // Navigate directly to payment failed page
+                                navigate(`/payment-failed/${order._id}`, {
                                     replace: true,
                                     state: {
-                                        paymentError: true,
-                                        errorMessage:
-                                            "Payment was cancelled by user",
+                                        error: "Payment was cancelled by user",
                                         canRetry: true,
                                     },
                                 });
@@ -460,16 +522,50 @@ const Checkout = () => {
             setError(userMessage);
             setLoading(false);
             setOrderProcessing(false);
+            setPaymentProcessing(false);
         }
     };
 
-    // Don't render if cart is empty
+    // Show loading state while cart is loading
+    if (cartLoading) {
+        return (
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <div className="text-center py-12">
+                    <Loader size="large" />
+                    <p className="mt-4 text-gray-600">Loading your cart...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render if cart is empty (after loading is complete)
     if (!cart?.items || cart.items.length === 0) {
         return null;
     }
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            {/* Payment Processing Overlay */}
+            {paymentProcessing && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
+                        <div className="mb-4">
+                            <Loader size="large" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                            Processing Payment
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                            Please wait while we initialize the payment
+                            gateway...
+                        </p>
+                        <p className="text-xs text-gray-500 mt-3">
+                            Do not refresh or close this page
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Progress Indicator - Commented out temporarily */}
             {/* <CheckoutProgress currentStep={step} /> */}
 

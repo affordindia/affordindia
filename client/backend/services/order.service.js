@@ -246,10 +246,20 @@ export const placeOrder = async (
         */
     }
 
-    // Clear cart including applied coupon
-    cart.items = [];
-    cart.appliedCoupon = undefined;
-    await cart.save();
+    // Clear cart only for COD orders (immediate success)
+    // For online orders, cart will be cleared after payment success via webhook
+    if (paymentMethod === "COD") {
+        cart.items = [];
+        cart.appliedCoupon = undefined;
+        await cart.save();
+        console.log("🛒 Cart cleared for COD order:", order._id);
+    } else {
+        console.log(
+            "🛒 Cart retained for online payment order:",
+            order._id,
+            "- will be cleared on payment success"
+        );
+    }
 
     // Record coupon usage if a coupon was applied
     if (appliedCoupon && appliedCoupon.couponId) {
