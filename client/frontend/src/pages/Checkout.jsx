@@ -547,7 +547,7 @@ const Checkout = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
             {/* Payment Processing Overlay */}
             {paymentProcessing && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
+                <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
                         <div className="mb-4">
                             <Loader size="large" />
