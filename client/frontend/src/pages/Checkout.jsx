@@ -494,12 +494,29 @@ const Checkout = () => {
                 console.log("✅ COD order placed successfully");
 
                 // Clear cart and navigate to confirmation
+                console.log("🧹 Clearing cart for COD order...");
+
                 await clearCart();
-                navigate(`/payment/status/${order._id}`, { replace: true });
+
+                console.log(
+                    "✅ Cart cleared, navigating to order confirmation..."
+                );
+
+                navigate(`/order-confirmation/${order._id}`, { replace: true });
+
+                console.log(
+                    "🚀 Navigation triggered to:",
+                    `/order-confirmation/${order._id}`
+                );
                 return;
             }
         } catch (error) {
-            console.error("Order placement failed:", error);
+            console.error("❌ Order placement failed:", error);
+            console.error("❌ Error details:", {
+                message: error.message,
+                stack: error.stack,
+                response: error.response?.data,
+            });
 
             // Show user-friendly error messages
             let userMessage =
@@ -550,7 +567,7 @@ const Checkout = () => {
                 <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
                         <div className="mb-4">
-                            <Loader size="large" />
+                            <Loader />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
                             Processing Payment

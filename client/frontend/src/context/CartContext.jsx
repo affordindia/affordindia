@@ -1,10 +1,4 @@
-import {
-    createContext,
-    useEffect,
-    useState,
-    useContext,
-    flushSync,
-} from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import * as cartApi from "../api/cart.js";
 
@@ -154,32 +148,10 @@ export const CartProvider = ({ children }) => {
         if (user) {
             await cartApi.clearCart();
             const dbCart = await cartApi.getCart();
-
-            // Use flushSync to ensure immediate state update
-            flushSync(() => {
-                setCart(dbCart);
-            });
-
-            // Return a Promise that resolves when the state update is complete
-            return new Promise((resolve) => {
-                // Wait for the next tick to ensure all context consumers are updated
-                setTimeout(() => {
-                    resolve();
-                }, 50);
-            });
+            setCart(dbCart);
         } else {
-            // Use flushSync to ensure immediate state update for guest users
-            flushSync(() => {
-                setCart({ items: [] });
-            });
+            setCart({ items: [] });
             localStorage.removeItem("cart"); // Clear localStorage for guest users
-
-            // Return a Promise that resolves when the state update is complete
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, 50);
-            });
         }
     };
 
