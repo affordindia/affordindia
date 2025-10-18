@@ -13,7 +13,7 @@ import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import OrderDetail from "./pages/OrderDetail.jsx";
-import PaymentStatus from "./pages/PaymentStatus.jsx";
+// import PaymentStatus from "./pages/PaymentStatus.jsx";
 import PaymentFailed from "./pages/PaymentFailed.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
@@ -129,22 +129,22 @@ const App = () => {
                                 />
 
                                 {/* Payment Status Pages */}
-                                <Route
+                                {/* <Route
                                     path="/payment/status/:orderId"
                                     element={
                                         <ProtectedRoute>
                                             <PaymentStatus />
                                         </ProtectedRoute>
                                     }
-                                />
-                                <Route
+                                /> */}
+                                {/* <Route
                                     path="/payment/status"
                                     element={
                                         <ProtectedRoute>
                                             <PaymentStatus />
                                         </ProtectedRoute>
                                     }
-                                />
+                                /> */}
 
                                 {/* Payment Failed Page */}
                                 <Route

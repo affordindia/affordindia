@@ -66,6 +66,7 @@ const Checkout = () => {
     const [step, setStep] = useState("shipping");
     const [orderProcessing, setOrderProcessing] = useState(false);
     const [paymentProcessing, setPaymentProcessing] = useState(false);
+    const [paymentSuccessful, setPaymentSuccessful] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -94,17 +95,25 @@ const Checkout = () => {
         return "";
     };
 
-    // Redirect if cart is empty (but not during loading or processing)
+    // Redirect if cart is empty (but not during loading, processing, or after successful payment)
     useEffect(() => {
         if (
             !cartLoading &&
             !orderProcessing &&
             !paymentProcessing &&
+            !paymentSuccessful &&
             (!cart?.items || cart.items.length === 0)
         ) {
             navigate("/cart");
         }
-    }, [cart, navigate, orderProcessing, paymentProcessing, cartLoading]);
+    }, [
+        cart,
+        navigate,
+        orderProcessing,
+        paymentProcessing,
+        cartLoading,
+        paymentSuccessful,
+    ]);
 
     // Sync billing address with shipping address when option is selected
     useEffect(() => {
@@ -336,6 +345,9 @@ const Checkout = () => {
                     // Dismiss loading toast
                     toast.dismiss();
 
+                    // Payment processing flag to prevent race condition between success and dismiss handlers
+                    let paymentProcessed = false;
+
                     // Razorpay options
                     const options = {
                         key: order.razorpayKeyId,
@@ -355,6 +367,9 @@ const Checkout = () => {
                         },
                         handler: async (response) => {
                             try {
+                                // Set flag immediately to prevent ondismiss from interfering
+                                paymentProcessed = true;
+
                                 // Hide payment processing loader and reset all loading states
                                 setPaymentProcessing(false);
                                 setLoading(false);
@@ -373,13 +388,16 @@ const Checkout = () => {
                                         response.razorpay_payment_id,
                                     razorpay_signature:
                                         response.razorpay_signature,
-                                    orderId: order._id,
+                                    orderId: order.orderId, // Use custom orderId instead of MongoDB _id
                                 });
 
                                 console.log(
                                     "✅ Payment verified successfully:",
                                     verifyData
                                 );
+
+                                // Set payment successful flag to prevent cart empty redirect
+                                setPaymentSuccessful(true);
 
                                 // Clear pending order from localStorage
                                 localStorage.removeItem("pendingOrderId");
@@ -454,6 +472,14 @@ const Checkout = () => {
                         },
                         modal: {
                             ondismiss: () => {
+                                // Exit early if payment was already processed to prevent race condition
+                                if (paymentProcessed) {
+                                    console.log(
+                                        "🔄 Payment already processed, skipping dismiss handler"
+                                    );
+                                    return;
+                                }
+
                                 // Hide payment processing loader and reset all loading states
                                 setPaymentProcessing(false);
                                 setLoading(false);
@@ -465,9 +491,9 @@ const Checkout = () => {
                                 // Clear pending order from localStorage
                                 localStorage.removeItem("pendingOrderId");
                                 toast.dismiss(); // Clear any pending toasts
-                                toast.info(
-                                    "Payment cancelled. You can complete payment anytime from My Orders."
-                                );
+                                // toast.info(
+                                //     "Payment cancelled. You can complete payment anytime from My Orders."
+                                // );
 
                                 // Navigate directly to payment failed page
                                 navigate(`/payment-failed/${order._id}`, {
@@ -492,6 +518,9 @@ const Checkout = () => {
             } else {
                 // For COD, proceed normally
                 console.log("✅ COD order placed successfully");
+
+                // Set payment successful flag to prevent cart empty redirect
+                setPaymentSuccessful(true);
 
                 // Clear cart and navigate to confirmation
                 console.log("🧹 Clearing cart for COD order...");

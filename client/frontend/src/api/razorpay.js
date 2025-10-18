@@ -9,7 +9,7 @@
  * - Branch: feat/razorpay
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+import api from "./axios.js";
 
 /**
  * Create Razorpay order for payment
@@ -18,31 +18,22 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
  */
 export const createRazorpayOrder = async (orderId) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/razorpay/create-order`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ orderId }),
-            }
-        );
+        // Use axios instance with automatic token refresh instead of raw fetch
+        const response = await api.post("/razorpay/create-order", { orderId });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-                errorData.message || "Failed to create payment order"
-            );
-        }
-
-        const data = await response.json();
-        console.log("✅ Razorpay order created:", data);
-        return data;
+        console.log("✅ Razorpay order created:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Failed to create Razorpay order:", error);
-        throw error;
+
+        // Provide better error messages for common issues
+        if (error.response?.status === 401) {
+            throw new Error("Authentication failed. Please log in again.");
+        } else if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Failed to create payment order");
+        }
     }
 };
 
@@ -53,29 +44,43 @@ export const createRazorpayOrder = async (orderId) => {
  */
 export const verifyRazorpayPayment = async (paymentData) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/razorpay/verify-payment`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify(paymentData),
-            }
+        // Use axios instance with automatic token refresh instead of raw fetch
+        const response = await api.post(
+            "/razorpay/verify-payment",
+            paymentData
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Payment verification failed");
-        }
-
-        const data = await response.json();
-        console.log("✅ Payment verified successfully:", data);
-        return data;
+        console.log("✅ Payment verified successfully:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Payment verification failed:", error);
-        throw error;
+
+        // Handle "Payment already verified" as a success case
+        if (
+            error.response?.status === 400 &&
+            error.response?.data?.message === "Payment already verified"
+        ) {
+            console.log(
+                "✅ Payment was already verified by webhook:",
+                error.response.data.data
+            );
+            // Return the existing payment data as success
+            return {
+                success: true,
+                message: "Payment already verified",
+                alreadyVerified: true,
+                ...error.response.data.data,
+            };
+        }
+
+        // Provide better error messages for other issues
+        if (error.response?.status === 401) {
+            throw new Error("Authentication failed. Please log in again.");
+        } else if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Payment verification failed");
+        }
     }
 };
 
@@ -86,29 +91,22 @@ export const verifyRazorpayPayment = async (paymentData) => {
  */
 export const retryRazorpayPayment = async (orderId) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/razorpay/retry-payment`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ orderId }),
-            }
-        );
+        // Use axios instance with automatic token refresh
+        const response = await api.post("/razorpay/retry-payment", { orderId });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to retry payment");
-        }
-
-        const data = await response.json();
-        console.log("✅ Payment retry initiated:", data);
-        return data;
+        console.log("✅ Payment retry initiated:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Failed to retry payment:", error);
-        throw error;
+
+        // Provide better error messages for common issues
+        if (error.response?.status === 401) {
+            throw new Error("Authentication failed. Please log in again.");
+        } else if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Failed to retry payment");
+        }
     }
 };
 
@@ -119,29 +117,22 @@ export const retryRazorpayPayment = async (orderId) => {
  */
 export const getRazorpayPaymentStatus = async (paymentId) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/razorpay/payment-status/${paymentId}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        );
+        // Use axios instance with automatic token refresh
+        const response = await api.get(`/razorpay/payment-status/${paymentId}`);
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-                errorData.message || "Failed to get payment status"
-            );
-        }
-
-        const data = await response.json();
-        console.log("✅ Payment status retrieved:", data);
-        return data;
+        console.log("✅ Payment status retrieved:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Failed to get payment status:", error);
-        throw error;
+
+        // Provide better error messages for common issues
+        if (error.response?.status === 401) {
+            throw new Error("Authentication failed. Please log in again.");
+        } else if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Failed to get payment status");
+        }
     }
 };
 
@@ -152,27 +143,24 @@ export const getRazorpayPaymentStatus = async (paymentId) => {
  */
 export const getRazorpayOrderStatus = async (razorpayOrderId) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/razorpay/order-status/${razorpayOrderId}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
+        // Use axios instance with automatic token refresh
+        const response = await api.get(
+            `/razorpay/order-status/${razorpayOrderId}`
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to get order status");
-        }
-
-        const data = await response.json();
-        console.log("✅ Order status retrieved:", data);
-        return data;
+        console.log("✅ Order status retrieved:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Failed to get order status:", error);
-        throw error;
+
+        // Provide better error messages for common issues
+        if (error.response?.status === 401) {
+            throw new Error("Authentication failed. Please log in again.");
+        } else if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Failed to get order status");
+        }
     }
 };
 
@@ -182,21 +170,20 @@ export const getRazorpayOrderStatus = async (razorpayOrderId) => {
  */
 export const checkRazorpayHealth = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/razorpay/health`, {
-            method: "GET",
-        });
+        // Use axios instance (health check typically doesn't need auth, but good for consistency)
+        const response = await api.get("/razorpay/health");
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Health check failed");
-        }
-
-        const data = await response.json();
-        console.log("✅ Razorpay health check:", data);
-        return data;
+        console.log("✅ Razorpay health check:", response.data);
+        return response.data;
     } catch (error) {
         console.error("❌ Razorpay health check failed:", error);
-        throw error;
+
+        // Health check doesn't need auth error handling, just generic error
+        if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("Health check failed");
+        }
     }
 };
 
