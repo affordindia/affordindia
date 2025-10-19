@@ -92,7 +92,7 @@ export const createOrder = async (req, res, next) => {
         order.razorpayOrderId = razorpayOrder.id;
         order.paymentTimeoutAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
         order.paymentAttempts = (order.paymentAttempts || 0) + 1;
-        order.lastPaymentAttempt = new Date();
+        order.lastPaymentAttemptAt = new Date();
         order.canRetryPayment = true;
 
         await order.save();
