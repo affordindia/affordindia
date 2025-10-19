@@ -56,12 +56,43 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
         paymentInfo: { type: Object },
-        paymentGateway: { type: String }, // 'HDFC', 'COD'
-        paymentSessionId: { type: String }, // HDFC session ID from session API
-        paymentResponse: { type: Object }, // Full HDFC response from status API
-        paymentSessionData: { type: Object }, // Original HDFC session creation response for verification
-        paymentUrl: { type: String }, // Payment URL for frontend redirect
-        paymentVerifiedAt: { type: Date }, // When payment was confirmed
+
+        paymentProvider: {
+            type: String,
+            enum: ["HDFC", "RAZORPAY", "COD"],
+            default: "RAZORPAY", // New orders use Razorpay by default
+        },
+
+        // =================== HDFC PAYMENT FIELDS (LEGACY) ===================
+        // COMMENTED OUT - NO ONLINE ORDERS YET, PRESERVED FOR FUTURE ROLLBACK
+        // These fields support existing HDFC orders and rollback scenarios
+        // paymentGateway: { type: String }, // 'HDFC', 'COD' - kept for legacy compatibility
+        // paymentSessionId: { type: String }, // HDFC session ID from session API
+        // paymentResponse: { type: Object }, // Full HDFC response from status API
+        // paymentSessionData: { type: Object }, // Original HDFC session creation response for verification
+        // paymentUrl: { type: String }, // Payment URL for frontend redirect
+        // paymentVerifiedAt: { type: Date }, // When payment was confirmed
+
+        // =================== RAZORPAY PAYMENT FIELDS (NEW) ===================
+        razorpayOrderId: { type: String }, // Razorpay order ID (order_xxxxx)
+        razorpayPaymentId: { type: String }, // Razorpay payment ID (pay_xxxxx)
+        razorpaySignature: { type: String }, // Razorpay signature for verification
+        razorpayOrderData: { type: Object }, // Full Razorpay order creation response
+        razorpayPaymentData: { type: Object }, // Full Razorpay payment response
+        razorpayWebhookData: { type: Object }, // Razorpay webhook data for reconciliation
+
+        // Payment retry and attempt tracking (Razorpay specific)
+        paymentAttempts: {
+            type: Number,
+            default: 0,
+        },
+        maxPaymentAttempts: {
+            type: Number,
+            default: 3,
+        },
+        lastPaymentAttemptAt: { type: Date },
+        paymentTimeoutAt: { type: Date }, // When payment window expires
+
         status: {
             type: String,
             enum: [
@@ -98,6 +129,30 @@ const orderSchema = new mongoose.Schema(
 );
 
 orderSchema.index({ user: 1 });
+
+/**
+ * Check if payment can be retried
+ */
+orderSchema.methods.canRetryPayment = function () {
+    if (this.paymentStatus === "paid") {
+        return false;
+    }
+
+    return (
+        this.paymentAttempts < this.maxPaymentAttempts &&
+        this.status === "pending" &&
+        (!this.paymentTimeoutAt || new Date() < this.paymentTimeoutAt)
+    );
+};
+
+/**
+ * Update payment attempts counter
+ */
+orderSchema.methods.incrementPaymentAttempt = function () {
+    this.paymentAttempts = (this.paymentAttempts || 0) + 1;
+    this.lastPaymentAttemptAt = new Date();
+    return this.save();
+};
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

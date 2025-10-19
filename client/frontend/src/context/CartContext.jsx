@@ -16,7 +16,7 @@ const getInitialCart = () => {
 export const CartProvider = ({ children }) => {
     const { user } = useAuth();
     const [cart, setCart] = useState(getInitialCart);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Start with loading true to prevent flash
 
     // On login: merge guest cart if needed, then fetch user cart
     useEffect(() => {
@@ -50,6 +50,7 @@ export const CartProvider = ({ children }) => {
             } else {
                 // Not logged in: use guest cart
                 setCart(getInitialCart());
+                setLoading(false); // Set loading to false for guest users
             }
         };
         syncCartOnLogin();
@@ -150,6 +151,7 @@ export const CartProvider = ({ children }) => {
             setCart(dbCart);
         } else {
             setCart({ items: [] });
+            localStorage.removeItem("cart"); // Clear localStorage for guest users
         }
     };
 

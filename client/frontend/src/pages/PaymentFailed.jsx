@@ -1,41 +1,139 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { getOrderById } from "../api/order";
+import { retryRazorpayPayment, verifyRazorpayPayment } from "../api/razorpay";
+import { toast } from "react-hot-toast";
 import {
     FaTimesCircle,
     FaExclamationTriangle,
     FaSpinner,
+    FaRedo,
+    FaShoppingCart,
+    FaPhone,
 } from "react-icons/fa";
 
 const PaymentFailed = () => {
+    const { orderId } = useParams();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const { user } = useAuth();
+
     const [loading, setLoading] = useState(true);
-    const [orderId, setOrderId] = useState(null);
+    const [order, setOrder] = useState(null);
+    const [retryLoading, setRetryLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Get error details from navigation state
+    const { error: paymentError, canRetry = true } = location.state || {};
 
     useEffect(() => {
-        // Get order ID from URL params or localStorage
-        const orderIdFromUrl = searchParams.get("orderId");
-        const orderIdFromStorage = localStorage.getItem("pendingOrderId");
+        const fetchOrderDetails = async () => {
+            try {
+                if (!user) {
+                    navigate("/login");
+                    return;
+                }
 
-        const finalOrderId = orderIdFromUrl || orderIdFromStorage;
+                if (!orderId) {
+                    setError("Order ID is missing");
+                    return;
+                }
 
-        if (finalOrderId) {
-            setOrderId(finalOrderId);
-        }
+                const orderData = await getOrderById(orderId);
+                if (!orderData) {
+                    setError("Order not found");
+                    return;
+                }
 
-        // Brief loading for better UX
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-    }, [searchParams]);
+                setOrder(orderData);
+            } catch (err) {
+                console.error("Error fetching order:", err);
+                setError("Failed to load order details");
+            } finally {
+                // Brief loading for better UX
+                setTimeout(() => setLoading(false), 1000);
+            }
+        };
 
-    const handleRetryPayment = () => {
-        if (orderId) {
-            // Navigate to order detail page where user can retry payment
-            navigate(`/orders/${orderId}`);
-        } else {
-            // Navigate to orders page
-            navigate("/orders");
+        fetchOrderDetails();
+    }, [orderId, user, navigate]);
+
+    const handleRetryPayment = async () => {
+        if (!order || retryLoading) return;
+
+        try {
+            setRetryLoading(true);
+            toast.loading("Initiating payment retry...");
+
+            // Retry payment for the order
+            const { razorpayOrderId } = await retryRazorpayPayment(orderId);
+
+            // Initialize Razorpay payment
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.totalAmount * 100,
+                currency: "INR",
+                name: "AffordIndia",
+                description: `Retry Payment - Order #${order.orderNumber}`,
+                order_id: razorpayOrderId,
+                handler: async (response) => {
+                    try {
+                        toast.dismiss();
+                        toast.loading("Verifying payment...");
+
+                        const verification = await verifyRazorpayPayment({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            orderId: orderId,
+                        });
+
+                        toast.dismiss();
+                        if (verification.success) {
+                            toast.success("Payment successful!");
+                            navigate(`/order-confirmation/${orderId}`);
+                        } else {
+                            toast.error("Payment verification failed");
+                            setError(
+                                "Payment verification failed. Please try again."
+                            );
+                        }
+                    } catch (error) {
+                        toast.dismiss();
+                        toast.error("Payment verification failed");
+                        setError(
+                            error.message || "Payment verification failed"
+                        );
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        toast.dismiss();
+                        toast.error("Payment cancelled");
+                    },
+                },
+                prefill: {
+                    name: user?.name || "",
+                    email: user?.email || "",
+                    contact: user?.phone || "",
+                },
+                theme: {
+                    color: "#3B82F6",
+                },
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
+        } catch (err) {
+            console.error("Payment retry error:", err);
+            toast.dismiss();
+            toast.error(err.message || "Failed to retry payment");
+            setError(
+                err.message || "Failed to retry payment. Please try again."
+            );
+        } finally {
+            setRetryLoading(false);
         }
     };
 
@@ -44,7 +142,18 @@ const PaymentFailed = () => {
     };
 
     const handleContinueShopping = () => {
-        navigate("/products");
+        navigate("/");
+    };
+
+    const handleViewOrders = () => {
+        navigate("/orders");
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+        }).format(amount);
     };
 
     if (loading) {
@@ -62,27 +171,122 @@ const PaymentFailed = () => {
         );
     }
 
+    if (error) {
+        return (
+            <div className="max-w-2xl mx-auto px-4 py-16">
+                <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <FaExclamationTriangle className="text-red-500 text-3xl" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-[#404040] mb-4">
+                        Error Loading Order
+                    </h1>
+                    <p className="text-gray-600 mb-6">{error}</p>
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            onClick={handleViewOrders}
+                            className="bg-[#C1B086] text-white px-6 py-3 rounded-lg hover:bg-[#B8A474] transition-colors font-medium"
+                        >
+                            View Orders
+                        </button>
+                        <button
+                            onClick={handleContinueShopping}
+                            className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                        >
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-2xl mx-auto px-4 py-16">
-            <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
+        <div className="max-w-3xl mx-auto px-4 py-16">
+            <div className="bg-white border border-gray-300 rounded-lg p-8">
                 {/* Failed Icon */}
-                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <FaTimesCircle className="text-red-500 text-3xl" />
+                <div className="text-center mb-8">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <FaTimesCircle className="text-red-500 text-3xl" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-[#404040] mb-4">
+                        Payment Failed
+                    </h1>
+                    <p className="text-lg text-gray-600 mb-2">
+                        {paymentError ||
+                            "Your payment could not be processed at this time."}
+                    </p>
                 </div>
 
-                {/* Failed Message */}
-                <h1 className="text-3xl font-bold text-[#404040] mb-4">
-                    Payment Failed
-                </h1>
+                {/* Order Details */}
+                {order && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+                        <h3 className="text-lg font-semibold text-[#404040] mb-4">
+                            Order Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p className="text-gray-600">Order Number:</p>
+                                <p className="font-medium">
+                                    {order.orderNumber}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-gray-600">Amount:</p>
+                                <p className="font-medium text-lg text-[#C1B086]">
+                                    {formatCurrency(order.totalAmount)}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-gray-600">Payment Method:</p>
+                                <p className="font-medium">
+                                    {order.paymentMethod}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-gray-600">Status:</p>
+                                <span className="inline-block bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
+                                    Payment Pending
+                                </span>
+                            </div>
+                        </div>
 
-                <p className="text-lg text-gray-600 mb-2">
-                    Your payment could not be processed at this time.
-                </p>
-
-                {orderId && (
-                    <p className="text-sm text-gray-500 mb-6">
-                        Order ID: #{orderId.slice(-8)}
-                    </p>
+                        {order.items && order.items.length > 0 && (
+                            <div className="mt-4">
+                                <p className="text-gray-600 text-sm mb-2">
+                                    Items ({order.items.length}):
+                                </p>
+                                <div className="space-y-2">
+                                    {order.items
+                                        .slice(0, 3)
+                                        .map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex justify-between text-sm"
+                                            >
+                                                <span>
+                                                    {item.productName ||
+                                                        item.name}{" "}
+                                                    × {item.quantity}
+                                                </span>
+                                                <span>
+                                                    {formatCurrency(
+                                                        item.price *
+                                                            item.quantity
+                                                    )}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    {order.items.length > 3 && (
+                                        <p className="text-xs text-gray-500">
+                                            ... and {order.items.length - 3}{" "}
+                                            more items
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {/* Failure Details */}
@@ -92,12 +296,18 @@ const PaymentFailed = () => {
                             <FaExclamationTriangle />
                             Payment was not completed
                         </p>
-                        <p>• Your order is on hold pending payment</p>
-                        <p>• No amount has been charged to your account</p>
-                        <p>
-                            • You can try paying again or choose a different
-                            payment method
-                        </p>
+                        <div className="text-center space-y-1">
+                            <p>• Your order is on hold pending payment</p>
+                            <p>• No amount has been charged to your account</p>
+                            <p>
+                                • Stock is reserved temporarily (will be
+                                released if not paid within 24 hours)
+                            </p>
+                            <p>
+                                • You can retry payment or choose a different
+                                payment method
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -107,32 +317,40 @@ const PaymentFailed = () => {
                         <p className="font-medium mb-2">
                             Common reasons for payment failure:
                         </p>
-                        <ul className="text-left space-y-1">
+                        <ul className="text-left space-y-1 ml-4">
                             <li>• Insufficient funds in your account</li>
                             <li>• Network connectivity issues</li>
-                            <li>• Card limit exceeded</li>
-                            <li>• Incorrect card details</li>
+                            <li>• Daily transaction limit exceeded</li>
+                            <li>• Incorrect card details or expired card</li>
                             <li>• Payment gateway timeout</li>
+                            <li>• International transactions blocked</li>
                         </ul>
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    {orderId && (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+                    {canRetry && order && (
                         <button
                             onClick={handleRetryPayment}
-                            className="bg-[#C1B086] text-white px-6 py-3 rounded-lg hover:bg-[#B8A474] transition-colors font-medium"
+                            disabled={retryLoading}
+                            className="bg-[#C1B086] text-white px-6 py-3 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            Retry Payment
+                            {retryLoading ? (
+                                <FaSpinner className="animate-spin" />
+                            ) : (
+                                <FaRedo />
+                            )}
+                            {retryLoading ? "Processing..." : "Retry Payment"}
                         </button>
                     )}
 
                     <button
-                        onClick={handleViewCart}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        onClick={handleViewOrders}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
                     >
-                        View Cart
+                        <FaShoppingCart />
+                        View My Orders
                     </button>
 
                     <button
@@ -143,13 +361,28 @@ const PaymentFailed = () => {
                     </button>
                 </div>
 
-                {/* Help Text */}
-                <div className="mt-8 text-xs text-gray-500">
-                    <p>
-                        Still facing issues? Contact us at
-                        support@affordindia.com
-                    </p>
-                    <p>Or call us at +91-XXXX-XXXX-XX</p>
+                {/* Help Section */}
+                <div className="border-t border-gray-200 pt-6 text-center">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <FaPhone className="text-blue-600" />
+                            <p className="font-medium text-blue-800">
+                                Need Help?
+                            </p>
+                        </div>
+                        <div className="text-sm text-blue-700 space-y-1">
+                            <p>Contact our support team for assistance:</p>
+                            <p className="font-medium">
+                                Email: support@affordindia.com
+                            </p>
+                            <p className="font-medium">
+                                Phone: +91-XXXX-XXXX-XX
+                            </p>
+                            <p className="text-xs mt-2">
+                                Available Mon-Sat, 9:00 AM - 7:00 PM
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
