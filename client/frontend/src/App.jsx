@@ -29,6 +29,7 @@ import OrderingProduct from "./pages/static/OrderingProduct.jsx";
 import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
 import ExchangePolicy from "./pages/static/ExchangePolicy.jsx";
 import PaymentPolicy from "./pages/static/PaymentPolicy.jsx";
+import TermsCondition from "./pages/static/TermsCondition.jsx";
 import Faq from "./pages/static/Faq.jsx";
 import AboutUs from "./pages/static/AboutUs.jsx";
 import ShippingDelivery from "./pages/static/OrderingProduct.jsx";
@@ -187,6 +188,10 @@ const App = () => {
                                 <Route
                                     path="/productcare"
                                     element={<ProductCare />}
+                                />
+                                <Route
+                                    path="/terms-and-conditions"
+                                    element={<TermsCondition />}
                                 />
 
                                 <Route
