@@ -1,14 +1,3 @@
-/**
- * Razorpay API Functions
- *
- * PAYMENT PROVIDER MIGRATION NOTES:
- * - These functions replace HDFC payment API calls
- * - Provides Razorpay-specific payment operations
- * - Includes payment verification and retry functionality
- * - Migration date: October 15, 2025
- * - Branch: feat/razorpay
- */
-
 import api from "./axios.js";
 
 /**

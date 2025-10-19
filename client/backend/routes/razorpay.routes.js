@@ -1,14 +1,3 @@
-/**
- * Razorpay Payment Routes
- *
- * PAYMENT PROVIDER MIGRATION NOTES:
- * - These routes replace HDFC payment routes in payment.routes.js
- * - HDFC routes preserved in payment.routes.js for rollback capability
- * - Provides dedicated Razorpay endpoints with improved security
- * - Migration date: October 15, 2025
- * - Branch: feat/razorpay
- */
-
 import express from "express";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import {
@@ -210,80 +199,6 @@ router.use((error, req, res, next) => {
                 : error.message,
         errorCode: "INTERNAL_ERROR",
         timestamp: new Date().toISOString(),
-    });
-});
-
-// =================== ROUTE DOCUMENTATION ===================
-
-/**
- * API Documentation Endpoint
- * GET /api/razorpay/docs
- *
- * Returns: Available endpoints and their usage
- */
-router.get("/docs", (req, res) => {
-    const endpoints = [
-        {
-            method: "POST",
-            path: "/api/razorpay/create-order",
-            description: "Create Razorpay order for payment",
-            auth: "Required",
-            body: { orderId: "string" },
-        },
-        {
-            method: "POST",
-            path: "/api/razorpay/verify-payment",
-            description: "Verify payment signature and update order",
-            auth: "Required",
-            body: {
-                razorpay_order_id: "string",
-                razorpay_payment_id: "string",
-                razorpay_signature: "string",
-                orderId: "string",
-            },
-        },
-        {
-            method: "POST",
-            path: "/api/razorpay/retry-payment",
-            description: "Retry failed payment attempt",
-            auth: "Required",
-            body: { orderId: "string" },
-        },
-        {
-            method: "POST",
-            path: "/api/razorpay/webhook",
-            description: "Handle Razorpay webhook notifications",
-            auth: "Signature verification",
-            body: "Razorpay webhook payload",
-        },
-        {
-            method: "GET",
-            path: "/api/razorpay/payment-status/:paymentId",
-            description: "Get payment status from Razorpay",
-            auth: "Required",
-            params: { paymentId: "pay_xxxxx" },
-        },
-        {
-            method: "GET",
-            path: "/api/razorpay/order-status/:orderId",
-            description: "Get order status from Razorpay",
-            auth: "Required",
-            params: { orderId: "order_xxxxx" },
-        },
-        {
-            method: "GET",
-            path: "/api/razorpay/health",
-            description: "Check Razorpay service health",
-            auth: "None",
-            params: {},
-        },
-    ];
-
-    res.json({
-        service: "Razorpay Payment Gateway API",
-        version: "1.0.0",
-        migration: "Replaced HDFC SmartGateway",
-        endpoints,
     });
 });
 

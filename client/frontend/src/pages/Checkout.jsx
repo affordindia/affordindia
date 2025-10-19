@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+
+import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { useProfile } from "../context/ProfileContext.jsx";
 import { createOrder } from "../api/order.js";
 import { calculateShipping } from "../api/shipping.js";
+import { verifyRazorpayPayment } from "../api/razorpay.js";
+
 import OrderSummary from "../components/checkout/OrderSummary.jsx";
 import ShippingForm from "../components/checkout/ShippingForm.jsx";
 import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 import Loader from "../components/common/Loader.jsx";
-
-// =================== PAYMENT PROVIDER MIGRATION ===================
-// Import Razorpay API functions for payment integration
-import { verifyRazorpayPayment } from "../api/razorpay.js";
-import { toast } from "react-hot-toast";
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -313,7 +312,6 @@ const Checkout = () => {
 
             // Handle different payment methods
             if (paymentMethod === "ONLINE") {
-                // =================== RAZORPAY PAYMENT FLOW (SIMPLIFIED) ===================
                 console.log(
                     "🔄 Initiating Razorpay payment for order:",
                     order._id

@@ -1,14 +1,3 @@
-/**
- * Razorpay Payment Controller
- *
- * PAYMENT PROVIDER MIGRATION NOTES:
- * - This controller replaces HDFC payment handling in payment.controller.js
- * - HDFC controller preserved in payment.controller.js for rollback capability
- * - Provides dedicated Razorpay request handlers with improved validation
- * - Migration date: October 15, 2025
- * - Branch: feat/razorpay
- */
-
 import {
     createRazorpayOrder,
     verifyRazorpayPayment,

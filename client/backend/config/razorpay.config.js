@@ -1,13 +1,3 @@
-/**
- * Razorpay Payment Gateway Configuration
- *
- * PAYMENT PROVIDER MIGRATION NOTES:
- * - This is the new Razorpay configuration replacing HDFC SmartGateway
- * - HDFC config preserved in hdfc.config.js for rollback capability
- * - Migration date: October 15, 2025
- * - Branch: feat/razorpay
- */
-
 export default {
     // API Credentials
     keyId: process.env.RAZORPAY_KEY_ID,

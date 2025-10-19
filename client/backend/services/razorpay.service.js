@@ -1,14 +1,3 @@
-/**
- * Razorpay Payment Gateway Service
- *
- * PAYMENT PROVIDER MIGRATION NOTES:
- * - This service replaces HDFC paymentGateway.service.js functionality
- * - HDFC service preserved in paymentGateway.service.js for rollback capability
- * - Provides complete Razorpay integration with improved error handling
- * - Migration date: October 15, 2025
- * - Branch: feat/razorpay
- */
-
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import razorpayConfig from "../config/razorpay.config.js";
