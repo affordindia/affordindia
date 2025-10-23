@@ -439,7 +439,7 @@ export const retryPayment = async (req, res, next) => {
 
         // Update retry attempt
         order.paymentAttempts = (order.paymentAttempts || 0) + 1;
-        order.lastPaymentAttempt = new Date();
+        order.lastPaymentAttemptAt = new Date();
         order.paymentTimeoutAt = new Date(Date.now() + 15 * 60 * 1000);
 
         await order.save();

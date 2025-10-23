@@ -358,7 +358,7 @@ const Checkout = () => {
                         prefill: {
                             name: userName || user?.name || receiverName,
                             email: user?.email || "",
-                            contact: receiverPhone || user?.phone || "",
+                            contact: user.phone || receiverPhone || "",
                         },
                         theme: {
                             color: "#B76E79",

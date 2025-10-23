@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
-import { verifyPaymentStatus } from "../api/payment.js";
+// import { verifyPaymentStatus } from "../api/payment.js"; // Legacy API - commented out
+import {
+    verifyRazorpayPayment,
+    retryRazorpayPayment,
+    getRazorpayOrderStatus,
+} from "../api/razorpay.js";
 import { checkInvoiceExists, downloadInvoice } from "../api/invoice.js";
 import Loader from "../components/common/Loader.jsx";
+import { toast } from "react-hot-toast";
 import {
     FaArrowLeft,
     FaBox,
@@ -15,6 +21,7 @@ import {
     FaTimesCircle,
     FaClock,
     FaFileInvoice,
+    FaRedo,
 } from "react-icons/fa";
 
 const OrderDetail = () => {
@@ -25,6 +32,8 @@ const OrderDetail = () => {
     const [error, setError] = useState("");
     const [verifyingPayment, setVerifyingPayment] = useState(false);
     const [verificationMessage, setVerificationMessage] = useState("");
+    const [retryingPayment, setRetryingPayment] = useState(false);
+    const [retryError, setRetryError] = useState("");
 
     // Invoice related state
     const [invoice, setInvoice] = useState(null);
@@ -77,26 +86,135 @@ const OrderDetail = () => {
             setVerifyingPayment(true);
             setVerificationMessage("");
 
-            const response = await verifyPaymentStatus(orderId);
+            // Check if order has razorpay order ID to verify against
+            if (!order.razorpayOrderId) {
+                setVerificationMessage(
+                    "No payment information found to verify."
+                );
+                return;
+            }
+
+            // Get the Razorpay order status
+            const response = await getRazorpayOrderStatus(
+                order.razorpayOrderId
+            );
 
             if (response.success) {
-                setVerificationMessage("Payment verified successfully!");
+                const razorpayOrder = response.data;
 
-                // Refresh order data to get updated payment status
-                const updatedOrder = await getOrderById(orderId);
-                setOrder(updatedOrder);
+                // Check if payment was successful on Razorpay side
+                if (razorpayOrder.status === "paid") {
+                    setVerificationMessage(
+                        "Payment verified successfully! Updating order status..."
+                    );
+
+                    // If Razorpay shows payment as successful, try to update our order
+                    // This should trigger our verification process
+                    const updatedOrder = await getOrderById(orderId);
+                    setOrder(updatedOrder);
+
+                    if (updatedOrder.paymentStatus === "paid") {
+                        setVerificationMessage(
+                            "Payment verified and order updated successfully!"
+                        );
+                    } else {
+                        setVerificationMessage(
+                            "Payment is successful but order update is pending. Please contact support if this persists."
+                        );
+                    }
+                } else if (
+                    razorpayOrder.status === "created" ||
+                    razorpayOrder.status === "attempted"
+                ) {
+                    setVerificationMessage(
+                        "Payment is still pending. Please complete the payment or try again later."
+                    );
+                } else {
+                    setVerificationMessage(
+                        `Payment status: ${razorpayOrder.status}. Please retry payment if needed.`
+                    );
+                }
             } else {
                 setVerificationMessage(
-                    response.message || "Payment verification failed"
+                    response.message || "Failed to verify payment status."
                 );
             }
         } catch (error) {
             console.error("Payment verification failed:", error);
             setVerificationMessage(
-                "Failed to verify payment. Please try again."
+                error.message || "Failed to verify payment. Please try again."
             );
         } finally {
             setVerifyingPayment(false);
+        }
+    };
+
+    const handleRetryPayment = async () => {
+        try {
+            setRetryingPayment(true);
+            setRetryError("");
+
+            // Call the retry payment API to get new Razorpay order
+            const { razorpayOrderId } = await retryRazorpayPayment(orderId);
+
+            // Initialize Razorpay payment
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.total * 100,
+                currency: "INR",
+                name: "AffordIndia",
+                description: `Retry Payment - Order #${order.orderId}`,
+                order_id: razorpayOrderId,
+                handler: async (response) => {
+                    try {
+                        const verification = await verifyRazorpayPayment({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            orderId: orderId,
+                        });
+
+                        if (verification.success) {
+                            // Refresh order to show updated status
+                            const updatedOrder = await getOrderById(orderId);
+                            setOrder(updatedOrder);
+                            navigate(`/order-confirmation/${orderId}`);
+                        } else {
+                            setRetryError(
+                                "Payment verification failed. Please contact support."
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Payment verification failed:", error);
+                        setRetryError(
+                            error.message || "Payment verification failed"
+                        );
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        console.log("Payment modal closed by user");
+                    },
+                },
+                prefill: {
+                    name: order.userName || order.user?.name || "",
+                    email: order.userEmail || order.user?.email || "",
+                    contact: order.userPhone || order.user?.phone || "",
+                },
+                theme: {
+                    color: "#B76E79",
+                },
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
+        } catch (error) {
+            console.error("Retry payment failed:", error);
+            setRetryError(
+                error.message || "Failed to retry payment. Please try again."
+            );
+        } finally {
+            setRetryingPayment(false);
         }
     };
 
@@ -364,34 +482,87 @@ const OrderDetail = () => {
                                     )}
 
                                     {/* Payment Action Buttons */}
-                                    {order.paymentMethod === "ONLINE" &&
+                                    {(order.paymentMethod === "ONLINE" ||
+                                        order.paymentMethod === "Razorpay") &&
                                         order.paymentStatus !== "paid" && (
-                                            <div className="mt-4 pt-3 border-t">
-                                                <button
-                                                    onClick={
-                                                        handleVerifyPayment
-                                                    }
-                                                    disabled={verifyingPayment}
-                                                    className="bg-[#C1B086] text-white px-4 py-2 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                                >
-                                                    {verifyingPayment ? (
-                                                        <>
-                                                            <FaClock className="animate-spin" />
-                                                            Verifying...
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <FaCheckCircle />
-                                                            Verify Payment
-                                                        </>
+                                            <div className="mt-4 pt-3 border-t space-y-3">
+                                                {/* Verify Payment Button - Show only if payment is older than 5 minutes */}
+                                                {order.paymentStatus ===
+                                                    "pending" &&
+                                                    Date.now() -
+                                                        new Date(
+                                                            order.createdAt
+                                                        ).getTime() >
+                                                        5 * 60 * 1000 && (
+                                                        <button
+                                                            onClick={
+                                                                handleVerifyPayment
+                                                            }
+                                                            disabled={
+                                                                verifyingPayment
+                                                            }
+                                                            className="w-full bg-[#C1B086] text-white px-4 py-2 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                        >
+                                                            {verifyingPayment ? (
+                                                                <>
+                                                                    <FaClock className="animate-spin" />
+                                                                    Verifying...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <FaCheckCircle />
+                                                                    Verify
+                                                                    Payment
+                                                                </>
+                                                            )}
+                                                        </button>
                                                     )}
-                                                </button>
 
+                                                {/* Retry Payment Button - Show for failed or old pending payments */}
+                                                {(order.paymentStatus ===
+                                                    "failed" ||
+                                                    (order.paymentStatus ===
+                                                        "pending" &&
+                                                        Date.now() -
+                                                            new Date(
+                                                                order.createdAt
+                                                            ).getTime() >
+                                                            10 * 60 * 1000)) &&
+                                                    order.status ===
+                                                        "pending" && (
+                                                        <button
+                                                            onClick={
+                                                                handleRetryPayment
+                                                            }
+                                                            disabled={
+                                                                retryingPayment
+                                                            }
+                                                            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                        >
+                                                            {retryingPayment ? (
+                                                                <>
+                                                                    <FaClock className="animate-spin" />
+                                                                    Processing...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <FaRedo />
+                                                                    Retry
+                                                                    Payment
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
+
+                                                {/* Verification Message */}
                                                 {verificationMessage && (
                                                     <div
-                                                        className={`mt-2 p-2 rounded text-xs ${
+                                                        className={`p-2 rounded text-xs ${
                                                             verificationMessage.includes(
                                                                 "successfully"
+                                                            ) ||
+                                                            verificationMessage.includes(
+                                                                "already verified"
                                                             )
                                                                 ? "bg-green-50 text-green-700 border border-green-200"
                                                                 : "bg-red-50 text-red-700 border border-red-200"
@@ -400,20 +571,73 @@ const OrderDetail = () => {
                                                         {verificationMessage}
                                                     </div>
                                                 )}
+
+                                                {/* Retry Error Message */}
+                                                {retryError && (
+                                                    <div className="p-2 rounded text-xs bg-red-50 text-red-700 border border-red-200">
+                                                        {retryError}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 
-                                    {order.paymentMethod === "ONLINE" &&
-                                        order.paymentStatus === "pending" && (
-                                            <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                                                <p className="text-xs text-yellow-700">
-                                                    ⚠️ Your payment is still
-                                                    pending. If you've already
-                                                    paid, click "Verify Payment"
-                                                    to check the status.
-                                                </p>
-                                            </div>
-                                        )}
+                                    {/* Payment Status Messages */}
+                                    {(order.paymentMethod === "ONLINE" ||
+                                        order.paymentMethod === "Razorpay") && (
+                                        <>
+                                            {/* Pending Payment Warning */}
+                                            {order.paymentStatus ===
+                                                "pending" && (
+                                                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                                    <p className="text-xs text-yellow-700">
+                                                        ⚠️ Your payment is still
+                                                        pending.
+                                                        {Date.now() -
+                                                            new Date(
+                                                                order.createdAt
+                                                            ).getTime() >
+                                                        5 * 60 * 1000
+                                                            ? " If you've already paid, click 'Verify Payment' to check the status."
+                                                            : " Please wait a few minutes for payment processing to complete."}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Failed Payment Warning */}
+                                            {order.paymentStatus ===
+                                                "failed" && (
+                                                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded">
+                                                    <p className="text-xs text-red-700">
+                                                        ❌ Payment failed. You
+                                                        can retry the payment by
+                                                        clicking "Retry Payment"
+                                                        button above. No charges
+                                                        have been made to your
+                                                        account.
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Old Pending Payment */}
+                                            {order.paymentStatus ===
+                                                "pending" &&
+                                                Date.now() -
+                                                    new Date(
+                                                        order.createdAt
+                                                    ).getTime() >
+                                                    10 * 60 * 1000 && (
+                                                    <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded">
+                                                        <p className="text-xs text-orange-700">
+                                                            🕒 Payment has been
+                                                            pending for a while.
+                                                            You can retry the
+                                                            payment or contact
+                                                            support.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
