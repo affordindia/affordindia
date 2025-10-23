@@ -373,17 +373,22 @@ export const retryPayment = async (req, res, next) => {
         // Find order by either MongoDB _id or custom orderId field
         const order = await Order.findOne({
             $or: [
-                { _id: orderId, user: req.user._id },           // MongoDB _id
-                { orderId: orderId, user: req.user._id }        // Custom orderId field
-            ]
+                { _id: orderId, user: req.user._id }, // MongoDB _id
+                { orderId: orderId, user: req.user._id }, // Custom orderId field
+            ],
         }).populate("user", "name email phone");
 
-        console.log("🔍 Order found:", order ? `ID: ${order._id}, OrderId: ${order.orderId}` : "No order found");
+        console.log(
+            "🔍 Order found:",
+            order
+                ? `ID: ${order._id}, OrderId: ${order.orderId}`
+                : "No order found"
+        );
 
         if (!order) {
             console.log("❌ Order not found with criteria:", {
                 orderId,
-                userId: req.user._id
+                userId: req.user._id,
             });
             return res.status(404).json({
                 success: false,
@@ -460,6 +465,7 @@ export const retryPayment = async (req, res, next) => {
             message: "Payment retry initiated",
             data: {
                 razorpayOrderId: order.razorpayOrderId,
+                razorpayKeyId: process.env.RAZORPAY_KEY_ID,
                 amount: order.total * 100, // Convert to paise
                 currency: "INR",
                 orderId: order.orderId,

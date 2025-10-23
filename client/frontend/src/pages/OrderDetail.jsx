@@ -155,11 +155,12 @@ const OrderDetail = () => {
             setRetryError("");
 
             // Call the retry payment API to get new Razorpay order
-            const { razorpayOrderId } = await retryRazorpayPayment(orderId);
+            const { razorpayOrderId, razorpayKeyId } =
+                await retryRazorpayPayment(orderId);
 
             // Initialize Razorpay payment
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                key: razorpayKeyId,
                 amount: order.total * 100,
                 currency: "INR",
                 name: "AffordIndia",
