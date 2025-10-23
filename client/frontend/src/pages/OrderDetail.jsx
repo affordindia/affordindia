@@ -206,6 +206,14 @@ const OrderDetail = () => {
                 },
             };
 
+            // Load Razorpay script if not already loaded (same as checkout flow)
+            if (!window.Razorpay) {
+                const script = document.createElement("script");
+                script.src = "https://checkout.razorpay.com/v1/checkout.js";
+                document.body.appendChild(script);
+                await new Promise((resolve) => (script.onload = resolve));
+            }
+
             const razorpay = new window.Razorpay(options);
             razorpay.open();
         } catch (error) {
