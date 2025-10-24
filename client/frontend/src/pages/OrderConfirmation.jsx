@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import { FaCheckCircle, FaTruck, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 
 const OrderConfirmation = () => {
@@ -30,12 +31,18 @@ const OrderConfirmation = () => {
     }, [orderId]);
 
     if (loading) {
-        return <Loader fullScreen={true} />;
+        return (
+            <>
+                <ScrollToTop />
+                <Loader fullScreen={true} />
+            </>
+        );
     }
 
     if (error || !order) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+                <ScrollToTop />
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
                     <p className="text-red-700 mb-4">
                         {error || "Order not found"}
@@ -53,6 +60,7 @@ const OrderConfirmation = () => {
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-8">
+            <ScrollToTop />
             {/* Success Header */}
             <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

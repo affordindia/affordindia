@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getOrders } from "../api/order.js";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import {
     FaBox,
     FaTruck,
@@ -84,45 +85,56 @@ const Orders = () => {
     };
 
     if (loading) {
-        return <Loader fullScreen={true} />;
+        return (
+            <>
+                <ScrollToTop />
+                <Loader fullScreen={true} />;
+            </>
+        );
     }
 
     if (error) {
         return (
-            <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                    <p className="text-red-700 mb-4">{error}</p>
-                    <button
-                        onClick={fetchOrders}
-                        className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
-                    >
-                        Try Again
-                    </button>
+            <>
+                <ScrollToTop />
+                <div className="max-w-6xl mx-auto px-4 py-16 text-center">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                        <p className="text-red-700 mb-4">{error}</p>
+                        <button
+                            onClick={fetchOrders}
+                            className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     if (orders.length === 0) {
         return (
-            <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
-                    <FaShoppingBag className="text-gray-400 text-4xl mx-auto mb-4" />
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                        No Orders Yet
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        You haven't placed any orders yet. Start shopping to see
-                        your orders here!
-                    </p>
-                    <Link
-                        to="/products"
-                        className="bg-[#B76E79] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#C68F98] transition-colors inline-block"
-                    >
-                        Start Shopping
-                    </Link>
+            <>
+                <ScrollToTop />
+                <div className="max-w-6xl mx-auto px-4 py-16 text-center">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
+                        <FaShoppingBag className="text-gray-400 text-4xl mx-auto mb-4" />
+                        <h2 className="text-xl font-semibold text-gray-700 mb-2">
+                            No Orders Yet
+                        </h2>
+                        <p className="text-gray-600 mb-6">
+                            You haven't placed any orders yet. Start shopping to
+                            see your orders here!
+                        </p>
+                        <Link
+                            to="/products"
+                            className="bg-[#B76E79] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#C68F98] transition-colors inline-block"
+                        >
+                            Start Shopping
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -130,24 +142,28 @@ const Orders = () => {
     if (!Array.isArray(orders)) {
         console.error("Orders is not an array:", orders);
         return (
-            <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                    <p className="text-red-700 mb-4">
-                        Error loading orders data
-                    </p>
-                    <button
-                        onClick={fetchOrders}
-                        className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
-                    >
-                        Try Again
-                    </button>
+            <>
+                <ScrollToTop />
+                <div className="max-w-6xl mx-auto px-4 py-16 text-center">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                        <p className="text-red-700 mb-4">
+                            Error loading orders data
+                        </p>
+                        <button
+                            onClick={fetchOrders}
+                            className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8">
+            <ScrollToTop />
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-[#404040] mb-2">

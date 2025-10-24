@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useProfile } from "../context/ProfileContext";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import Loader from "../components/common/Loader";
+import ScrollToTop from "../components/common/ScrollToTop";
 import ProfileForm from "../components/profile/ProfileForm";
 import AddressCard from "../components/profile/AddressCard";
 import AddressModal from "../components/common/AddressModal";
@@ -55,6 +56,7 @@ const Profile = () => {
 
     return (
         <div className="flex justify-center items-start py-10 bg-gray-100 min-h-screen">
+            <ScrollToTop />
             <div
                 className="p-8 rounded-lg shadow-md w-full max-w-4xl"
                 style={{ backgroundColor: "#fff" }}

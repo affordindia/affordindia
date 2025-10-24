@@ -16,6 +16,7 @@ import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -579,6 +580,7 @@ const Checkout = () => {
     if (cartLoading) {
         return (
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ScrollToTop />
                 <div className="text-center py-12">
                     <Loader size="large" />
                     <p className="mt-4 text-gray-600">Loading your cart...</p>
@@ -594,6 +596,7 @@ const Checkout = () => {
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            <ScrollToTop />
             {/* Payment Processing Overlay */}
             {(paymentProcessing || paymentVerifying) && (
                 <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">

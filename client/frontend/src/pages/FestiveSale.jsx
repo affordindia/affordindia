@@ -4,6 +4,7 @@ import { getBannersByIds } from "../api/banner.js";
 import ProductCard from "../components/common/ProductCard.jsx";
 import Banners from "../components/common/Banners.jsx";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import { FaHeart, FaGift, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useKeenSlider } from "keen-slider/react";
@@ -231,12 +232,18 @@ const FestiveSale = () => {
 
     // Show loading if products are loading
     if (loading) {
-        return <Loader fullScreen={true} />;
+        return (
+            <>
+                <ScrollToTop />
+                <Loader fullScreen={true} />
+            </>
+        );
     }
 
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center">
+                <ScrollToTop />
                 <div className="text-center">
                     <div className="text-red-500 text-6xl mb-4">⚠️</div>
                     <p className="text-[#404040] text-lg mb-4">{error}</p>
@@ -253,6 +260,7 @@ const FestiveSale = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <ScrollToTop />
             {/* Festival Banners - Use custom banners if available, otherwise fallback to material-based */}
             {banners.length > 0 ? (
                 <CustomBanners banners={banners} />

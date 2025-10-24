@@ -12,6 +12,7 @@ import {
     FaShoppingCart,
     FaPhone,
 } from "react-icons/fa";
+import ScrollToTop from "../components/common/ScrollToTop";
 
 const PaymentFailed = () => {
     const { orderId } = useParams();
@@ -159,6 +160,7 @@ const PaymentFailed = () => {
     if (loading) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16">
+                <ScrollToTop />
                 <div className="text-center">
                     <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FaSpinner className="text-orange-500 text-2xl animate-spin" />
@@ -174,6 +176,7 @@ const PaymentFailed = () => {
     if (error) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16">
+                <ScrollToTop />
                 <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <FaExclamationTriangle className="text-red-500 text-3xl" />
@@ -203,6 +206,7 @@ const PaymentFailed = () => {
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-16">
+            <ScrollToTop />
             <div className="bg-white border border-gray-300 rounded-lg p-8">
                 {/* Failed Icon */}
                 <div className="text-center mb-8">
