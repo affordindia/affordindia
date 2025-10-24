@@ -218,7 +218,7 @@ const ReviewForm = ({
                         type="button"
                         onClick={handleCancel}
                         disabled={loading}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-3 border-2 border-[#B76E79] text-[#B76E79] bg-white rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Cancel
                     </button>

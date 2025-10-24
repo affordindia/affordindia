@@ -94,7 +94,7 @@ const Orders = () => {
                     <p className="text-red-700 mb-4">{error}</p>
                     <button
                         onClick={fetchOrders}
-                        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
                     >
                         Try Again
                     </button>
@@ -117,7 +117,7 @@ const Orders = () => {
                     </p>
                     <Link
                         to="/products"
-                        className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors inline-block"
+                        className="bg-[#B76E79] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#C68F98] transition-colors inline-block"
                     >
                         Start Shopping
                     </Link>
@@ -137,7 +137,7 @@ const Orders = () => {
                     </p>
                     <button
                         onClick={fetchOrders}
-                        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
                     >
                         Try Again
                     </button>

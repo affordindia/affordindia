@@ -299,18 +299,18 @@ const OrderDetail = () => {
                         {error || "Order not found"}
                     </p>
                     <div className="flex gap-3 justify-center">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
-                        >
-                            Go Back
-                        </button>
                         <Link
                             to="/orders"
-                            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                            className="bg-[#B76E79] text-white px-4 py-2 rounded hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors"
                         >
                             View All Orders
                         </Link>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded hover:bg-[#B76E79] hover:text-white transition-colors"
+                        >
+                            Go Back
+                        </button>
                     </div>
                 </div>
             </div>
@@ -364,7 +364,7 @@ const OrderDetail = () => {
                                 <button
                                     onClick={handleDownloadInvoice}
                                     disabled={downloadingInvoice}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                                    className="bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:bg-white  hover:text-[#B76E79] ransition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                                 >
                                     {downloadingInvoice ? (
                                         <>
@@ -494,7 +494,7 @@ const OrderDetail = () => {
                                     {(order.paymentMethod === "ONLINE" ||
                                         order.paymentMethod === "Razorpay") &&
                                         order.paymentStatus !== "paid" && (
-                                            <div className="mt-4 pt-3 border-t space-y-3">
+                                            <div className="mt-4 pt-3 border-t flex items-center justify-center gap-4">
                                                 {/* Verify Payment Button - Show only if payment is older than 5 minutes */}
                                                 {order.paymentStatus ===
                                                     "pending" &&
@@ -510,7 +510,7 @@ const OrderDetail = () => {
                                                             disabled={
                                                                 verifyingPayment
                                                             }
-                                                            className="w-full bg-[#C1B086] text-white px-4 py-2 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                            className="w-full border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                         >
                                                             {verifyingPayment ? (
                                                                 <>
@@ -546,7 +546,7 @@ const OrderDetail = () => {
                                                             disabled={
                                                                 retryingPayment
                                                             }
-                                                            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                            className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                         >
                                                             {retryingPayment ? (
                                                                 <>
@@ -930,13 +930,13 @@ const OrderDetail = () => {
                         <div className="space-y-2">
                             <Link
                                 to="/orders"
-                                className="w-full bg-black text-white px-4 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors text-center block text-sm"
+                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-white hover:text-[#B76E79] transition-colors text-center block text-sm"
                             >
                                 View All Orders
                             </Link>
                             <Link
                                 to="/products"
-                                className="w-full bg-white border border-gray-300 text-[#404040] px-4 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center block text-sm"
+                                className="w-full bg-white border-2 border-[#B76E79] text-[#B76E79] px-4 py-2.5 rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors text-center block text-sm"
                             >
                                 Continue Shopping
                             </Link>

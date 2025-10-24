@@ -57,7 +57,7 @@ const Profile = () => {
         <div className="flex justify-center items-start py-10 bg-gray-100 min-h-screen">
             <div
                 className="p-8 rounded-lg shadow-md w-full max-w-4xl"
-                style={{ backgroundColor: "#E0E0E0" }}
+                style={{ backgroundColor: "#fff" }}
             >
                 {/* Error Message */}
                 {error && (

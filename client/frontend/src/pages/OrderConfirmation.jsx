@@ -42,7 +42,7 @@ const OrderConfirmation = () => {
                     </p>
                     <Link
                         to="/orders"
-                        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        className="bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
                     >
                         View All Orders
                     </Link>
@@ -369,13 +369,13 @@ const OrderConfirmation = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                     to="/orders"
-                    className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors text-center"
+                    className="bg-[#B76E79] border-2 border-[#B76E79] text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors text-center"
                 >
                     View All Orders
                 </Link>
                 <Link
                     to="/products"
-                    className="bg-white border border-gray-300 text-[#404040] px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center"
+                    className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors text-center"
                 >
                     Continue Shopping
                 </Link>
