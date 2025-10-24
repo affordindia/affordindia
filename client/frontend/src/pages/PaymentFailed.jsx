@@ -12,6 +12,7 @@ import {
     FaShoppingCart,
     FaPhone,
 } from "react-icons/fa";
+import ScrollToTop from "../components/common/ScrollToTop";
 
 const PaymentFailed = () => {
     const { orderId } = useParams();
@@ -159,6 +160,7 @@ const PaymentFailed = () => {
     if (loading) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16">
+                <ScrollToTop />
                 <div className="text-center">
                     <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FaSpinner className="text-orange-500 text-2xl animate-spin" />
@@ -174,6 +176,7 @@ const PaymentFailed = () => {
     if (error) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16">
+                <ScrollToTop />
                 <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <FaExclamationTriangle className="text-red-500 text-3xl" />
@@ -191,7 +194,7 @@ const PaymentFailed = () => {
                         </button>
                         <button
                             onClick={handleContinueShopping}
-                            className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                            className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium"
                         >
                             Continue Shopping
                         </button>
@@ -203,6 +206,7 @@ const PaymentFailed = () => {
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-16">
+            <ScrollToTop />
             <div className="bg-white border border-gray-300 rounded-lg p-8">
                 {/* Failed Icon */}
                 <div className="text-center mb-8">
@@ -227,14 +231,12 @@ const PaymentFailed = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
                                 <p className="text-gray-600">Order Number:</p>
-                                <p className="font-medium">
-                                    {order.orderNumber}
-                                </p>
+                                <p className="font-medium">{order.orderId}</p>
                             </div>
                             <div>
                                 <p className="text-gray-600">Amount:</p>
-                                <p className="font-medium text-lg text-[#C1B086]">
-                                    {formatCurrency(order.totalAmount)}
+                                <p className="font-medium text-lg ">
+                                    {formatCurrency(order.total)}
                                 </p>
                             </div>
                             <div>
@@ -265,13 +267,13 @@ const PaymentFailed = () => {
                                                 className="flex justify-between text-sm"
                                             >
                                                 <span>
-                                                    {item.productName ||
+                                                    {item.product.name ||
                                                         item.name}{" "}
                                                     × {item.quantity}
                                                 </span>
-                                                <span>
+                                                <span className="font-medium">
                                                     {formatCurrency(
-                                                        item.price *
+                                                        item.discountedPrice *
                                                             item.quantity
                                                     )}
                                                 </span>
@@ -334,7 +336,7 @@ const PaymentFailed = () => {
                         <button
                             onClick={handleRetryPayment}
                             disabled={retryLoading}
-                            className="bg-[#C1B086] text-white px-6 py-3 rounded-lg hover:bg-[#B8A474] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="bg-[#B76E79] text-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {retryLoading ? (
                                 <FaSpinner className="animate-spin" />
@@ -347,7 +349,7 @@ const PaymentFailed = () => {
 
                     <button
                         onClick={handleViewOrders}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
+                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium flex items-center justify-center gap-2"
                     >
                         <FaShoppingCart />
                         View My Orders
@@ -355,7 +357,7 @@ const PaymentFailed = () => {
 
                     <button
                         onClick={handleContinueShopping}
-                        className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium"
                     >
                         Continue Shopping
                     </button>
@@ -373,13 +375,11 @@ const PaymentFailed = () => {
                         <div className="text-sm text-blue-700 space-y-1">
                             <p>Contact our support team for assistance:</p>
                             <p className="font-medium">
-                                Email: support@affordindia.com
+                                Email: contact@affordindia.com
                             </p>
-                            <p className="font-medium">
-                                Phone: +91-XXXX-XXXX-XX
-                            </p>
+                            <p className="font-medium">Phone: +91-9899927002</p>
                             <p className="text-xs mt-2">
-                                Available Mon-Sat, 9:00 AM - 7:00 PM
+                                Available Mon-Sat, 10:00 AM - 6:00 PM
                             </p>
                         </div>
                     </div>

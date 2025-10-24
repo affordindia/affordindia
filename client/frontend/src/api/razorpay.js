@@ -84,7 +84,7 @@ export const retryRazorpayPayment = async (orderId) => {
         const response = await api.post("/razorpay/retry-payment", { orderId });
 
         console.log("✅ Payment retry initiated:", response.data);
-        return response.data;
+        return response.data.data; // Return the nested data object
     } catch (error) {
         console.error("❌ Failed to retry payment:", error);
 

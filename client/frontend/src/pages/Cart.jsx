@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import CouponSection from "../components/cart/CouponSection.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
@@ -73,12 +74,18 @@ const Cart = () => {
     };
 
     if (loading) {
-        return <Loader fullScreen={true} />;
+        return (
+            <>
+                <ScrollToTop />
+                <Loader fullScreen={true} />;
+            </>
+        );
     }
 
     if (!items.length) {
         return (
             <div className="max-w-4xl mx-auto px-4 py-16">
+                <ScrollToTop />
                 <div className="text-center">
                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg
@@ -114,6 +121,7 @@ const Cart = () => {
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-5">
+            <ScrollToTop />
             <h2 className="text-2xl font-bold mb-2">Your Shopping Cart</h2>
 
             {/* Header Row (Desktop Only) */}

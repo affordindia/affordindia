@@ -34,7 +34,7 @@ const ConfirmationModal = ({
                 return {
                     iconColor: "text-blue-600",
                     iconBg: "bg-blue-100",
-                    confirmBg: "bg-blue-600 hover:bg-blue-700",
+                    confirmBg: "bg-[#B76E79] hover:bg-[#C68F98]",
                     borderColor: "border-blue-200",
                 };
             default:
@@ -96,7 +96,7 @@ const ConfirmationModal = ({
                         <button
                             onClick={handleClose}
                             disabled={loading}
-                            className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-white border-2 border-[#B76E79] text-[#B76E79] rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50"
                         >
                             {cancelText}
                         </button>

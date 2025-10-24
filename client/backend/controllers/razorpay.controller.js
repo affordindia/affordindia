@@ -368,14 +368,28 @@ export const retryPayment = async (req, res, next) => {
         console.log("🔄 Razorpay: Retrying payment for user:", req.user._id);
 
         const { orderId } = req.body;
+        console.log("📋 Received orderId for retry:", orderId);
 
-        // Find order
+        // Find order by either MongoDB _id or custom orderId field
         const order = await Order.findOne({
-            orderId: orderId,
-            user: req.user._id,
+            $or: [
+                { _id: orderId, user: req.user._id }, // MongoDB _id
+                { orderId: orderId, user: req.user._id }, // Custom orderId field
+            ],
         }).populate("user", "name email phone");
 
+        console.log(
+            "🔍 Order found:",
+            order
+                ? `ID: ${order._id}, OrderId: ${order.orderId}`
+                : "No order found"
+        );
+
         if (!order) {
+            console.log("❌ Order not found with criteria:", {
+                orderId,
+                userId: req.user._id,
+            });
             return res.status(404).json({
                 success: false,
                 message: "Order not found",
@@ -439,7 +453,7 @@ export const retryPayment = async (req, res, next) => {
 
         // Update retry attempt
         order.paymentAttempts = (order.paymentAttempts || 0) + 1;
-        order.lastPaymentAttempt = new Date();
+        order.lastPaymentAttemptAt = new Date();
         order.paymentTimeoutAt = new Date(Date.now() + 15 * 60 * 1000);
 
         await order.save();
@@ -451,6 +465,7 @@ export const retryPayment = async (req, res, next) => {
             message: "Payment retry initiated",
             data: {
                 razorpayOrderId: order.razorpayOrderId,
+                razorpayKeyId: process.env.RAZORPAY_KEY_ID,
                 amount: order.total * 100, // Convert to paise
                 currency: "INR",
                 orderId: order.orderId,

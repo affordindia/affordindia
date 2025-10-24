@@ -339,14 +339,14 @@ const AddressForm = ({ editingAddress = null, onClose, inline = false }) => {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 px-4 py-2 bg-gray-200 border border-gray-400 text-gray-800 rounded hover:bg-gray-300 transition-colors font-medium"
+                        className="flex-1 px-4 py-2 bg-white border-2 border-[#B76E79] text-[#B76E79] rounded hover:bg-[#B76E79] hover:text-white transition-colors font-medium"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors disabled:opacity-50"
+                        className="flex-1 px-4 py-2 bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50"
                     >
                         {loading
                             ? "Saving..."

@@ -340,7 +340,7 @@ const AddressModal = ({ isOpen, onClose, editingAddress = null }) => {
                             type="button"
                             onClick={handleClose}
                             disabled={isSubmitting}
-                            className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            className="flex-1 px-4 py-3 bg-white border-2 border-[#B76E79] text-[#B76E79] rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>

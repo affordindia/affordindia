@@ -16,6 +16,7 @@ import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -66,6 +67,7 @@ const Checkout = () => {
     const [orderProcessing, setOrderProcessing] = useState(false);
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+    const [paymentVerifying, setPaymentVerifying] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -358,7 +360,7 @@ const Checkout = () => {
                         prefill: {
                             name: userName || user?.name || receiverName,
                             email: user?.email || "",
-                            contact: receiverPhone || user?.phone || "",
+                            contact: user.phone || receiverPhone || "",
                         },
                         theme: {
                             color: "#B76E79",
@@ -368,9 +370,9 @@ const Checkout = () => {
                                 // Set flag immediately to prevent ondismiss from interfering
                                 paymentProcessed = true;
 
-                                // Hide payment processing loader and reset all loading states
-                                setPaymentProcessing(false);
-                                setLoading(false);
+                                // Payment succeeded! Start verification process
+                                setPaymentProcessing(false); // Hide Razorpay modal loader
+                                setPaymentVerifying(true); // Show verification loader
                                 setOrderProcessing(false);
 
                                 console.log(
@@ -445,8 +447,9 @@ const Checkout = () => {
                                     },
                                 });
                             } catch (error) {
-                                // Hide payment processing loader and reset all loading states
+                                // Hide all loaders and reset states on error
                                 setPaymentProcessing(false);
+                                setPaymentVerifying(false);
                                 setLoading(false);
                                 setOrderProcessing(false);
 
@@ -480,6 +483,7 @@ const Checkout = () => {
 
                                 // Hide payment processing loader and reset all loading states
                                 setPaymentProcessing(false);
+                                setPaymentVerifying(false);
                                 setLoading(false);
                                 setOrderProcessing(false);
 
@@ -519,6 +523,7 @@ const Checkout = () => {
 
                 // Set payment successful flag to prevent cart empty redirect
                 setPaymentSuccessful(true);
+                setPaymentVerifying(true); // Show "confirming order" message
 
                 // Clear cart and navigate to confirmation
                 console.log("🧹 Clearing cart for COD order...");
@@ -567,6 +572,7 @@ const Checkout = () => {
             setLoading(false);
             setOrderProcessing(false);
             setPaymentProcessing(false);
+            setPaymentVerifying(false);
         }
     };
 
@@ -574,6 +580,7 @@ const Checkout = () => {
     if (cartLoading) {
         return (
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ScrollToTop />
                 <div className="text-center py-12">
                     <Loader size="large" />
                     <p className="mt-4 text-gray-600">Loading your cart...</p>
@@ -589,19 +596,23 @@ const Checkout = () => {
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            <ScrollToTop />
             {/* Payment Processing Overlay */}
-            {paymentProcessing && (
+            {(paymentProcessing || paymentVerifying) && (
                 <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
                         <div className="mb-4">
                             <Loader />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                            Processing Payment
+                            {paymentVerifying
+                                ? "Confirming Order"
+                                : "Processing Payment"}
                         </h3>
                         <p className="text-sm text-gray-600">
-                            Please wait while we initialize the payment
-                            gateway...
+                            {paymentVerifying
+                                ? "Order successful! Preparing confirmation..."
+                                : "Please wait while we initialize the payment gateway..."}
                         </p>
                         <p className="text-xs text-gray-500 mt-3">
                             Do not refresh or close this page
