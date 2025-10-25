@@ -494,15 +494,12 @@ const OrderDetail = () => {
                                     {(order.paymentMethod === "ONLINE" ||
                                         order.paymentMethod === "Razorpay") &&
                                         order.paymentStatus !== "paid" && (
-                                            <div className="mt-4 pt-3 border-t flex items-center justify-center gap-4">
-                                                {/* Verify Payment Button - Show only if payment is older than 5 minutes */}
-                                                {order.paymentStatus ===
-                                                    "pending" &&
-                                                    Date.now() -
-                                                        new Date(
-                                                            order.createdAt
-                                                        ).getTime() >
-                                                        5 * 60 * 1000 && (
+                                            <div className="mt-4 pt-3 border-t">
+                                                {/* Buttons Container - Side by Side */}
+                                                <div className="flex items-center justify-center gap-4 mb-3">
+                                                    {/* Verify Payment Button - Available immediately for pending payments */}
+                                                    {order.paymentStatus ===
+                                                        "pending" && (
                                                         <button
                                                             onClick={
                                                                 handleVerifyPayment
@@ -527,66 +524,67 @@ const OrderDetail = () => {
                                                         </button>
                                                     )}
 
-                                                {/* Retry Payment Button - Show for failed or old pending payments */}
-                                                {(order.paymentStatus ===
-                                                    "failed" ||
-                                                    (order.paymentStatus ===
-                                                        "pending" &&
-                                                        Date.now() -
-                                                            new Date(
-                                                                order.createdAt
-                                                            ).getTime() >
-                                                            10 * 60 * 1000)) &&
-                                                    order.status ===
-                                                        "pending" && (
-                                                        <button
-                                                            onClick={
-                                                                handleRetryPayment
-                                                            }
-                                                            disabled={
-                                                                retryingPayment
-                                                            }
-                                                            className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                    {/* Retry Payment Button - Show for failed or pending payments */}
+                                                    {(order.paymentStatus ===
+                                                        "failed" ||
+                                                        order.paymentStatus ===
+                                                            "pending") &&
+                                                        order.status ===
+                                                            "pending" && (
+                                                            <button
+                                                                onClick={
+                                                                    handleRetryPayment
+                                                                }
+                                                                disabled={
+                                                                    retryingPayment
+                                                                }
+                                                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:bg-white hover:text-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                            >
+                                                                {retryingPayment ? (
+                                                                    <>
+                                                                        <FaClock className="animate-spin" />
+                                                                        Processing...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <FaRedo />
+                                                                        Retry
+                                                                        Payment
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        )}
+                                                </div>
+
+                                                {/* Messages Container - Below Buttons */}
+                                                <div className="space-y-2">
+                                                    {/* Verification Message */}
+                                                    {verificationMessage && (
+                                                        <div
+                                                            className={`p-2 rounded text-xs ${
+                                                                verificationMessage.includes(
+                                                                    "successfully"
+                                                                ) ||
+                                                                verificationMessage.includes(
+                                                                    "already verified"
+                                                                )
+                                                                    ? "bg-green-50 text-green-700 border border-green-200"
+                                                                    : "bg-red-50 text-red-700 border border-red-200"
+                                                            }`}
                                                         >
-                                                            {retryingPayment ? (
-                                                                <>
-                                                                    <FaClock className="animate-spin" />
-                                                                    Processing...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <FaRedo />
-                                                                    Retry
-                                                                    Payment
-                                                                </>
-                                                            )}
-                                                        </button>
+                                                            {
+                                                                verificationMessage
+                                                            }
+                                                        </div>
                                                     )}
 
-                                                {/* Verification Message */}
-                                                {verificationMessage && (
-                                                    <div
-                                                        className={`p-2 rounded text-xs ${
-                                                            verificationMessage.includes(
-                                                                "successfully"
-                                                            ) ||
-                                                            verificationMessage.includes(
-                                                                "already verified"
-                                                            )
-                                                                ? "bg-green-50 text-green-700 border border-green-200"
-                                                                : "bg-red-50 text-red-700 border border-red-200"
-                                                        }`}
-                                                    >
-                                                        {verificationMessage}
-                                                    </div>
-                                                )}
-
-                                                {/* Retry Error Message */}
-                                                {retryError && (
-                                                    <div className="p-2 rounded text-xs bg-red-50 text-red-700 border border-red-200">
-                                                        {retryError}
-                                                    </div>
-                                                )}
+                                                    {/* Retry Error Message */}
+                                                    {retryError && (
+                                                        <div className="p-2 rounded text-xs bg-red-50 text-red-700 border border-red-200">
+                                                            {retryError}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
 
@@ -600,14 +598,12 @@ const OrderDetail = () => {
                                                 <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
                                                     <p className="text-xs text-yellow-700">
                                                         ⚠️ Your payment is still
-                                                        pending.
-                                                        {Date.now() -
-                                                            new Date(
-                                                                order.createdAt
-                                                            ).getTime() >
-                                                        5 * 60 * 1000
-                                                            ? " If you've already paid, click 'Verify Payment' to check the status."
-                                                            : " Please wait a few minutes for payment processing to complete."}
+                                                        pending. If you've
+                                                        already paid, click
+                                                        'Verify Payment' to
+                                                        check the status. You
+                                                        can also retry payment
+                                                        if needed.
                                                     </p>
                                                 </div>
                                             )}
@@ -627,24 +623,19 @@ const OrderDetail = () => {
                                                 </div>
                                             )}
 
-                                            {/* Old Pending Payment */}
+                                            {/* Pending Payment Status */}
                                             {order.paymentStatus ===
-                                                "pending" &&
-                                                Date.now() -
-                                                    new Date(
-                                                        order.createdAt
-                                                    ).getTime() >
-                                                    10 * 60 * 1000 && (
-                                                    <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded">
-                                                        <p className="text-xs text-orange-700">
-                                                            🕒 Payment has been
-                                                            pending for a while.
-                                                            You can retry the
-                                                            payment or contact
-                                                            support.
-                                                        </p>
-                                                    </div>
-                                                )}
+                                                "pending" && (
+                                                <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded">
+                                                    <p className="text-xs text-orange-700">
+                                                        🕒 Payment is currently
+                                                        pending. You can verify
+                                                        or retry the payment, or
+                                                        contact support if
+                                                        needed.
+                                                    </p>
+                                                </div>
+                                            )}
                                         </>
                                     )}
                                 </div>
