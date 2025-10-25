@@ -65,14 +65,16 @@ const PaymentFailed = () => {
 
         try {
             setRetryLoading(true);
+            setError(""); // Clear previous errors
             toast.loading("Initiating payment retry...");
 
-            // Retry payment for the order
-            const { razorpayOrderId } = await retryRazorpayPayment(orderId);
+            // Call the retry payment API to get new Razorpay order
+            const { razorpayOrderId, razorpayKeyId } =
+                await retryRazorpayPayment(orderId);
 
             // Initialize Razorpay payment
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                key: razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: order.totalAmount * 100,
                 currency: "INR",
                 name: "AffordIndia",
@@ -97,11 +99,12 @@ const PaymentFailed = () => {
                         } else {
                             toast.error("Payment verification failed");
                             setError(
-                                "Payment verification failed. Please try again."
+                                "Payment verification failed. Please contact support."
                             );
                         }
                     } catch (error) {
                         toast.dismiss();
+                        console.error("Payment verification failed:", error);
                         toast.error("Payment verification failed");
                         setError(
                             error.message || "Payment verification failed"
@@ -111,23 +114,41 @@ const PaymentFailed = () => {
                 modal: {
                     ondismiss: () => {
                         toast.dismiss();
-                        toast.error("Payment cancelled");
+                        console.log("Payment modal closed by user");
                     },
                 },
                 prefill: {
-                    name: user?.name || "",
-                    email: user?.email || "",
-                    contact: user?.phone || "",
+                    name:
+                        order.userName || order.user?.name || user?.name || "",
+                    email:
+                        order.userEmail ||
+                        order.user?.email ||
+                        user?.email ||
+                        "",
+                    contact:
+                        order.userPhone ||
+                        order.user?.phone ||
+                        user?.phone ||
+                        "",
                 },
                 theme: {
-                    color: "#3B82F6",
+                    color: "#B76E79", // Updated to brand color
                 },
             };
 
+            // Load Razorpay script if not already loaded
+            if (!window.Razorpay) {
+                const script = document.createElement("script");
+                script.src = "https://checkout.razorpay.com/v1/checkout.js";
+                document.body.appendChild(script);
+                await new Promise((resolve) => (script.onload = resolve));
+            }
+
+            toast.dismiss();
             const razorpay = new window.Razorpay(options);
             razorpay.open();
         } catch (err) {
-            console.error("Payment retry error:", err);
+            console.error("Retry payment failed:", err);
             toast.dismiss();
             toast.error(err.message || "Failed to retry payment");
             setError(
@@ -332,20 +353,27 @@ const PaymentFailed = () => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                    {canRetry && order && (
-                        <button
-                            onClick={handleRetryPayment}
-                            disabled={retryLoading}
-                            className="bg-[#B76E79] text-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {retryLoading ? (
-                                <FaSpinner className="animate-spin" />
-                            ) : (
-                                <FaRedo />
-                            )}
-                            {retryLoading ? "Processing..." : "Retry Payment"}
-                        </button>
-                    )}
+                    {/* Retry Payment Button - Show for failed or pending payments */}
+                    {order &&
+                        canRetry &&
+                        (order.paymentStatus === "failed" ||
+                            order.paymentStatus === "pending") &&
+                        order.status === "pending" && (
+                            <button
+                                onClick={handleRetryPayment}
+                                disabled={retryLoading}
+                                className="bg-[#B76E79] text-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {retryLoading ? (
+                                    <FaSpinner className="animate-spin" />
+                                ) : (
+                                    <FaRedo />
+                                )}
+                                {retryLoading
+                                    ? "Processing..."
+                                    : "Retry Payment"}
+                            </button>
+                        )}
 
                     <button
                         onClick={handleViewOrders}
@@ -377,9 +405,9 @@ const PaymentFailed = () => {
                             <p className="font-medium">
                                 Email: contact@affordindia.com
                             </p>
-                            <p className="font-medium">Phone: +91-9899927002</p>
+                            <p className="font-medium">Phone: +91-9211501006</p>
                             <p className="text-xs mt-2">
-                                Available Mon-Sat, 10:00 AM - 6:00 PM
+                                Available Mon-Sat, 10:00 AM - 5:00 PM
                             </p>
                         </div>
                     </div>
