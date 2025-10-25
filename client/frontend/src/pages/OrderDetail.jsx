@@ -179,22 +179,50 @@ const OrderDetail = () => {
                             // Refresh order to show updated status
                             const updatedOrder = await getOrderById(orderId);
                             setOrder(updatedOrder);
-                            navigate(`/order-confirmation/${orderId}`);
+
+                            // Navigate directly to order confirmation page (same as checkout)
+                            navigate(`/order-confirmation/${orderId}`, {
+                                replace: true,
+                                state: {
+                                    paymentSuccess: true,
+                                    paymentData: verification,
+                                },
+                            });
                         } else {
-                            setRetryError(
-                                "Payment verification failed. Please contact support."
-                            );
+                            // Navigate directly to payment failed page (same as checkout)
+                            navigate(`/payment-failed/${orderId}`, {
+                                replace: true,
+                                state: {
+                                    error: "Payment verification failed. Please contact support.",
+                                    canRetry: true,
+                                },
+                            });
                         }
                     } catch (error) {
                         console.error("Payment verification failed:", error);
-                        setRetryError(
-                            error.message || "Payment verification failed"
-                        );
+                        // Navigate directly to payment failed page (same as checkout)
+                        navigate(`/payment-failed/${orderId}`, {
+                            replace: true,
+                            state: {
+                                error:
+                                    error.message ||
+                                    "Payment verification failed",
+                                canRetry: true,
+                            },
+                        });
                     }
                 },
                 modal: {
                     ondismiss: () => {
                         console.log("Payment modal closed by user");
+                        // Navigate directly to payment failed page (same as checkout)
+                        navigate(`/payment-failed/${orderId}`, {
+                            replace: true,
+                            state: {
+                                error: "Payment was cancelled by user",
+                                canRetry: true,
+                            },
+                        });
                     },
                 },
                 prefill: {
@@ -219,9 +247,16 @@ const OrderDetail = () => {
             razorpay.open();
         } catch (error) {
             console.error("Retry payment failed:", error);
-            setRetryError(
-                error.message || "Failed to retry payment. Please try again."
-            );
+            // Navigate directly to payment failed page for setup/connection errors (same as checkout)
+            navigate(`/payment-failed/${orderId}`, {
+                replace: true,
+                state: {
+                    error:
+                        error.message ||
+                        "Failed to retry payment. Please try again.",
+                    canRetry: true,
+                },
+            });
         } finally {
             setRetryingPayment(false);
         }

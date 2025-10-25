@@ -23,7 +23,8 @@ const PaymentFailed = () => {
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState(null);
     const [retryLoading, setRetryLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // For fatal errors (shows error page)
+    const [retryMessage, setRetryMessage] = useState(null); // For retry-related messages
 
     // Get error details from navigation state
     const { error: paymentError, canRetry = true } = location.state || {};
@@ -66,6 +67,7 @@ const PaymentFailed = () => {
         try {
             setRetryLoading(true);
             setError(""); // Clear previous errors
+            setRetryMessage(""); // Clear previous retry messages
             toast.loading("Initiating payment retry...");
 
             // Call the retry payment API to get new Razorpay order
@@ -95,10 +97,18 @@ const PaymentFailed = () => {
                         toast.dismiss();
                         if (verification.success) {
                             toast.success("Payment successful!");
-                            navigate(`/order-confirmation/${orderId}`);
+                            // Navigate directly to order confirmation page (same as checkout)
+                            navigate(`/order-confirmation/${orderId}`, {
+                                replace: true,
+                                state: {
+                                    paymentSuccess: true,
+                                    paymentData: verification,
+                                },
+                            });
                         } else {
                             toast.error("Payment verification failed");
-                            setError(
+                            // Stay on payment failed page but update the retry message
+                            setRetryMessage(
                                 "Payment verification failed. Please contact support."
                             );
                         }
@@ -106,7 +116,8 @@ const PaymentFailed = () => {
                         toast.dismiss();
                         console.error("Payment verification failed:", error);
                         toast.error("Payment verification failed");
-                        setError(
+                        // Stay on payment failed page but update the retry message
+                        setRetryMessage(
                             error.message || "Payment verification failed"
                         );
                     }
@@ -115,6 +126,9 @@ const PaymentFailed = () => {
                     ondismiss: () => {
                         toast.dismiss();
                         console.log("Payment modal closed by user");
+                        // For PaymentFailed page, just show a toast and stay on same page
+                        // Don't set error state as it would trigger the error page
+                        // toast.info("Payment cancelled. You can try again anytime.");
                     },
                 },
                 prefill: {
@@ -151,7 +165,7 @@ const PaymentFailed = () => {
             console.error("Retry payment failed:", err);
             toast.dismiss();
             toast.error(err.message || "Failed to retry payment");
-            setError(
+            setRetryMessage(
                 err.message || "Failed to retry payment. Please try again."
             );
         } finally {
@@ -390,6 +404,17 @@ const PaymentFailed = () => {
                         Continue Shopping
                     </button>
                 </div>
+
+                {/* Retry Message Display */}
+                {retryMessage && (
+                    <div className="mb-6">
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-700">
+                                {retryMessage}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Help Section */}
                 <div className="border-t border-gray-200 pt-6 text-center">
