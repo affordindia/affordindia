@@ -388,7 +388,7 @@ const Checkout = () => {
                                         response.razorpay_payment_id,
                                     razorpay_signature:
                                         response.razorpay_signature,
-                                    orderId: order.orderId, // Use custom orderId instead of MongoDB _id
+                                    orderId: order._id,
                                 });
 
                                 console.log(
