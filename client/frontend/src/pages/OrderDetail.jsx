@@ -34,6 +34,7 @@ const OrderDetail = () => {
     const [verificationMessage, setVerificationMessage] = useState("");
     const [retryingPayment, setRetryingPayment] = useState(false);
     const [retryError, setRetryError] = useState("");
+    const [paymentRedirecting, setPaymentRedirecting] = useState(false);
 
     // Invoice related state
     const [invoice, setInvoice] = useState(null);
@@ -176,7 +177,10 @@ const OrderDetail = () => {
                         });
 
                         if (verification.success) {
-                            // Refresh order to show updated status
+                            // Set redirecting state to show loader
+                            setPaymentRedirecting(true);
+
+                            // Refresh order to show updated status (but don't show it to user)
                             const updatedOrder = await getOrderById(orderId);
                             setOrder(updatedOrder);
 
@@ -259,6 +263,7 @@ const OrderDetail = () => {
             });
         } finally {
             setRetryingPayment(false);
+            setPaymentRedirecting(false);
         }
     };
 
@@ -324,6 +329,28 @@ const OrderDetail = () => {
 
     if (loading) {
         return <Loader fullScreen={true} />;
+    }
+
+    // Show payment redirect loader
+    if (paymentRedirecting) {
+        return (
+            <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
+                    <div className="mb-4">
+                        <Loader />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        Confirming Order
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                        Payment successful! Preparing confirmation...
+                    </p>
+                    <p className="text-xs text-gray-500 mt-3">
+                        Do not refresh or close this page
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     if (error || !order) {

@@ -30,12 +30,10 @@ export const createOrder = async (req, res, next) => {
 
         const { orderId } = req.body;
 
-        // Find order in database - handle both MongoDB _id and custom orderId
+        // Find order in database using MongoDB _id
         const order = await Order.findOne({
-            $or: [
-                { _id: orderId, user: req.user._id }, // MongoDB _id
-                { orderId: orderId, user: req.user._id }, // Custom orderId field
-            ],
+            _id: orderId,
+            user: req.user._id,
         }).populate("user", "name email phone");
 
         if (!order) {
@@ -157,12 +155,10 @@ export const verifyPayment = async (req, res, next) => {
             orderId,
         } = req.body;
 
-        // Find order in database - handle both MongoDB _id and custom orderId
+        // Find order in database using MongoDB _id
         const order = await Order.findOne({
-            $or: [
-                { _id: orderId, user: req.user._id }, // MongoDB _id
-                { orderId: orderId, user: req.user._id }, // Custom orderId field
-            ],
+            _id: orderId,
+            user: req.user._id,
             razorpayOrderId: razorpay_order_id,
         });
 
@@ -374,12 +370,10 @@ export const retryPayment = async (req, res, next) => {
         const { orderId } = req.body;
         console.log("📋 Received orderId for retry:", orderId);
 
-        // Find order by either MongoDB _id or custom orderId field
+        // Find order using MongoDB _id
         const order = await Order.findOne({
-            $or: [
-                { _id: orderId, user: req.user._id }, // MongoDB _id
-                { orderId: orderId, user: req.user._id }, // Custom orderId field
-            ],
+            _id: orderId,
+            user: req.user._id,
         }).populate("user", "name email phone");
 
         console.log(
