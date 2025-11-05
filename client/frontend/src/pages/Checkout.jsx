@@ -583,7 +583,7 @@ const Checkout = () => {
                 <ScrollToTop />
                 <div className="text-center py-12">
                     <Loader size="large" />
-                    <p className="mt-4 text-gray-600">Loading your cart...</p>
+                    <p className="mt-4 text-[#404040]">Loading your cart...</p>
                 </div>
             </div>
         );
@@ -604,12 +604,12 @@ const Checkout = () => {
                         <div className="mb-4">
                             <Loader />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        <h3 className="text-lg font-semibold text-[#404040] mb-2">
                             {paymentVerifying
                                 ? "Confirming Order"
                                 : "Processing Payment"}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-[#404040]">
                             {paymentVerifying
                                 ? "Order successful! Preparing confirmation..."
                                 : "Please wait while we initialize the payment gateway..."}
@@ -643,12 +643,12 @@ const Checkout = () => {
 
                     {/* Your Details Section */}
                     <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                        <h3 className="text-lg font-semibold text-[#404040] mb-4">
                             Your Details
                         </h3>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[#404040] mb-2">
                                     Your Name *
                                 </label>
                                 <input
@@ -678,14 +678,14 @@ const Checkout = () => {
                                 )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[#404040] mb-2">
                                     Your Phone
                                 </label>
                                 <input
                                     type="text"
                                     value={user?.phone || ""}
                                     disabled
-                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm cursor-not-allowed"
+                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-[#404040] text-sm cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -705,14 +705,14 @@ const Checkout = () => {
                                 className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
                                 style={{ accentColor: "#b76e79" }}
                             />
-                            <span className="font-medium text-gray-800">
+                            <span className="font-medium text-[#404040]">
                                 Ordering for someone else?
                             </span>
                         </label>
                         {isOrderingForSomeoneElse && (
                             <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-gray-200">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-[#404040] mb-2">
                                         Receiver Name *
                                     </label>
                                     <input
@@ -745,7 +745,7 @@ const Checkout = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-[#404040] mb-2">
                                         Receiver Phone *
                                     </label>
                                     <input

@@ -120,11 +120,11 @@ const AddressSelector = ({
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg border border-gray-300">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             {/* Header */}
             <div className="flex items-center gap-2 mb-6">
-                <FaTruck className="text-gray-600" />
-                <h3 className="text-lg font-semibold text-gray-800">
+                <FaTruck className="text-[#404040]" />
+                <h3 className="text-lg font-semibold text-[#404040]">
                     Shipping Address
                 </h3>
             </div>
@@ -132,12 +132,12 @@ const AddressSelector = ({
             {/* Default Address Section */}
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-medium text-gray-700">
+                    <h4 className="text-sm font-medium text-[#404040]">
                         Default Address
                     </h4>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm text-[#404040] hover:bg-gray-50 transition-colors"
                     >
                         <FaPlus className="text-xs" />
                         ADD NEW ADDRESS
@@ -166,16 +166,16 @@ const AddressSelector = ({
                                         onChange={() =>
                                             handleAddressSelect(defaultAddress)
                                         }
-                                        className="text-[#b76e79] focus:ring-gray-400"
+                                        className="text-[#b76e79] focus:ring-gray-400 accent-[#b76e79]"
                                     />
-                                    <span className="font-medium text-gray-900">
+                                    <span className="font-medium text-[#404040]">
                                         {defaultAddress.label}
                                     </span>
                                 </div>
-                                <p className="text-sm text-gray-600 ml-5">
+                                <p className="text-sm text-[#404040] ml-5">
                                     {formatAddress(defaultAddress)}
                                 </p>
-                                <p className="text-sm text-gray-600 ml-5">
+                                <p className="text-sm text-[#404040] ml-5">
                                     {defaultAddress.state} -{" "}
                                     {defaultAddress.pincode}
                                 </p>
@@ -189,7 +189,7 @@ const AddressSelector = ({
                                     className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
                                     title="Edit"
                                 >
-                                    <FaEdit className="text-sm" />
+                                    <FaEdit className="text-base" />
                                 </button>
                                 <button
                                     onClick={(e) => {
@@ -199,7 +199,7 @@ const AddressSelector = ({
                                     className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                                     title="Delete"
                                 >
-                                    <FaTrash className="text-sm" />
+                                    <FaTrash className="text-base" />
                                 </button>
                             </div>
                         </div>
@@ -230,7 +230,7 @@ const AddressSelector = ({
                         }
                         className="flex items-center justify-between w-full p-3 bg-gray-50 border border-gray-200 rounded-lg mb-3 hover:bg-gray-100 transition-colors"
                     >
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-[#404040]">
                             Other Address ({otherAddresses.length})
                         </span>
                         {isOtherAddressesExpanded ? (
@@ -247,7 +247,7 @@ const AddressSelector = ({
                                     key={address._id}
                                     className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                                         selectedAddress?._id === address._id
-                                            ? "border-[#b76e79a0]"
+                                            ? "border-[#b76e79]"
                                             : "border-gray-200 hover:border-gray-300"
                                     }`}
                                     onClick={() => handleAddressSelect(address)}
@@ -267,16 +267,16 @@ const AddressSelector = ({
                                                             address
                                                         )
                                                     }
-                                                    className="text-[#b76e79] focus:ring-gray-400"
+                                                    className="text-[#b76e79] focus:ring-gray-400 accent-[#b76e79]"
                                                 />
-                                                <span className="font-medium text-gray-900">
+                                                <span className="font-medium text-[#404040]">
                                                     {address.label}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-600 ml-5">
+                                            <p className="text-sm text-[#404040] ml-5">
                                                 {formatAddress(address)}
                                             </p>
-                                            <p className="text-sm text-gray-600 ml-5">
+                                            <p className="text-sm text-[#404040] ml-5">
                                                 {address.state} -{" "}
                                                 {address.pincode}
                                             </p>
@@ -290,7 +290,7 @@ const AddressSelector = ({
                                                 className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
                                                 title="Edit"
                                             >
-                                                <FaEdit className="text-sm" />
+                                                <FaEdit className="text-base" />
                                             </button>
                                             <button
                                                 onClick={(e) => {
@@ -300,7 +300,7 @@ const AddressSelector = ({
                                                 className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                                                 title="Delete"
                                             >
-                                                <FaTrash className="text-sm" />
+                                                <FaTrash className="text-base" />
                                             </button>
                                         </div>
                                     </div>
@@ -312,7 +312,7 @@ const AddressSelector = ({
                                                 e.stopPropagation();
                                                 handleSetDefault(address._id);
                                             }}
-                                            className="text-xs text-[#b76e79] hover:opacity-80 transition-colors"
+                                            className="text-xs text-[#b76e79] hover:opacity-80 transition-colors font-semibold"
                                         >
                                             Set as default
                                         </button>

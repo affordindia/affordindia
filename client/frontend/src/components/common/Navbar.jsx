@@ -155,13 +155,13 @@ const Navbar = () => {
                             onClick={() =>
                                 setProfileDropdownOpen(!profileDropdownOpen)
                             }
-                            className="relative p-2 hover:bg-gray-100 rounded-full transition-transform transform hover:scale-110 duration-200"
+                            className="relative p-2 transition-transform transform hover:scale-110 duration-200"
                         >
                             <FaUser className="text-xl hover:text-black" />
                         </button>
 
                         {profileDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 text-sm">
+                            <div className="absolute right-0 mt-3.5 w-56 bg-white border border-gray-200 rounded-sm shadow-lg z-50 text-sm">
                                 <div className="py-3 px-4">
                                     {!isAuthenticated ? (
                                         <>
