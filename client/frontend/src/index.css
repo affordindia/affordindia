@@ -71,6 +71,16 @@
   font-style: normal;
 }
 
+.product-name {
+  white-space: nowrap;          /* keep everything in one line */
+  overflow: hidden;             /* hide overflow text */
+  text-overflow: ellipsis;      /* show ... at the end */
+  display: block;               /* make sure truncation works properly */
+  width: 100%;                  /* ensure full width coverage */
+  letter-spacing: -0.2px;
+  word-spacing: -1px;
+}
+
 
 
 

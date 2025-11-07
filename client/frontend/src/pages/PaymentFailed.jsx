@@ -10,9 +10,10 @@ import {
     FaSpinner,
     FaRedo,
     FaShoppingCart,
-    FaPhone,
 } from "react-icons/fa";
+import { GiPhone } from "react-icons/gi";
 import ScrollToTop from "../components/common/ScrollToTop";
+import "../index.css";
 
 const PaymentFailed = () => {
     const { orderId } = useParams();
@@ -23,10 +24,9 @@ const PaymentFailed = () => {
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState(null);
     const [retryLoading, setRetryLoading] = useState(false);
-    const [error, setError] = useState(null); // For fatal errors (shows error page)
-    const [retryMessage, setRetryMessage] = useState(null); // For retry-related messages
+    const [error, setError] = useState(null);
+    const [retryMessage, setRetryMessage] = useState(null);
 
-    // Get error details from navigation state
     const { error: paymentError, canRetry = true } = location.state || {};
 
     useEffect(() => {
@@ -36,7 +36,6 @@ const PaymentFailed = () => {
                     navigate("/login");
                     return;
                 }
-
                 if (!orderId) {
                     setError("Order ID is missing");
                     return;
@@ -47,13 +46,11 @@ const PaymentFailed = () => {
                     setError("Order not found");
                     return;
                 }
-
                 setOrder(orderData);
             } catch (err) {
                 console.error("Error fetching order:", err);
                 setError("Failed to load order details");
             } finally {
-                // Brief loading for better UX
                 setTimeout(() => setLoading(false), 1000);
             }
         };
@@ -66,15 +63,13 @@ const PaymentFailed = () => {
 
         try {
             setRetryLoading(true);
-            setError(""); // Clear previous errors
-            setRetryMessage(""); // Clear previous retry messages
+            setError("");
+            setRetryMessage("");
             toast.loading("Initiating payment retry...");
 
-            // Call the retry payment API to get new Razorpay order
             const { razorpayOrderId, razorpayKeyId } =
                 await retryRazorpayPayment(orderId);
 
-            // Initialize Razorpay payment
             const options = {
                 key: razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: order.totalAmount * 100,
@@ -97,7 +92,6 @@ const PaymentFailed = () => {
                         toast.dismiss();
                         if (verification.success) {
                             toast.success("Payment successful!");
-                            // Navigate directly to order confirmation page (same as checkout)
                             navigate(`/order-confirmation/${orderId}`, {
                                 replace: true,
                                 state: {
@@ -107,7 +101,6 @@ const PaymentFailed = () => {
                             });
                         } else {
                             toast.error("Payment verification failed");
-                            // Stay on payment failed page but update the retry message
                             setRetryMessage(
                                 "Payment verification failed. Please contact support."
                             );
@@ -116,7 +109,6 @@ const PaymentFailed = () => {
                         toast.dismiss();
                         console.error("Payment verification failed:", error);
                         toast.error("Payment verification failed");
-                        // Stay on payment failed page but update the retry message
                         setRetryMessage(
                             error.message || "Payment verification failed"
                         );
@@ -126,9 +118,6 @@ const PaymentFailed = () => {
                     ondismiss: () => {
                         toast.dismiss();
                         console.log("Payment modal closed by user");
-                        // For PaymentFailed page, just show a toast and stay on same page
-                        // Don't set error state as it would trigger the error page
-                        // toast.info("Payment cancelled. You can try again anytime.");
                     },
                 },
                 prefill: {
@@ -145,12 +134,9 @@ const PaymentFailed = () => {
                         user?.phone ||
                         "",
                 },
-                theme: {
-                    color: "#B76E79", // Updated to brand color
-                },
+                theme: { color: "#B76E79" },
             };
 
-            // Load Razorpay script if not already loaded
             if (!window.Razorpay) {
                 const script = document.createElement("script");
                 script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -173,17 +159,8 @@ const PaymentFailed = () => {
         }
     };
 
-    const handleViewCart = () => {
-        navigate("/cart");
-    };
-
-    const handleContinueShopping = () => {
-        navigate("/");
-    };
-
-    const handleViewOrders = () => {
-        navigate("/orders");
-    };
+    const handleViewOrders = () => navigate("/orders");
+    const handleContinueShopping = () => navigate("/");
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
@@ -251,7 +228,7 @@ const PaymentFailed = () => {
                     <h1 className="text-3xl font-bold text-[#404040] mb-4">
                         Payment Failed
                     </h1>
-                    <p className="text-lg text-gray-600 mb-2">
+                    <p className="text-lg text-[#404040] mb-2">
                         {paymentError ||
                             "Your payment could not be processed at this time."}
                     </p>
@@ -260,29 +237,37 @@ const PaymentFailed = () => {
                 {/* Order Details */}
                 {order && (
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
-                        <h3 className="text-lg font-semibold text-[#404040] mb-4">
-                            Order Details
-                        </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-gray-600">Order Number:</p>
-                                <p className="font-medium">{order.orderId}</p>
+                                <p className="text-[#404040]">Order Number:</p>
+                                <p className="font-medium text-[#404040]">
+                                    {order.orderId}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-gray-600">Amount:</p>
-                                <p className="font-medium text-lg ">
+                                <p className="text-[#404040]">Amount:</p>
+                                <p className="font-medium text-[#404040]">
                                     {formatCurrency(order.total)}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-gray-600">Payment Method:</p>
-                                <p className="font-medium">
-                                    {order.paymentMethod}
+                                <p className="text-[#404040]">
+                                    Payment Method:
+                                </p>
+                                <p className="font-medium capitalize text-[#404040]">
+                                    {order.paymentMethod
+                                        ? order.paymentMethod
+                                              .toLowerCase()
+                                              .replace(/_/g, " ")
+                                              .replace(/\b\w/g, (char) =>
+                                                  char.toUpperCase()
+                                              )
+                                        : "N/A"}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-gray-600">Status:</p>
-                                <span className="inline-block bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
+                                <p className="text-[#404040]">Status:</p>
+                                <span className="text-[#DC2626] font-medium capitalize">
                                     Payment Pending
                                 </span>
                             </div>
@@ -290,7 +275,7 @@ const PaymentFailed = () => {
 
                         {order.items && order.items.length > 0 && (
                             <div className="mt-4">
-                                <p className="text-gray-600 text-sm mb-2">
+                                <p className="text-[#404040] text-sm mb-2">
                                     Items ({order.items.length}):
                                 </p>
                                 <div className="space-y-2">
@@ -299,19 +284,23 @@ const PaymentFailed = () => {
                                         .map((item, index) => (
                                             <div
                                                 key={index}
-                                                className="flex justify-between text-sm"
+                                                className="flex justify-between items-start text-sm gap-3"
                                             >
-                                                <span>
-                                                    {item.product.name ||
-                                                        item.name}{" "}
-                                                    × {item.quantity}
-                                                </span>
-                                                <span className="font-medium">
-                                                    {formatCurrency(
-                                                        item.discountedPrice *
-                                                            item.quantity
-                                                    )}
-                                                </span>
+                                                <div className="w-3/4 overflow-hidden">
+                                                    <p className="product-name font-medium text-[#404040]">
+                                                        {item.quantity}×{" "}
+                                                        {item.product.name ||
+                                                            item.name}
+                                                    </p>
+                                                </div>
+                                                <div className="w-1/4 text-right">
+                                                    <span className="font-medium text-[#404040]">
+                                                        {formatCurrency(
+                                                            item.discountedPrice *
+                                                                item.quantity
+                                                        )}
+                                                    </span>
+                                                </div>
                                             </div>
                                         ))}
                                     {order.items.length > 3 && (
@@ -326,57 +315,16 @@ const PaymentFailed = () => {
                     </div>
                 )}
 
-                {/* Failure Details */}
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <div className="text-sm text-red-700">
-                        <p className="font-medium mb-2 flex items-center justify-center gap-2">
-                            <FaExclamationTriangle />
-                            Payment was not completed
-                        </p>
-                        <div className="text-center space-y-1">
-                            <p>• Your order is on hold pending payment</p>
-                            <p>• No amount has been charged to your account</p>
-                            <p>
-                                • Stock is reserved temporarily (will be
-                                released if not paid within 24 hours)
-                            </p>
-                            <p>
-                                • You can retry payment or choose a different
-                                payment method
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Possible Reasons */}
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                    <div className="text-sm text-yellow-700">
-                        <p className="font-medium mb-2">
-                            Common reasons for payment failure:
-                        </p>
-                        <ul className="text-left space-y-1 ml-4">
-                            <li>• Insufficient funds in your account</li>
-                            <li>• Network connectivity issues</li>
-                            <li>• Daily transaction limit exceeded</li>
-                            <li>• Incorrect card details or expired card</li>
-                            <li>• Payment gateway timeout</li>
-                            <li>• International transactions blocked</li>
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                    {/* Retry Payment Button - Show for failed or pending payments */}
-                    {order &&
-                        canRetry &&
+                {/* Retry Payment + View My Orders Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 pl-10 pr-10">
+                    {canRetry &&
                         (order.paymentStatus === "failed" ||
                             order.paymentStatus === "pending") &&
                         order.status === "pending" && (
                             <button
                                 onClick={handleRetryPayment}
                                 disabled={retryLoading}
-                                className="bg-[#B76E79] text-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-[2] bg-[#B76E79] text-white px-6 py-2 rounded-lg transition-transform transform hover:scale-105 shadow-sm hover:shadow-md font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {retryLoading ? (
                                     <FaSpinner className="animate-spin" />
@@ -388,20 +336,37 @@ const PaymentFailed = () => {
                                     : "Retry Payment"}
                             </button>
                         )}
-
                     <button
                         onClick={handleViewOrders}
-                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium flex items-center justify-center gap-2"
+                        className="flex-[1] border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded-lg transition-transform transform hover:scale-105 shadow-sm hover:shadow-md font-medium flex items-center justify-center gap-2"
                     >
                         <FaShoppingCart />
                         View My Orders
                     </button>
+                </div>
 
+                {/* Common Reasons */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                    <div className="text-sm text-[#404040]">
+                        <p className="font-medium mb-2">
+                            Common reasons for payment failure:
+                        </p>
+                        <ul className="text-left space-y-1 ml-4">
+                            <li>• Network connectivity issues</li>
+                            <li>• Daily transaction limit exceeded</li>
+                            <li>• Incorrect card details or expired card</li>
+                            <li>• Payment gateway timeout</li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Continue Shopping Button */}
+                <div className="flex justify-start mb-6">
                     <button
                         onClick={handleContinueShopping}
-                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium"
+                        className="text-[#404040] font-medium flex items-center gap-1 underline hover:text-[#B76E79] transition-colors"
                     >
-                        Continue Shopping
+                        Continue Shopping <span>→</span>
                     </button>
                 </div>
 
@@ -417,15 +382,15 @@ const PaymentFailed = () => {
                 )}
 
                 {/* Help Section */}
-                <div className="border-t border-gray-200 pt-6 text-center">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                            <FaPhone className="text-blue-600" />
-                            <p className="font-medium text-blue-800">
+                <div className="border border-gray-200 pt-6 text-center bg-gray-50">
+                    <div className="rounded-lg p-4">
+                        <div className="flex items-center justify-center gap-2 mb-2 text-lg">
+                            <GiPhone className="text-[#404040] text-2xl" />
+                            <p className="font-semibold text-[#404040]">
                                 Need Help?
                             </p>
                         </div>
-                        <div className="text-sm text-blue-700 space-y-1">
+                        <div className="text-sm text-[#404040] space-y-1">
                             <p>Contact our support team for assistance:</p>
                             <p className="font-medium">
                                 Email: contact@affordindia.com

@@ -252,24 +252,20 @@ const ProductDetail = () => {
                                 </span>
                             </button>
                         )}
-                        <button
-                            onClick={handleAddToWishlist}
-                            disabled={wishlistLoading}
-                            className={`px-4 py-2 rounded-md border-2 border-[#B76E79] bg-white hover:bg-[#B76E79] hover:text-white focus:outline-none transition-colors ${
-                                wishlistLoading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                            }`}
-                        >
-                            <FaHeart
-                                className={`text-2xl transition-all duration-200 hover:scale-110 active:scale-95 ${
-                                    wishlist?.items?.some(
-                                        (item) => item._id === product._id
-                                    )
-                                        ? "text-[#B76E79] fill-current"
-                                        : "text-[#B76E79] hover:text-white"
-                                }`}
-                            />
+                     <button
+              onClick={handleAddToWishlist}
+              disabled={wishlistLoading}
+              className={`px-4 py-2 rounded-md bg-white  focus:outline-none border border-[#A7A7A7] ${
+                wishlistLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+                           <FaHeart
+                className={`text-2xl transition-all duration-200 hover:scale-110 active:scale-95 ${
+                  wishlist?.items?.some((item) => item._id === product._id)
+                    ? "text-red-500 fill-current"
+                    : "text-[#AFAFAF] hover:text-[#ff5555]"
+                }`}
+              />
                         </button>
                     </div>
                     {wishlistMsg && (

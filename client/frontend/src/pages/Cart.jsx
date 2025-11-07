@@ -6,13 +6,13 @@ import { useCart } from "../context/CartContext.jsx";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { calculateShipping } from "../api/shipping.js";
+import "../index.css";
 
 const Cart = () => {
     const { cart, updateCartItem, removeFromCart, loading, refreshCart } =
         useCart();
     const items = cart?.items || [];
 
-    // Shipping state
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -20,7 +20,6 @@ const Cart = () => {
         remainingForFreeShipping: 1000,
     });
 
-    // Discounts calculation
     const { totalProductDiscount, originalSubtotal, discountedSubtotal } =
         items.reduce(
             (acc, { product, quantity }) => {
@@ -44,7 +43,6 @@ const Cart = () => {
 
     const couponDiscount = cart?.couponDiscount || 0;
 
-    // Fetch shipping
     useEffect(() => {
         const fetchShipping = async () => {
             if (discountedSubtotal > 0) {
@@ -122,14 +120,13 @@ const Cart = () => {
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-5">
             <ScrollToTop />
-            <h2 className="text-2xl font-bold mb-2">Your Shopping Cart</h2>
 
             {/* Header Row (Desktop Only) */}
-            <div className="hidden md:flex font-semibold text-gray-700 px-4 w-full">
-                <span className="flex-[2]">Products</span>
-                <span className="flex-1 text-center">Price</span>
-                <span className="flex-1 text-center">Quantity</span>
-                <span className="flex-1 text-center">Subtotal</span>
+            <div className="hidden md:flex font-semibold text-gray-700 px-4 w-full mt-10">
+                <span className="flex-[2] text-center">Products</span>
+                <span className="flex-1 text-center pr-2">Price</span>
+                <span className="flex-1 text-center pr-2">Quantity</span>
+                <span className="flex-1 text-center pr-2">Subtotal</span>
                 <span className="flex-1 text-center">Delete</span>
             </div>
 
@@ -138,10 +135,131 @@ const Cart = () => {
                 {items.map(({ product, quantity }) => (
                     <div
                         key={product._id}
-                        className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#F7F4EF] text-[#404040] rounded-md w-full shadow-md"
+                        className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-[#EFEEE5] text-[#404040] rounded-md w-full shadow-md"
                     >
-                        {/* Product Info */}
-                        <div className="flex items-start gap-4 flex-[2]">
+                        {/* --- MOBILE DESIGN --- */}
+                        <div className="flex flex-col md:hidden gap-3 p-3 ">
+                            <div className="flex items-start gap-3">
+                                {/* Product Image */}
+                                <Link
+                                    to={`/products/id/${product._id}`}
+                                    className="flex-shrink-0"
+                                >
+                                    <img
+                                        src={
+                                            product.images?.[0] ||
+                                            "/placeholder.png"
+                                        }
+                                        alt={product.name}
+                                        className="w-20 h-20 object-cover rounded-md"
+                                    />
+                                </Link>
+
+                                {/* Product Details */}
+                                <div className="flex-1 flex flex-col">
+                                    {/* Product Name & Delete Button */}
+                                    <div className="flex justify-between items-start">
+                                        <span className="font-normal text-sm text-[#404040] line-clamp-2">
+                                            {product.name}
+                                        </span>
+
+                                        <button
+                                            onClick={async () => {
+                                                await removeFromCart(
+                                                    product._id
+                                                );
+                                                await handleCartUpdate();
+                                            }}
+                                            className="text-[#404040] text-lg font-medium ml-2 flex-shrink-0"
+                                        >
+                                            <FaTrash className="text-sm m-1" />
+                                        </button>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="text-sm mt-1">
+                                        {product.discount &&
+                                        product.discount > 0 ? (
+                                            <>
+                                                <span className="text-[#404040] mr-1">
+                                                    MRP:{" "}
+                                                </span>
+                                                <span className="line-through  text-[#ACACAC] text-md  mr-1">
+                                                    ₹{product.price}
+                                                </span>
+                                                <span className="text-[#404040] text-md ">
+                                                    ₹
+                                                    {Math.round(
+                                                        product.price *
+                                                            (1 -
+                                                                product.discount /
+                                                                    100)
+                                                    )}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span>MRP: ₹{product.price}</span>
+                                        )}
+                                    </div>
+
+                                    {/* Subtotal */}
+                                    <div className="text-md font-semibold mt-1">
+                                        Subtotal: ₹
+                                        {product.discount &&
+                                        product.discount > 0
+                                            ? Math.round(
+                                                  product.price *
+                                                      (1 -
+                                                          product.discount /
+                                                              100)
+                                              ) * quantity
+                                            : product.price * quantity}
+                                    </div>
+
+                                    {/* Quantity Controls (Horizontally aligned, compact) */}
+                                    <div className="flex items-center gap-2 mt-2 border border-gray-300 bg-[#ffffff] rounded-md w-max">
+                                        <button
+                                            className="w-6 h-6 flex items-center justify-center text-base"
+                                            onClick={async () => {
+                                                await updateCartItem(
+                                                    product._id,
+                                                    quantity - 1
+                                                );
+                                                await handleCartUpdate();
+                                            }}
+                                        >
+                                            –
+                                        </button>
+
+                                        {/* Left vertical line */}
+                                        <div className="h-4 border-l border-gray-300"></div>
+
+                                        <span className="px-2 text-sm">
+                                            {quantity}
+                                        </span>
+
+                                        {/* Right vertical line */}
+                                        <div className="h-4 border-l border-gray-300"></div>
+
+                                        <button
+                                            className="w-6 h-6 flex items-center justify-center text-base"
+                                            onClick={async () => {
+                                                await updateCartItem(
+                                                    product._id,
+                                                    quantity + 1
+                                                );
+                                                await handleCartUpdate();
+                                            }}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* --- DESKTOP DESIGN  --- */}
+                        <div className="hidden md:flex flex-col md:flex-row md:items-center justify-center gap-3 flex-[2] text-center md:text-center">
                             <Link to={`/products/id/${product._id}`}>
                                 <img
                                     src={
@@ -149,55 +267,18 @@ const Cart = () => {
                                         "/placeholder.png"
                                     }
                                     alt={product.name}
-                                    className="w-20 h-20 object-cover rounded-sm cursor-pointer hover:opacity-90 transition"
+                                    className="w-24 h-24 object-cover rounded-sm cursor-pointer hover:opacity-90 transition mx-auto md:mx-0"
                                 />
                             </Link>
-                            <div className="flex flex-col flex-1">
-                                <span className="text-sm font-medium">
-                                    {product.name}
-                                </span>
-
-                                {/* Mobile Price & Subtotal */}
-                                <div className="mt-2 md:hidden text-sm">
-                                    {product.discount &&
-                                    product.discount > 0 ? (
-                                        <>
-                                            <span className="line-through text-gray-400 mr-1 text-xs">
-                                                ₹{product.price}
-                                            </span>
-                                            <span className="font-semibold">
-                                                ₹
-                                                {Math.round(
-                                                    product.price *
-                                                        (1 -
-                                                            product.discount /
-                                                                100)
-                                                )}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <>₹{product.price}</>
-                                    )}
-                                    <div className="text-xs text-gray-500">
-                                        Subtotal:{" "}
-                                        {product.discount &&
-                                        product.discount > 0
-                                            ? `₹${
-                                                  Math.round(
-                                                      product.price *
-                                                          (1 -
-                                                              product.discount /
-                                                                  100)
-                                                  ) * quantity
-                                              }`
-                                            : `₹${product.price * quantity}`}
-                                    </div>
-                                </div>
-                            </div>
+                            <span
+                                className="font-medium text-sm text-[#404040] product-name text-left line-clamp-1 max-w-48"
+                                title={product.name}
+                            >
+                                {product.name}
+                            </span>
                         </div>
 
-                        {/* Price (Desktop Only) */}
-                        <div className="hidden md:flex flex-1 justify-center items-center">
+                        <div className="hidden md:flex flex-1 justify-center items-center text-center">
                             <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
                                 {product.discount && product.discount > 0 ? (
                                     <>
@@ -218,8 +299,7 @@ const Cart = () => {
                             </div>
                         </div>
 
-                        {/* Quantity */}
-                        <div className="flex-1 flex md:justify-center items-center">
+                        <div className="hidden md:flex flex-1 justify-center items-center text-center">
                             <div className="flex items-center bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10">
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center"
@@ -233,9 +313,13 @@ const Cart = () => {
                                 >
                                     –
                                 </button>
+
+                                <div className="h-5 border-l border-gray-300 mx-1"></div>
                                 <div className="flex-1 text-center text-sm select-none">
                                     {quantity}
                                 </div>
+                                <div className="h-5 border-l border-gray-300 mx-1"></div>
+
                                 <button
                                     className="w-8 h-full text-xl font-medium flex items-center justify-center"
                                     onClick={async () => {
@@ -249,44 +333,27 @@ const Cart = () => {
                                     +
                                 </button>
                             </div>
-
-                            {/* Delete (Mobile) */}
-                            <button
-                                onClick={async () => {
-                                    await removeFromCart(product._id);
-                                    await handleCartUpdate();
-                                }}
-                                className="md:hidden ml-3 text-[#404040] hover:text-black text-lg"
-                            >
-                                <FaTrash />
-                            </button>
                         </div>
 
-                        {/* Subtotal (Desktop Only) */}
-                        <div className="hidden md:flex flex-1 justify-center items-center">
+                        <div className="hidden md:flex flex-1 justify-center items-center text-center">
                             <div className="bg-[#FAFAFA] border border-[#D0D0D0] rounded w-full max-w-[120px] mx-auto h-10 flex items-center justify-center text-sm">
-                                {product.discount && product.discount > 0 ? (
-                                    <>
-                                        ₹
-                                        {Math.round(
-                                            product.price *
-                                                (1 - product.discount / 100)
-                                        ) * quantity}
-                                    </>
-                                ) : (
-                                    <>₹{product.price * quantity}</>
-                                )}
+                                ₹
+                                {product.discount && product.discount > 0
+                                    ? Math.round(
+                                          product.price *
+                                              (1 - product.discount / 100)
+                                      ) * quantity
+                                    : product.price * quantity}
                             </div>
                         </div>
 
-                        {/* Delete (Desktop Only) */}
-                        <div className="hidden md:flex flex-1 justify-center items-center">
+                        <div className="hidden md:flex flex-1 justify-center items-center text-center">
                             <button
                                 onClick={async () => {
                                     await removeFromCart(product._id);
                                     await handleCartUpdate();
                                 }}
-                                className="text-[#404040] hover:text-black text-lg"
+                                className="text-[#404040] hover:text-[#DC2626] text-lg"
                             >
                                 <FaTrash />
                             </button>
@@ -296,8 +363,7 @@ const Cart = () => {
             </div>
 
             {/* Actions & Summary */}
-            <div className="flex flex-col md:flex-row md:items-start gap-8 mt-6">
-                {/* Actions */}
+            <div className="flex flex-col md:flex-row md:items-start gap-4 mt-6">
                 <div className="w-full md:max-w-xs">
                     <div className="flex flex-row md:flex-col gap-4">
                         <Link
@@ -309,59 +375,68 @@ const Cart = () => {
                     </div>
                 </div>
 
-                {/* Summary */}
-                <div className="w-full md:max-w-md md:ml-auto">
+                {/* ✅ Smaller Summary Box */}
+                <div className="w-full md:max-w-sm md:ml-auto">
                     <CouponSection
                         cart={cart}
                         onCartUpdate={handleCartUpdate}
                     />
 
-                    <div className="p-6 border border-gray-300 rounded-md bg-[#f7f2e9] text-sm">
-                        <div className="flex justify-between mb-2">
-                            <span>Total MRP</span>
+                    <div className="p-4  rounded-md bg-[#EFEEE5] text-sm">
+                        <div className="flex justify-between mb-1">
+                            <span className="text-[#404040]">Total MRP</span>
                             <span>₹{originalSubtotal}</span>
                         </div>
 
                         {totalProductDiscount > 0 && (
-                            <div className="flex justify-between mb-2">
-                                <span>Product Discount</span>
-                                <span className="text-green-600">
+                            <div className="flex justify-between mb-1">
+                                <span className="text-[#404040]">
+                                    Product Discount
+                                </span>
+                                <span className="text-[#2ECC71]">
                                     -₹{totalProductDiscount}
                                 </span>
                             </div>
                         )}
 
                         {couponDiscount > 0 && (
-                            <div className="flex justify-between mb-2">
-                                <span>Coupon Discount</span>
-                                <span className="text-green-600">
+                            <div className="flex justify-between mb-1">
+                                <span className="text-[#404040]">
+                                    Coupon Discount
+                                </span>
+                                <span className="text-[#2ECC71]">
                                     -₹{couponDiscount}
                                 </span>
                             </div>
                         )}
 
-                        <div className="flex justify-between mb-2">
-                            <span>Delivery Charge</span>
+                        <div className="flex justify-between mb-1">
+                            <span className="text-[#404040]">
+                                Delivery Charge
+                            </span>
                             <span>
                                 {shippingInfo.isFreeShipping
                                     ? "FREE"
                                     : `₹${shippingInfo.shippingFee}`}
                             </span>
                         </div>
+
                         {!shippingInfo.isFreeShipping &&
                             shippingInfo.remainingForFreeShipping > 0 && (
-                                <div className="text-xs text-gray-600 mb-2">
+                                <div className="text-[10px] text-gray-600 mb-1">
                                     Add ₹{shippingInfo.remainingForFreeShipping}{" "}
                                     more for free shipping
                                 </div>
                             )}
-                        <div className="flex justify-between font-bold text-base mt-4">
-                            <span>Total Amount</span>
-                            <span>₹{total}</span>
+
+                        <div className="flex justify-between font-bold text-md mt-3">
+                            <span className="text-[#404040]">Total Amount</span>
+                            <span className="text-[#404040]">₹{total}</span>
                         </div>
+
                         <Link
                             to="/checkout"
-                            className="mt-6 w-full bg-[#B76E79] text-white py-2 rounded hover:opacity-90 transition block text-center"
+                            className="bg-[#B76E79] text-white px-4 py-2 rounded text-sm text-center hover:opacity-90 transition-colors mt-4 block"
                         >
                             Proceed to Checkout
                         </Link>
