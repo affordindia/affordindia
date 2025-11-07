@@ -48,41 +48,41 @@ const Orders = () => {
         }
     };
 
-    const getStatusIcon = (status) => {
-        switch (status.toLowerCase()) {
-            case "pending":
-                return <FaClock className="text-yellow-500" />;
-            case "processing":
-                return <FaBox className="text-blue-500" />;
-            case "shipped":
-                return <FaTruck className="text-purple-500" />;
-            case "delivered":
-                return <FaCheckCircle className="text-green-500" />;
-            case "cancelled":
-            case "canceled":
-                return <FaTimesCircle className="text-red-500" />;
-            default:
-                return <FaClock className="text-gray-500" />;
-        }
-    };
+    // const getStatusIcon = (status) => {
+    //     switch (status.toLowerCase()) {
+    //         case "pending":
+    //             return <FaClock className="text-yellow-500" />;
+    //         case "processing":
+    //             return <FaBox className="text-blue-500" />;
+    //         case "shipped":
+    //             return <FaTruck className="text-purple-500" />;
+    //         case "delivered":
+    //             return <FaCheckCircle className="text-green-500" />;
+    //         case "cancelled":
+    //         case "canceled":
+    //             return <FaTimesCircle className="text-red-500" />;
+    //         default:
+    //             return <FaClock className="text-gray-500" />;
+    //     }
+    // };
 
-    const getStatusColor = (status) => {
-        switch (status.toLowerCase()) {
-            case "pending":
-                return "bg-yellow-100 text-yellow-800";
-            case "processing":
-                return "bg-blue-100 text-blue-800";
-            case "shipped":
-                return "bg-purple-100 text-purple-800";
-            case "delivered":
-                return "bg-green-100 text-green-800";
-            case "cancelled":
-            case "canceled":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
+    // const getStatusColor = (status) => {
+    //     switch (status.toLowerCase()) {
+    //         case "pending":
+    //             return "bg-yellow-100 text-yellow-800";
+    //         case "processing":
+    //             return "bg-blue-100 text-blue-800";
+    //         case "shipped":
+    //             return "bg-purple-100 text-purple-800";
+    //         case "delivered":
+    //             return "bg-green-100 text-green-800";
+    //         case "cancelled":
+    //         case "canceled":
+    //             return "bg-red-100 text-red-800";
+    //         default:
+    //             return "bg-gray-100 text-gray-800";
+    //     }
+    // };
 
     if (loading) {
         return (
@@ -173,84 +173,91 @@ const Orders = () => {
             </div>
 
             {/* Orders List */}
-            <div className="space-y-4">
+            <div className="space-y-10">
                 {orders.map((order) => (
                     <div
                         key={order._id}
                         className="bg-white border border-gray-300 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                     >
                         {/* Order Header */}
-                        <div className="bg-[#F7F4EF] px-6 py-4 border-b">
-                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="bg-[#EFEEE5] px-6 py-4 border-b border-[#404040a0]">
+                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-4 ">
+                                <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                                     <div>
                                         <h3 className="font-semibold text-[#404040]">
                                             Order #{order.orderId}
                                         </h3>
-                                        <p className="text-sm text-gray-600">
-                                            Placed on{" "}
-                                            {new Date(
-                                                order.createdAt
-                                            ).toLocaleDateString("en-IN", {
-                                                day: "numeric",
-                                                month: "long",
-                                                year: "numeric",
-                                            })}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {getStatusIcon(order.status)}
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                                order.status
-                                            )}`}
-                                        >
-                                            {order.status
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                                order.status.slice(1)}
-                                        </span>
-                                    </div>
+                                        <div className="flex lg:items-center flex-col lg:flex-row gap-1 lg:gap-4 mt-1">
+                                            <p className="text-sm text-gray-600">
+                                                Placed on{" "}
+                                                {new Date(
+                                                    order.createdAt
+                                                ).toLocaleDateString("en-IN", {
+                                                    day: "numeric",
+                                                    month: "long",
+                                                    year: "numeric",
+                                                })}
+                                            </p>
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs text-[#404040]">
+                                                        Order:
+                                                    </span>
+                                                    <span className="px-1 py-1 rounded-full text-xs font-medium text-[#404040]">
+                                                        {order.status
+                                                            .charAt(0)
+                                                            .toUpperCase() +
+                                                            order.status.slice(
+                                                                1
+                                                            )}
+                                                    </span>
+                                                </div>
 
-                                    {/* Payment Status */}
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-500">
-                                            Payment:
-                                        </span>
-                                        <span
-                                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                order.paymentStatus === "paid"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : order.paymentStatus ===
-                                                      "failed"
-                                                    ? "bg-red-100 text-red-800"
-                                                    : "bg-yellow-100 text-yellow-800"
-                                            }`}
-                                        >
-                                            {order.paymentStatus === "paid"
-                                                ? "Paid"
-                                                : order.paymentStatus ===
-                                                  "failed"
-                                                ? "Failed"
-                                                : "Pending"}
-                                        </span>
+                                                {/* Payment Status */}
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs text-[#404040]">
+                                                        Payment:
+                                                    </span>
+                                                    <span
+                                                        className={`px-1 py-1 rounded-full text-xs font-medium text-[#404040] ${
+                                                            order.paymentStatus ===
+                                                            "paid"
+                                                                ? "text-green-500"
+                                                                : order.paymentStatus ===
+                                                                  "failed"
+                                                                ? "text-red-500"
+                                                                : "text-yellow-500"
+                                                        }`}
+                                                    >
+                                                        {order.paymentStatus ===
+                                                        "paid"
+                                                            ? "Paid"
+                                                            : order.paymentStatus ===
+                                                              "failed"
+                                                            ? "Failed"
+                                                            : "Pending"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="text-right">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="text-right flex flex-row lg:flex-col gap-4 lg:gap-1 items-center">
                                         <p className="font-semibold text-[#404040]">
                                             ₹{order.total?.toLocaleString?.()}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            {order.items?.length || 0} item
+                                            ({order.items?.length || 0} item
                                             {(order.items?.length || 0) !== 1
                                                 ? "s"
                                                 : ""}
+                                            )
                                         </p>
                                     </div>
                                     <Link
                                         to={`/orders/${order._id}`}
-                                        className="bg-white border border-gray-300 text-[#404040] px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
+                                        className="bg-white border border-gray-300 text-[#404040] px-2 lg:px-4 py-2 rounded-lg font-medium text-sm lg:text-base hover:bg-gray-50 transition-colors flex items-center gap-2"
                                     >
                                         <FaEye />
                                         View Details

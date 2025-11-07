@@ -124,7 +124,7 @@ const Profile = () => {
                 <div className="text-center pt-6 border-t border-gray-300">
                     <button
                         onClick={logout}
-                        className="bg-[#B76E79] text-white px-6 py-2 rounded-lg hover:bg-[#C68F98] transition-colors font-medium shadow-sm"
+                        className="bg-[#DC2626] text-white px-6 py-2 rounded-lg hover:bg-[#EF4444] transition-colors font-medium shadow-sm"
                     >
                         Logout
                     </button>
