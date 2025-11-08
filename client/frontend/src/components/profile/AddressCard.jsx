@@ -69,7 +69,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                 <button
                     onClick={() => onEdit(address)}
                     disabled={loading}
-                    className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] border border-[#B76E79] text-white rounded hover:bg-white hover:text-[#B76E79] transition-colors disabled:opacity-50 font-medium"
+                    className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium"
                 >
                     <FaEdit className="text-xs" />
                     Edit
@@ -77,7 +77,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                 <button
                     onClick={() => onDelete(address)}
                     disabled={loading}
-                    className="flex items-center gap-1 px-2 py-2 text-sm border border-[#B76E79] text-[#B76E79] bg-white rounded hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50 font-medium min-w-[70px]"
+                    className="flex items-center gap-1 px-2 py-2 text-sm bg-[#DC2626] text-white rounded hover:bg-[#EF4444] transition-colors disabled:opacity-50 font-medium min-w-[70px]"
                 >
                     <FaTrash className="text-xs" />
                     Delete
@@ -86,7 +86,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                     <button
                         onClick={handleSetDefault}
                         disabled={loading || isSettingDefault}
-                        className="flex items-center gap-1 px-4 py-2 text-sm border border-[#B76E79] text-[#B76E79] bg-white rounded hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
+                        className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
                     >
                         {isSettingDefault ? "Setting..." : "Set Default"}
                     </button>

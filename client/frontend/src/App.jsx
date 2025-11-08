@@ -54,7 +54,7 @@ const App = () => {
                 element={
                     <div className="flex flex-col min-h-screen bg-[#f5f5f5]">
                         {/* Promotional Strip */}
-                        <PromoStrip />
+                        {/* <PromoStrip /> */}
                         <Navbar />
                         <main className="flex-1">
                             <Routes>

@@ -410,6 +410,9 @@ const OrderDetail = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
+                                <span className="text-sm text-[#404040]">
+                                    Order:
+                                </span>
                                 {getStatusIcon(order.status)}
                                 <span
                                     className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
@@ -522,14 +525,7 @@ const OrderDetail = () => {
                                             Payment Status:
                                         </span>
                                         <span
-                                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                order.paymentStatus === "paid"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : order.paymentStatus ===
-                                                      "failed"
-                                                    ? "bg-red-100 text-red-800"
-                                                    : "bg-yellow-100 text-yellow-800"
-                                            }`}
+                                            className={`px-2 py-1 rounded-full font-medium text-[#404040]`}
                                         >
                                             {order.paymentStatus === "paid"
                                                 ? "Paid"
@@ -558,35 +554,9 @@ const OrderDetail = () => {
                                         order.paymentStatus !== "paid" && (
                                             <div className="mt-4 pt-3 border-t">
                                                 {/* Buttons Container - Side by Side */}
-                                                <div className="flex items-center justify-center gap-4 mb-3">
-                                                    {/* Verify Payment Button - Available immediately for pending payments */}
-                                                    {order.paymentStatus ===
-                                                        "pending" && (
-                                                        <button
-                                                            onClick={
-                                                                handleVerifyPayment
-                                                            }
-                                                            disabled={
-                                                                verifyingPayment
-                                                            }
-                                                            className="w-full border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                                        >
-                                                            {verifyingPayment ? (
-                                                                <>
-                                                                    <FaClock className="animate-spin" />
-                                                                    Verifying...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <FaCheckCircle />
-                                                                    Verify
-                                                                    Payment
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    )}
 
-                                                    {/* Retry Payment Button - Show for failed or pending payments */}
+                                                {/* Retry Payment Button - Show for failed or pending payments */}
+                                                <div className="flex items-center justify-center gap-4 mb-3">
                                                     {(order.paymentStatus ===
                                                         "failed" ||
                                                         order.paymentStatus ===
@@ -600,7 +570,7 @@ const OrderDetail = () => {
                                                                 disabled={
                                                                     retryingPayment
                                                                 }
-                                                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:bg-white hover:text-[#B76E79] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                             >
                                                                 {retryingPayment ? (
                                                                     <>
@@ -616,6 +586,33 @@ const OrderDetail = () => {
                                                                 )}
                                                             </button>
                                                         )}
+
+                                                    {/* Verify Payment Button - Available immediately for pending payments */}
+                                                    {order.paymentStatus ===
+                                                        "pending" && (
+                                                        <button
+                                                            onClick={
+                                                                handleVerifyPayment
+                                                            }
+                                                            disabled={
+                                                                verifyingPayment
+                                                            }
+                                                            className="w-full border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                        >
+                                                            {verifyingPayment ? (
+                                                                <>
+                                                                    <FaClock className="animate-spin" />
+                                                                    Verifying...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <FaCheckCircle />
+                                                                    Verify
+                                                                    Payment
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
                                                 </div>
 
                                                 {/* Messages Container - Below Buttons */}
@@ -657,8 +654,8 @@ const OrderDetail = () => {
                                             {/* Pending Payment Warning */}
                                             {order.paymentStatus ===
                                                 "pending" && (
-                                                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                                                    <p className="text-xs text-yellow-700">
+                                                <div className="mt-2 p-3 border border-gray-300 shadow-sm rounded">
+                                                    <p className="text-xs text-[#404040]">
                                                         ⚠️ Your payment is still
                                                         pending. If you've
                                                         already paid, click
@@ -673,8 +670,8 @@ const OrderDetail = () => {
                                             {/* Failed Payment Warning */}
                                             {order.paymentStatus ===
                                                 "failed" && (
-                                                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded">
-                                                    <p className="text-xs text-red-700">
+                                                <div className="mt-2 p-3 border border-gray-300 shadow-sm rounded">
+                                                    <p className="text-xs text-[#404040]">
                                                         ❌ Payment failed. You
                                                         can retry the payment by
                                                         clicking "Retry Payment"
@@ -688,8 +685,8 @@ const OrderDetail = () => {
                                             {/* Pending Payment Status */}
                                             {order.paymentStatus ===
                                                 "pending" && (
-                                                <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded">
-                                                    <p className="text-xs text-orange-700">
+                                                <div className="mt-2 p-3 border border-gray-300 shadow-sm rounded">
+                                                    <p className="text-xs text-[#404040]">
                                                         🕒 Payment is currently
                                                         pending. You can verify
                                                         or retry the payment, or
@@ -963,7 +960,7 @@ const OrderDetail = () => {
                         </div>
 
                         {/* Payment Method */}
-                        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                        {/* <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#F7F4EF] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaCreditCard />
@@ -977,7 +974,7 @@ const OrderDetail = () => {
                                         : order.paymentMethod}
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Quick Actions */}
                         <div className="space-y-2">
