@@ -219,13 +219,13 @@ const Orders = () => {
                                                         Payment:
                                                     </span>
                                                     <span
-                                                        className={`px-1 py-1 rounded-full text-xs font-medium text-[#404040] ${
+                                                        className={`px-1 py-1 rounded-full text-xs font-medium ${
                                                             order.paymentStatus ===
                                                             "paid"
-                                                                ? "text-green-500"
+                                                                ? "text-[#2ECC71]"
                                                                 : order.paymentStatus ===
                                                                   "failed"
-                                                                ? "text-red-500"
+                                                                ? "text-[#DC2626]"
                                                                 : "text-yellow-500"
                                                         }`}
                                                     >

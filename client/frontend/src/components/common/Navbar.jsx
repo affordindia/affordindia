@@ -48,22 +48,72 @@ const Navbar = () => {
     return (
         <nav className="bg-[#EBEBE9]/80 sm:bg-[#EBEBE9]/80 text-black sticky top-0 z-50 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-2 py-3 flex items-center justify-between">
-                <div className="flex items-center space-x-4 md:space-x-8">
+                {/* Mobile Layout */}
+                <div className="md:hidden flex items-center justify-between w-full relative">
+                    {/* Hamburger Menu */}
                     <button
-                        className="md:hidden p-2 focus:outline-none"
+                        className="p-2 focus:outline-none"
                         onClick={() => setMobileMenuOpen(true)}
                         aria-label="Toggle menu"
                     >
                         <FaBars className="w-6 h-6" />
                     </button>
+
+                    {/* Absolutely Centered Logo - Favicon for mobile */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <Link to="/" className="flex items-center">
+                            <img
+                                src="/favicon.png"
+                                alt="Afford India Logo"
+                                className="h-8 w-auto object-contain"
+                            />
+                        </Link>
+                    </div>
+
+                    {/* Right Icons - Search, Wishlist, Cart (NO PROFILE ICON) */}
+                    <div className="flex items-center">
+                        <button
+                            type="button"
+                            className="p-2 hover:text-black focus:outline-none"
+                            onClick={() => setMobileSearchOpen(true)}
+                        >
+                            <FaSearch className="text-xl text-[#404040]" />
+                        </button>
+                        <Link
+                            to="/wishlist"
+                            className="relative transition-transform transform hover:scale-110 duration-200 p-2"
+                        >
+                            <FaHeart className="text-xl text-[#404040] hover:text-black" />
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                    {wishlistCount}
+                                </span>
+                            )}
+                        </Link>
+                        <Link
+                            to="/cart"
+                            className="relative transition-transform transform hover:scale-110 duration-200 p-2"
+                        >
+                            <FaShoppingCart className="text-xl text-[#404040] hover:text-black" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-gray-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
                     <Link to="/" className="flex items-center space-x-2">
                         <img
                             src={NavLogo}
                             alt="Afford India Logo"
-                            className="h-8 w-auto object-contain md:h-10"
+                            className="h-10 w-auto object-contain"
                         />
                     </Link>
-                    <div className="hidden md:flex space-x-6 text-lg text-[#363230]">
+                    <div className="flex space-x-6 text-lg text-[#363230]">
                         {categories.length > 0 &&
                             categories.map((cat) => (
                                 <Link
@@ -77,17 +127,10 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Right Icons */}
-                <div className="flex items-center space-x-4">
-                    <button
-                        type="button"
-                        className="md:hidden p-2 hover:text-black focus:outline-none"
-                        onClick={() => setMobileSearchOpen(true)}
-                    >
-                        <FaSearch className="text-xl" />
-                    </button>
+                {/* Desktop Right Icons */}
+                <div className="hidden md:flex items-center space-x-4">
                     <form
-                        className="relative items-center w-40 md:w-80 hidden md:flex"
+                        className="relative items-center w-40 lg:w-80 flex"
                         onSubmit={(e) => {
                             e.preventDefault();
                             if (searchValue.trim()) {
@@ -130,7 +173,7 @@ const Navbar = () => {
                         to="/wishlist"
                         className="relative transition-transform transform hover:scale-110 duration-200"
                     >
-                        <FaHeart className="text-xl hover:text-black" />
+                        <FaHeart className="text-xl text-[#404040] hover:text-black" />
                         {wishlistCount > 0 && (
                             <span className="absolute -top-3 -right-3 bg-[#E35151] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                                 {wishlistCount}
@@ -141,7 +184,7 @@ const Navbar = () => {
                         to="/cart"
                         className="relative transition-transform transform hover:scale-110 duration-200"
                     >
-                        <FaShoppingCart className="text-xl hover:text-black" />
+                        <FaShoppingCart className="text-xl text-[#404040] hover:text-black" />
                         {cartCount > 0 && (
                             <span className="absolute -top-3 -right-3 bg-gray-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                                 {cartCount}
@@ -149,15 +192,15 @@ const Navbar = () => {
                         )}
                     </Link>
 
-                    {/* Auth Button */}
-                    <div className="relative profile-dropdown-container ">
+                    {/* Auth Button - Desktop Only */}
+                    <div className="relative profile-dropdown-container">
                         <button
                             onClick={() =>
                                 setProfileDropdownOpen(!profileDropdownOpen)
                             }
                             className="relative p-2 transition-transform transform hover:scale-110 duration-200"
                         >
-                            <FaUser className="text-xl hover:text-black" />
+                            <FaUser className="text-xl text-[#404040] hover:text-black" />
                         </button>
 
                         {profileDropdownOpen && (
@@ -250,7 +293,11 @@ const Navbar = () => {
                 >
                     <div className="relative px-4 py-3 border-b border-gray-300 bg-[#e3dfd7]">
                         <div className="flex justify-center">
-                            <img src={NavLogo} alt="Logo" className="h-6" />
+                            <img
+                                src="/favicon.png"
+                                alt="Logo"
+                                className="h-8"
+                            />
                         </div>
                         <button
                             onClick={() => setMobileMenuOpen(false)}
@@ -275,7 +322,7 @@ const Navbar = () => {
                             ))}
 
                         {isAuthenticated && (
-                            <div className="space-y-3 mt-6 pt-4 border-t border-gray-300 ">
+                            <div className="space-y-3 mt-6 pt-4 border-t border-gray-300">
                                 <Link
                                     to="/profile"
                                     className="block text-base text-gray-700 hover:text-black"
@@ -307,7 +354,7 @@ const Navbar = () => {
                             </div>
                         )}
 
-                        <div className="mt-12 text-sm">
+                        <div className="mt-8 text-sm">
                             {!isAuthenticated && (
                                 <p className="mb-2">
                                     To access account and manage orders
@@ -319,10 +366,9 @@ const Navbar = () => {
                                         logout();
                                         setMobileMenuOpen(false);
                                     }}
-                                    className="flex items-center gap-2 text-xl font-bold text-red-600 py-2 rounded hover:bg-gray-200"
+                                    className="block text-base text-[#DC2626] hover:text-red-700"
                                 >
                                     Logout
-                                    <FaSignOutAlt className="text-lg" />
                                 </button>
                             ) : (
                                 <Link
@@ -338,7 +384,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile search overlay */}
+            {/* Mobile Search Overlay */}
             {mobileSearchOpen && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center md:hidden">
                     <div className="bg-secondary w-full px-4 py-4 flex items-center gap-2 shadow-lg relative">
@@ -356,16 +402,19 @@ const Navbar = () => {
                                 }
                             }}
                         >
-                            <input
-                                type="text"
-                                autoFocus
-                                placeholder="Search Here"
-                                className="flex-1 px-4 py-2 rounded-lg border border-black text-base focus:outline-none bg-primary text-black placeholder:text-black/80"
-                                value={mobileSearchValue}
-                                onChange={(e) =>
-                                    setMobileSearchValue(e.target.value)
-                                }
-                            />
+                            <div className="flex-1 relative">
+                                <input
+                                    type="text"
+                                    autoFocus
+                                    placeholder="Search Here"
+                                    className="w-full pl-4 pr-10 py-2 rounded-lg text-base focus:outline-none bg-primary text-[#404040] placeholder:text-[#404040]/80"
+                                    value={mobileSearchValue}
+                                    onChange={(e) =>
+                                        setMobileSearchValue(e.target.value)
+                                    }
+                                />
+                                <FaSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404040]" />
+                            </div>
                             {mobileSearchValue && (
                                 <button
                                     type="button"
@@ -381,12 +430,6 @@ const Navbar = () => {
                                     <RxCross1 />
                                 </button>
                             )}
-                            <button
-                                type="submit"
-                                className="p-2 text-black hover:text-primary"
-                            >
-                                <FaSearch className="text-lg" />
-                            </button>
                             <button
                                 type="button"
                                 className="p-2 text-black"
