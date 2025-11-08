@@ -22,6 +22,7 @@ import {
     FaClock,
     FaFileInvoice,
     FaRedo,
+    FaUser,
 } from "react-icons/fa";
 
 const OrderDetail = () => {
@@ -461,8 +462,9 @@ const OrderDetail = () => {
                     <div className="lg:col-span-2 space-y-4">
                         {/* User & Receiver Info */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
+                                    <FaUser />
                                     Contact Information
                                 </h2>
                             </div>
@@ -502,7 +504,7 @@ const OrderDetail = () => {
 
                         {/* Payment Information */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaCreditCard />
                                     Payment Information
@@ -703,7 +705,7 @@ const OrderDetail = () => {
 
                         {/* Order Items */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaBox />
                                     Items Ordered ({order.items?.length || 0})
@@ -792,7 +794,7 @@ const OrderDetail = () => {
 
                         {/* Shipping Address */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaMapMarkerAlt />
                                     Shipping Address
@@ -820,7 +822,7 @@ const OrderDetail = () => {
 
                         {/* Billing Address */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaBox />
                                     Billing Address
@@ -891,7 +893,7 @@ const OrderDetail = () => {
                     <div className="space-y-4">
                         {/* Order Summary */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-[#F7F4EF] px-4 py-3 border-b">
+                            <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
                                     <FaReceipt />
                                     Order Summary
@@ -980,13 +982,13 @@ const OrderDetail = () => {
                         <div className="space-y-2">
                             <Link
                                 to="/orders"
-                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-white hover:text-[#B76E79] transition-colors text-center block text-sm"
+                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2.5 rounded-lg font-medium hover:scale-102 transition-transform duration-200 hover:shadow-md text-center block text-sm"
                             >
                                 View All Orders
                             </Link>
                             <Link
                                 to="/products"
-                                className="w-full bg-white border-2 border-[#B76E79] text-[#B76E79] px-4 py-2.5 rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors text-center block text-sm"
+                                className="w-full bg-white border-2 border-[#B76E79] text-[#B76E79] px-4 py-2.5 rounded-lg font-medium hover:scale-102 transition-transform duration-200 hover:shadow-md text-center block text-sm"
                             >
                                 Continue Shopping
                             </Link>
