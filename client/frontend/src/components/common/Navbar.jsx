@@ -47,7 +47,7 @@ const Navbar = () => {
 
     return (
         <nav className="bg-[#EBEBE9]/80 sm:bg-[#EBEBE9]/80 text-black sticky top-0 z-50 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto px-2 py-3 flex items-center justify-between">
+            <div className="mx-auto px-4 md:px-8 lg:px-12 py-3 flex items-center justify-between">
                 {/* Mobile Layout */}
                 <div className="md:hidden flex items-center justify-between w-full relative">
                     {/* Hamburger Menu */}
