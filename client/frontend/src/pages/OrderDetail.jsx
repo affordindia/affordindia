@@ -8,6 +8,7 @@ import {
     getRazorpayOrderStatus,
 } from "../api/razorpay.js";
 import { checkInvoiceExists, downloadInvoice } from "../api/invoice.js";
+import { submitContactForm } from "../api/email.js";
 import Loader from "../components/common/Loader.jsx";
 import { toast } from "react-hot-toast";
 import {
@@ -23,6 +24,10 @@ import {
     FaFileInvoice,
     FaRedo,
     FaUser,
+    FaUndo,
+    FaBan,
+    FaSpinner,
+    FaExclamationTriangle,
 } from "react-icons/fa";
 
 const OrderDetail = () => {
@@ -41,6 +46,21 @@ const OrderDetail = () => {
     const [invoice, setInvoice] = useState(null);
     const [invoiceLoading, setInvoiceLoading] = useState(false);
     const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+
+    // Return/Cancel modal state
+    const [showReturnModal, setShowReturnModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [requestFormData, setRequestFormData] = useState({
+        name: "",
+        email: "",
+        message: "",
+    });
+    const [requestFormState, setRequestFormState] = useState({
+        isSubmitting: false,
+        isSubmitted: false,
+        error: null,
+        errors: {},
+    });
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -292,6 +312,162 @@ const OrderDetail = () => {
         }
     };
 
+    // Return/Cancel form handlers
+    const openReturnModal = () => {
+        setRequestFormData({
+            name: order.userName || order.user?.name || "",
+            email: order.userEmail || order.user?.email || "",
+            message: `Return Request for Order #${order.orderId}\n\nReason: `,
+        });
+        setShowReturnModal(true);
+    };
+
+    const openCancelModal = () => {
+        setRequestFormData({
+            name: order.userName || order.user?.name || "",
+            email: order.userEmail || order.user?.email || "",
+            message: `Cancel Request for Order #${order.orderId}\n\nReason: `,
+        });
+        setShowCancelModal(true);
+    };
+
+    const closeModal = () => {
+        setShowReturnModal(false);
+        setShowCancelModal(false);
+        setRequestFormState({
+            isSubmitting: false,
+            isSubmitted: false,
+            error: null,
+            errors: {},
+        });
+        setRequestFormData({
+            name: "",
+            email: "",
+            message: "",
+        });
+    };
+
+    const handleRequestInputChange = (e) => {
+        const { name, value } = e.target;
+        setRequestFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+
+        // Clear field-specific error when user starts typing
+        if (requestFormState.errors[name]) {
+            setRequestFormState((prev) => ({
+                ...prev,
+                errors: { ...prev.errors, [name]: null },
+            }));
+        }
+    };
+
+    const validateRequestForm = () => {
+        const errors = {};
+
+        if (
+            !requestFormData.name.trim() ||
+            requestFormData.name.trim().length < 2
+        ) {
+            errors.name = "Name must be at least 2 characters long";
+        }
+
+        if (
+            !requestFormData.email.trim() ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestFormData.email)
+        ) {
+            errors.email = "Please provide a valid email address";
+        }
+
+        if (
+            !requestFormData.message.trim() ||
+            requestFormData.message.trim().length < 20
+        ) {
+            errors.message =
+                "Please provide a detailed reason (at least 20 characters)";
+        }
+
+        return errors;
+    };
+
+    const handleRequestSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validate form
+        const errors = validateRequestForm();
+        if (Object.keys(errors).length > 0) {
+            setRequestFormState((prev) => ({ ...prev, errors }));
+            return;
+        }
+
+        setRequestFormState((prev) => ({
+            ...prev,
+            isSubmitting: true,
+            error: null,
+            errors: {},
+        }));
+
+        try {
+            const response = await submitContactForm(requestFormData);
+
+            if (response.success) {
+                setRequestFormState((prev) => ({
+                    ...prev,
+                    isSubmitting: false,
+                    isSubmitted: true,
+                }));
+
+                toast.success(
+                    showReturnModal
+                        ? "Return request submitted successfully!"
+                        : "Cancel request submitted successfully!"
+                );
+
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    closeModal();
+                }, 5000);
+            } else {
+                throw new Error(response.message || "Failed to submit request");
+            }
+        } catch (error) {
+            console.error("Request form error:", error);
+
+            let errorMessage =
+                "Failed to submit your request. Please try again.";
+            let fieldErrors = {};
+
+            if (error.response?.data) {
+                const data = error.response.data;
+                errorMessage = data.message || errorMessage;
+
+                // Handle validation errors from backend
+                if (data.errors && Array.isArray(data.errors)) {
+                    fieldErrors = data.errors.reduce((acc, err) => {
+                        if (err.includes("Name")) acc.name = err;
+                        if (err.includes("Email") || err.includes("email"))
+                            acc.email = err;
+                        if (err.includes("Message")) acc.message = err;
+                        return acc;
+                    }, {});
+                }
+            }
+
+            setRequestFormState((prev) => ({
+                ...prev,
+                isSubmitting: false,
+                error: errorMessage,
+                errors: fieldErrors,
+            }));
+        }
+    };
+
+    // Check if return/cancel options should be shown
+    const canReturn = order?.status === "delivered";
+    const canCancel =
+        order?.status === "pending" || order?.status === "processing";
+
     const getStatusIcon = (status) => {
         switch (status?.toLowerCase()) {
             case "pending":
@@ -410,15 +586,11 @@ const OrderDetail = () => {
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-[#404040]">
-                                    Order:
-                                </span>
-                                {getStatusIcon(order.status)}
+                            <div className="flex items-center text-[#404040]">
+                                <span className="text-sm ">Order:</span>
+                                {/* {getStatusIcon(order.status)} */}
                                 <span
-                                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                        order.status
-                                    )}`}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium`}
                                 >
                                     {order.status?.charAt(0).toUpperCase() +
                                         order.status?.slice(1)}
@@ -572,7 +744,7 @@ const OrderDetail = () => {
                                                                 disabled={
                                                                     retryingPayment
                                                                 }
-                                                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                                className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2.5 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                             >
                                                                 {retryingPayment ? (
                                                                     <>
@@ -599,7 +771,7 @@ const OrderDetail = () => {
                                                             disabled={
                                                                 verifyingPayment
                                                             }
-                                                            className="w-full border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                            className="w-full border-2 border-[#B76E79] text-[#B76E79] bg-white px-4 py-2.5 rounded-lg hover:scale-102 hover:shadow-sm transition-transform duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                         >
                                                             {verifyingPayment ? (
                                                                 <>
@@ -980,6 +1152,31 @@ const OrderDetail = () => {
 
                         {/* Quick Actions */}
                         <div className="space-y-2">
+                            {/* Return/Cancel Options */}
+                            {(canReturn || canCancel) && (
+                                <>
+                                    {canReturn && (
+                                        <button
+                                            onClick={openReturnModal}
+                                            className="w-full bg-[#dc2626] border-2 border-[#DC2626] text-white px-4 py-2.5 rounded-lg font-medium hover:scale-102 transition-transform duration-200 hover:shadow-md text-center text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <FaUndo />
+                                            Request Return
+                                        </button>
+                                    )}
+                                    {canCancel && (
+                                        <button
+                                            onClick={openCancelModal}
+                                            className="w-full bg-[#dc2626] border-2 border-[#DC2626] text-white px-4 py-2.5 rounded-lg font-medium hover:scale-102 transition-transform duration-200 hover:shadow-md text-center text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <FaBan />
+                                            Cancel Order
+                                        </button>
+                                    )}
+                                    <div className="border-t border-gray-200 my-3"></div>
+                                </>
+                            )}
+
                             <Link
                                 to="/orders"
                                 className="w-full bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2.5 rounded-lg font-medium hover:scale-102 transition-transform duration-200 hover:shadow-md text-center block text-sm"
@@ -996,6 +1193,234 @@ const OrderDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Return/Cancel Modal */}
+            {(showReturnModal || showCancelModal) && (
+                <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+                        <div className="grid grid-cols-1 md:grid-cols-2">
+                            {/* Left Section - Info */}
+                            <div className="bg-[#B76E79] text-white p-6 flex flex-col justify-center space-y-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    {showReturnModal ? (
+                                        <FaUndo className="text-2xl" />
+                                    ) : (
+                                        <FaBan className="text-2xl" />
+                                    )}
+                                    <h2 className="text-xl font-bold">
+                                        {showReturnModal
+                                            ? "Return Request"
+                                            : "Cancel Order"}
+                                    </h2>
+                                </div>
+                                <p className="text-gray-200 text-sm">
+                                    {showReturnModal
+                                        ? "Request a return for your delivered order. Please provide a detailed reason."
+                                        : "Cancel your order before it's shipped. Please provide a reason."}
+                                </p>
+                                <div className="bg-white bg-opacity-20 p-3 rounded-lg text-sm text-[#404040]">
+                                    <p>
+                                        <strong>Order:</strong> #
+                                        {order?.orderId}
+                                    </p>
+                                    <p>
+                                        <strong>Status:</strong>{" "}
+                                        {order.status?.charAt(0).toUpperCase() +
+                                            order.status?.slice(1)}
+                                    </p>
+                                    <p>
+                                        <strong>Total:</strong> ₹
+                                        {order?.total?.toLocaleString()}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Right Section - Form */}
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-800">
+                                        {showReturnModal
+                                            ? "Return Details"
+                                            : "Cancellation Details"}
+                                    </h3>
+                                    <button
+                                        onClick={closeModal}
+                                        className="text-gray-400 hover:text-gray-600 text-xl"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+
+                                {/* Success message */}
+                                {requestFormState.isSubmitted ? (
+                                    <div className="text-center py-6">
+                                        <FaCheckCircle className="text-green-500 text-4xl mx-auto mb-4" />
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                                            Request Submitted Successfully!
+                                        </h4>
+                                        <p className="text-gray-600 text-sm">
+                                            We've received your{" "}
+                                            {showReturnModal
+                                                ? "return"
+                                                : "cancellation"}{" "}
+                                            request. Our team will contact you
+                                            within 24-48 hours.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Error message */}
+                                        {requestFormState.error && (
+                                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2">
+                                                <FaExclamationTriangle className="text-red-500" />
+                                                <span className="text-red-700 text-sm">
+                                                    {requestFormState.error}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        <form
+                                            onSubmit={handleRequestSubmit}
+                                            className="space-y-4"
+                                        >
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    value={requestFormData.name}
+                                                    onChange={
+                                                        handleRequestInputChange
+                                                    }
+                                                    placeholder="Your Name"
+                                                    className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B76E79] ${
+                                                        requestFormState.errors
+                                                            .name
+                                                            ? "border-red-500"
+                                                            : "border-gray-300"
+                                                    }`}
+                                                    disabled={
+                                                        requestFormState.isSubmitting
+                                                    }
+                                                />
+                                                {requestFormState.errors
+                                                    .name && (
+                                                    <p className="text-red-500 text-xs mt-1">
+                                                        {
+                                                            requestFormState
+                                                                .errors.name
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    value={
+                                                        requestFormData.email
+                                                    }
+                                                    onChange={
+                                                        handleRequestInputChange
+                                                    }
+                                                    placeholder="Your Email"
+                                                    className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B76E79] ${
+                                                        requestFormState.errors
+                                                            .email
+                                                            ? "border-red-500"
+                                                            : "border-gray-300"
+                                                    }`}
+                                                    disabled={
+                                                        requestFormState.isSubmitting
+                                                    }
+                                                />
+                                                {requestFormState.errors
+                                                    .email && (
+                                                    <p className="text-red-500 text-xs mt-1">
+                                                        {
+                                                            requestFormState
+                                                                .errors.email
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <textarea
+                                                    name="message"
+                                                    value={
+                                                        requestFormData.message
+                                                    }
+                                                    onChange={
+                                                        handleRequestInputChange
+                                                    }
+                                                    placeholder={`Please provide a detailed reason for the ${
+                                                        showReturnModal
+                                                            ? "return"
+                                                            : "cancellation"
+                                                    }`}
+                                                    rows="4"
+                                                    className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B76E79] ${
+                                                        requestFormState.errors
+                                                            .message
+                                                            ? "border-red-500"
+                                                            : "border-gray-300"
+                                                    }`}
+                                                    disabled={
+                                                        requestFormState.isSubmitting
+                                                    }
+                                                ></textarea>
+                                                {requestFormState.errors
+                                                    .message && (
+                                                    <p className="text-red-500 text-xs mt-1">
+                                                        {
+                                                            requestFormState
+                                                                .errors.message
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={closeModal}
+                                                    className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition text-sm"
+                                                    disabled={
+                                                        requestFormState.isSubmitting
+                                                    }
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    disabled={
+                                                        requestFormState.isSubmitting
+                                                    }
+                                                    className="flex-1 bg-[#B76E79] text-white py-2 px-4 rounded-md hover:bg-[#A05E6C] transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                >
+                                                    {requestFormState.isSubmitting ? (
+                                                        <>
+                                                            <FaSpinner className="animate-spin" />
+                                                            Submitting...
+                                                        </>
+                                                    ) : (
+                                                        `Submit ${
+                                                            showReturnModal
+                                                                ? "Return"
+                                                                : "Cancel"
+                                                        } Request`
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
