@@ -8,7 +8,7 @@ import {
     getRazorpayOrderStatus,
 } from "../api/razorpay.js";
 import { checkInvoiceExists, downloadInvoice } from "../api/invoice.js";
-import { submitContactForm } from "../api/email.js";
+import { submitReturnCancelRequest } from "../api/email.js";
 import Loader from "../components/common/Loader.jsx";
 import { toast } from "react-hot-toast";
 import {
@@ -53,7 +53,8 @@ const OrderDetail = () => {
     const [requestFormData, setRequestFormData] = useState({
         name: "",
         email: "",
-        message: "",
+        reason: "",
+        customReason: "",
     });
     const [requestFormState, setRequestFormState] = useState({
         isSubmitting: false,
@@ -313,11 +314,32 @@ const OrderDetail = () => {
     };
 
     // Return/Cancel form handlers
+    const returnReasons = [
+        "Defective/Damaged product",
+        "Wrong item delivered",
+        "Product not as described",
+        "Size/Color issue",
+        "Changed my mind",
+        "Quality issues",
+        "Other",
+    ];
+
+    const cancelReasons = [
+        "Changed my mind",
+        "Found better price elsewhere",
+        "Ordered by mistake",
+        "No longer needed",
+        "Delivery taking too long",
+        "Payment issues",
+        "Other",
+    ];
+
     const openReturnModal = () => {
         setRequestFormData({
             name: order.userName || order.user?.name || "",
             email: order.userEmail || order.user?.email || "",
-            message: `Return Request for Order #${order.orderId}\n\nReason: `,
+            reason: "",
+            customReason: "",
         });
         setShowReturnModal(true);
     };
@@ -326,7 +348,8 @@ const OrderDetail = () => {
         setRequestFormData({
             name: order.userName || order.user?.name || "",
             email: order.userEmail || order.user?.email || "",
-            message: `Cancel Request for Order #${order.orderId}\n\nReason: `,
+            reason: "",
+            customReason: "",
         });
         setShowCancelModal(true);
     };
@@ -343,7 +366,8 @@ const OrderDetail = () => {
         setRequestFormData({
             name: "",
             email: "",
-            message: "",
+            reason: "",
+            customReason: "",
         });
     };
 
@@ -380,12 +404,15 @@ const OrderDetail = () => {
             errors.email = "Please provide a valid email address";
         }
 
+        if (!requestFormData.reason.trim()) {
+            errors.reason = "Please select a reason";
+        }
+
         if (
-            !requestFormData.message.trim() ||
-            requestFormData.message.trim().length < 20
+            requestFormData.reason === "Other" &&
+            !requestFormData.customReason.trim()
         ) {
-            errors.message =
-                "Please provide a detailed reason (at least 20 characters)";
+            errors.customReason = "Please provide a custom reason";
         }
 
         return errors;
@@ -409,7 +436,20 @@ const OrderDetail = () => {
         }));
 
         try {
-            const response = await submitContactForm(requestFormData);
+            const finalReason =
+                requestFormData.reason === "Other"
+                    ? requestFormData.customReason
+                    : requestFormData.reason;
+
+            const requestPayload = {
+                name: requestFormData.name,
+                email: requestFormData.email,
+                orderId: order.orderId,
+                reason: finalReason,
+                type: showReturnModal ? "return" : "cancel",
+            };
+
+            const response = await submitReturnCancelRequest(requestPayload);
 
             if (response.success) {
                 setRequestFormState((prev) => ({
@@ -422,9 +462,7 @@ const OrderDetail = () => {
                     showReturnModal
                         ? "Return request submitted successfully!"
                         : "Cancel request submitted successfully!"
-                );
-
-                // Close modal after 2 seconds
+                ); // Close modal after 2 seconds
                 setTimeout(() => {
                     closeModal();
                 }, 5000);
@@ -1346,40 +1384,101 @@ const OrderDetail = () => {
                                             </div>
 
                                             <div>
-                                                <textarea
-                                                    name="message"
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Reason for{" "}
+                                                    {showReturnModal
+                                                        ? "return"
+                                                        : "cancellation"}
+                                                </label>
+                                                <select
+                                                    name="reason"
                                                     value={
-                                                        requestFormData.message
+                                                        requestFormData.reason
                                                     }
                                                     onChange={
                                                         handleRequestInputChange
                                                     }
-                                                    placeholder={`Please provide a detailed reason for the ${
-                                                        showReturnModal
-                                                            ? "return"
-                                                            : "cancellation"
-                                                    }`}
-                                                    rows="4"
                                                     className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B76E79] ${
                                                         requestFormState.errors
-                                                            .message
+                                                            .reason
                                                             ? "border-red-500"
                                                             : "border-gray-300"
                                                     }`}
                                                     disabled={
                                                         requestFormState.isSubmitting
                                                     }
-                                                ></textarea>
+                                                >
+                                                    <option value="">
+                                                        Select a reason
+                                                    </option>
+                                                    {(showReturnModal
+                                                        ? returnReasons
+                                                        : cancelReasons
+                                                    ).map((reason) => (
+                                                        <option
+                                                            key={reason}
+                                                            value={reason}
+                                                        >
+                                                            {reason}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                                 {requestFormState.errors
-                                                    .message && (
+                                                    .reason && (
                                                     <p className="text-red-500 text-xs mt-1">
                                                         {
                                                             requestFormState
-                                                                .errors.message
+                                                                .errors.reason
                                                         }
                                                     </p>
                                                 )}
                                             </div>
+
+                                            {/* Custom reason field - only show if "Other" is selected */}
+                                            {requestFormData.reason ===
+                                                "Other" && (
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Please specify your
+                                                        reason
+                                                    </label>
+                                                    <textarea
+                                                        name="customReason"
+                                                        value={
+                                                            requestFormData.customReason
+                                                        }
+                                                        onChange={
+                                                            handleRequestInputChange
+                                                        }
+                                                        placeholder={`Please provide a detailed reason for the ${
+                                                            showReturnModal
+                                                                ? "return"
+                                                                : "cancellation"
+                                                        }`}
+                                                        rows="3"
+                                                        className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B76E79] ${
+                                                            requestFormState
+                                                                .errors
+                                                                .customReason
+                                                                ? "border-red-500"
+                                                                : "border-gray-300"
+                                                        }`}
+                                                        disabled={
+                                                            requestFormState.isSubmitting
+                                                        }
+                                                    ></textarea>
+                                                    {requestFormState.errors
+                                                        .customReason && (
+                                                        <p className="text-red-500 text-xs mt-1">
+                                                            {
+                                                                requestFormState
+                                                                    .errors
+                                                                    .customReason
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
 
                                             <div className="flex gap-3">
                                                 <button

@@ -1,6 +1,7 @@
 import {
     sendTemplateEmail,
     sendContactFormEmails,
+    sendReturnCancelRequestEmails,
     sendOrderConfirmationEmail,
     sendOrderShippedEmail,
     sendOrderDeliveredEmail,
@@ -159,6 +160,95 @@ export const sendOrderShipped = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to send order shipped email",
+            error:
+                process.env.NODE_ENV === "development"
+                    ? error.message
+                    : undefined,
+        });
+    }
+};
+
+/**
+ * Submit return/cancel request
+ * POST /api/email/return-cancel
+ */
+export const submitReturnCancelRequest = async (req, res) => {
+    try {
+        const { name, email, orderId, reason, type = "return" } = req.body;
+
+        // Validate required fields
+        const errors = [];
+        if (!name?.trim()) errors.push("Name is required");
+        if (!email?.trim()) errors.push("Email is required");
+        if (!orderId?.trim()) errors.push("Order ID is required");
+        if (!reason?.trim()) errors.push("Reason is required");
+
+        // Email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email && !emailRegex.test(email)) {
+            errors.push("Invalid email format");
+        }
+
+        // Validate type
+        if (!["return", "cancel"].includes(type)) {
+            errors.push("Type must be either 'return' or 'cancel'");
+        }
+
+        if (errors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors,
+            });
+        }
+
+        const requestData = {
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            orderId: orderId.trim(),
+            reason: reason.trim(),
+            type: type.toLowerCase(),
+        };
+
+        // Send return/cancel request emails
+        const result = await sendReturnCancelRequestEmails(requestData);
+
+        // Check if at least admin email was sent successfully
+        if (!result.admin.success) {
+            console.error(
+                "Failed to send return/cancel admin notification email"
+            );
+            return res.status(500).json({
+                success: false,
+                message: `Failed to process your ${type} request. Please try again or contact support directly.`,
+                error: "Email delivery failed",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `${
+                type.charAt(0).toUpperCase() + type.slice(1)
+            } request submitted successfully. We'll process your request and get back to you within 24-48 hours.`,
+            data: {
+                submitted: true,
+                adminEmailSent: result.admin.success,
+                userEmailSent: result.user.success,
+                submittedAt: new Date().toISOString(),
+                type: requestData.type,
+                orderId: requestData.orderId,
+            },
+        });
+    } catch (error) {
+        console.error(
+            "❌ Error in submitReturnCancelRequest controller:",
+            error
+        );
+        res.status(500).json({
+            success: false,
+            message: `An unexpected error occurred while processing your ${
+                req.body?.type || "return"
+            } request. Please try again later or contact support directly.`,
             error:
                 process.env.NODE_ENV === "development"
                     ? error.message

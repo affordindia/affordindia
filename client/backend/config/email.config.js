@@ -15,6 +15,8 @@ const getEmailConfig = () => ({
     templates: {
         contactAdmin: process.env.MSG91_TEMPLATE_CONTACT_ADMIN,
         contactUser: process.env.MSG91_TEMPLATE_CONTACT_USER,
+        returnCancelAdmin: process.env.MSG91_TEMPLATE_RETURN_CANCEL_ADMIN,
+        returnCancelUser: process.env.MSG91_TEMPLATE_CONTACT_USER,
         orderConfirmation: process.env.MSG91_TEMPLATE_ORDER_CONFIRMATION,
         orderShipped: process.env.MSG91_TEMPLATE_ORDER_SHIPPED,
         orderDelivered: process.env.MSG91_TEMPLATE_ORDER_DELIVERED,
