@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useProfile } from "../context/ProfileContext";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import Loader from "../components/common/Loader";
+import ScrollToTop from "../components/common/ScrollToTop";
 import ProfileForm from "../components/profile/ProfileForm";
 import AddressCard from "../components/profile/AddressCard";
 import AddressModal from "../components/common/AddressModal";
@@ -55,9 +56,10 @@ const Profile = () => {
 
     return (
         <div className="flex justify-center items-start py-10 bg-gray-100 min-h-screen">
+            <ScrollToTop />
             <div
                 className="p-8 rounded-lg shadow-md w-full max-w-4xl"
-                style={{ backgroundColor: "#E0E0E0" }}
+                style={{ backgroundColor: "#fff" }}
             >
                 {/* Error Message */}
                 {error && (
@@ -122,7 +124,7 @@ const Profile = () => {
                 <div className="text-center pt-6 border-t border-gray-300">
                     <button
                         onClick={logout}
-                        className="bg-[#B76E79] text-white px-6 py-2 rounded-lg hover:bg-[#C68F98] transition-colors font-medium shadow-sm"
+                        className="bg-[#DC2626] text-white px-6 py-2 rounded-lg hover:bg-[#EF4444] transition-colors font-medium shadow-sm"
                     >
                         Logout
                     </button>

@@ -1,40 +1,26 @@
 const getEmailConfig = () => ({
-    // Email service provider settings (using custom SMTP for Titan Mail)
-    service: process.env.EMAIL_SERVICE || "custom", // Using custom SMTP for Titan Mail
+    // MSG91 API Configuration
+    authKey: process.env.MSG91_AUTH_KEY,
+    baseUrl: process.env.MSG91_BASE_URL || "https://control.msg91.com/api/v5",
 
-    // SMTP settings for Titan Mail (GoDaddy)
-    smtp: {
-        host: process.env.EMAIL_HOST || "smtpout.secureserver.net",
-        port: process.env.EMAIL_PORT || 587,
-        secure: process.env.EMAIL_SECURE === "true", // false for 587, true for 465
+    // Email defaults
+    from: {
+        name: process.env.MSG91_FROM_NAME || "Afford India",
+        email: process.env.MSG91_FROM_EMAIL || "contact@affordindia.com",
     },
 
-    // Authentication
-    auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password or app password
-    },
+    domain: process.env.MSG91_DOMAIN || "contact.affordindia.com",
 
-    // Default settings
-    defaults: {
-        from: {
-            name: process.env.EMAIL_FROM_NAME || "Afford India",
-            address:
-                process.env.EMAIL_FROM_ADDRESS || "contact@affordindia.com",
-        },
-        to: {
-            support: process.env.EMAIL_SUPPORT || "contact@affordindia.com",
-            admin: process.env.EMAIL_ADMIN || "contact@affordindia.com",
-        },
-    },
-
-    // Email templates settings
+    // Email templates - Template IDs from MSG91 dashboard
     templates: {
-        contactForm: {
-            subject: "New Contact Form Submission - Afford India",
-            adminSubject: "New Contact Form Message",
-            userSubject: "Thank you for contacting Afford India",
-        },
+        contactAdmin: process.env.MSG91_TEMPLATE_CONTACT_ADMIN,
+        contactUser: process.env.MSG91_TEMPLATE_CONTACT_USER,
+        orderConfirmation: process.env.MSG91_TEMPLATE_ORDER_CONFIRMATION,
+        orderShipped: process.env.MSG91_TEMPLATE_ORDER_SHIPPED,
+        orderDelivered: process.env.MSG91_TEMPLATE_ORDER_DELIVERED,
+        orderCancelled: process.env.MSG91_TEMPLATE_ORDER_CANCELLED,
+        paymentSuccess: process.env.MSG91_TEMPLATE_PAYMENT_SUCCESS,
+        paymentFailed: process.env.MSG91_TEMPLATE_PAYMENT_FAILED,
     },
 });
 

@@ -54,49 +54,39 @@ const BillingForm = ({
         !billingAddress[field] || billingAddress[field].trim() === "";
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "#f3ece8" }}
-                >
-                    <FaCreditCard
-                        className="text-sm"
-                        style={{ color: "#b76e79" }}
-                    />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">
-                    Billing Address
-                </h3>
-            </div>
-
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
             {/* Same as shipping checkbox */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
-                <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={billingAddressSameAsShipping}
-                        onChange={handleSameAsShippingChange}
-                        className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
-                        style={{ accentColor: "#b76e79" }}
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                        Billing address is same as shipping address
-                    </span>
-                </label>
-                <p className="text-xs text-gray-500 mt-1 ml-7">
-                    Check this box if your billing address matches your shipping
-                    address
-                </p>
-            </div>
+            <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                    type="checkbox"
+                    checked={billingAddressSameAsShipping}
+                    onChange={handleSameAsShippingChange}
+                    className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
+                    style={{ accentColor: "#b76e79" }}
+                />
+                <span className="text-sm font-medium text-[#404040]">
+                    Billing address is same as shipping address
+                </span>
+            </label>
+            <p className="text-xs text-gray-500 mt-1 ml-7">
+                Check this box if your billing address matches your shipping
+                address
+            </p>
 
-            {/* Billing Address Form - Only show when different address is selected */}
+            {/* Billing Address Form - Expands in the same box when unchecked */}
             {!billingAddressSameAsShipping && (
-                <div className="space-y-4 transition-all duration-300 ease-in-out">
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 transition-all duration-300 ease-in-out">
+                    {/* Info message */}
+                    <div className="flex items-center gap-2 mb-4">
+                        <FaMapMarkerAlt className="text-sm text-[#b76e79]" />
+                        <span className="text-sm font-medium text-[#404040]">
+                            Different Billing Address
+                        </span>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 House/Flat Number *
                             </label>
                             <input
@@ -113,7 +103,7 @@ const BillingForm = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 Street Address *
                             </label>
                             <input
@@ -129,7 +119,7 @@ const BillingForm = ({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#404040] mb-2">
                             Landmark (Optional)
                         </label>
                         <input
@@ -145,7 +135,7 @@ const BillingForm = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 Area/Locality *
                             </label>
                             <input
@@ -159,7 +149,7 @@ const BillingForm = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 City *
                             </label>
                             <input
@@ -176,7 +166,7 @@ const BillingForm = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 State *
                             </label>
                             <input
@@ -190,7 +180,7 @@ const BillingForm = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-[#404040] mb-2">
                                 PIN Code *
                             </label>
                             <input
@@ -207,7 +197,7 @@ const BillingForm = ({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#404040] mb-2">
                             Country
                         </label>
                         <input
@@ -217,19 +207,8 @@ const BillingForm = ({
                             disabled
                         />
                     </div>
-                </div>
-            )}
 
-            {/* Info message when different address is selected */}
-            {!billingAddressSameAsShipping && (
-                <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
-                    <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-sm" />
-                        <span className="text-sm font-medium text-gray-700">
-                            Different Billing Address
-                        </span>
-                    </div>
-                    <p className="text-xs mt-1 text-gray-500">
+                    <p className="text-xs text-gray-500 mt-4">
                         Please ensure all billing address fields are correctly
                         filled out
                     </p>

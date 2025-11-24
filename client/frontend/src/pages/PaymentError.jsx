@@ -77,14 +77,14 @@ const PaymentError = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
                         onClick={handleContactSupport}
-                        className="bg-[#C1B086] text-white px-6 py-3 rounded-lg hover:bg-[#B8A474] transition-colors font-medium"
+                        className="bg-[#B76E79] text-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors font-medium"
                     >
                         Contact Support
                     </button>
 
                     <button
                         onClick={handleGoToCart}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
+                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium flex items-center justify-center gap-2"
                     >
                         <FaShoppingBag />
                         View Cart
@@ -92,7 +92,7 @@ const PaymentError = () => {
 
                     <button
                         onClick={handleGoHome}
-                        className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium flex items-center justify-center gap-2"
+                        className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg hover:bg-[#B76E79] hover:text-white transition-colors font-medium flex items-center justify-center gap-2"
                     >
                         <FaHome />
                         Go Home

@@ -4,7 +4,11 @@ import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
-import { createPaymentSession } from "./paymentGateway.service.js";
+import { createRazorpayOrder } from "./razorpay.service.js";
+
+// HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
+// PRESERVED FOR FUTURE ROLLBACK IF NEEDED
+// import { createPaymentSession } from "./paymentGateway.service.js";
 
 export const placeOrder = async (
     userId,
@@ -95,23 +99,35 @@ export const placeOrder = async (
     // Calculate final total: subtotal - product discounts - coupon discount + shipping
     const total = subtotal - totalDiscount - couponDiscount + shippingFee;
 
-    // Deduct stock
-    for (const item of cart.items) {
-        await Product.findByIdAndUpdate(item.product._id, {
-            $inc: { stock: -item.quantity },
-        });
+    // NEW STOCK MANAGEMENT: Only deduct stock for COD orders
+    // Online payment orders: stock deducted only on successful payment
+    if (paymentMethod === "COD") {
+        console.log("📦 Deducting stock for COD order");
+        for (const item of cart.items) {
+            await Product.findByIdAndUpdate(item.product._id, {
+                $inc: { stock: -item.quantity },
+            });
+        }
+    } else {
+        console.log(
+            "⏳ Stock will be deducted on successful payment for online order"
+        );
     }
 
-    // Determine payment status
+    // Determine payment status and provider
     let paymentStatus = "pending";
+    let paymentProvider = "COD";
+
     if (paymentMethod === "COD") {
         paymentStatus = "pending";
+        paymentProvider = "COD";
     } else if (paymentMethod === "ONLINE") {
-        // In real payment integration, set to 'paid' only after confirmation
+        // For online payments, use Razorpay by default
         paymentStatus = "pending";
+        paymentProvider = "RAZORPAY";
     }
 
-    // Create order
+    // Create order with new payment provider field
     const order = await Order.create({
         user: userId,
         items: orderItems,
@@ -123,7 +139,13 @@ export const placeOrder = async (
         paymentMethod,
         paymentStatus,
         paymentInfo,
-        paymentGateway: paymentMethod === "COD" ? "COD" : "HDFC",
+        paymentProvider, // New field for payment provider tracking
+
+        // =================== LEGACY HDFC FIELD PRESERVATION ===================
+        // COMMENTED OUT - NO ONLINE ORDERS YET, PRESERVED FOR FUTURE ROLLBACK
+        // Keep paymentGateway for backward compatibility with existing orders
+        // paymentGateway: paymentMethod === "COD" ? "COD" : "HDFC", // Preserved for rollback
+
         status: "pending",
         subtotal,
         totalDiscount,
@@ -142,14 +164,58 @@ export const placeOrder = async (
 
     // Handle payment method specific logic
     let paymentUrl = null;
+    let razorpayOrderData = null;
 
     if (paymentMethod === "ONLINE") {
         try {
-            console.log(
-                "🔄 Creating HDFC payment session for order:",
-                order._id
+            console.log("🔄 Creating Razorpay order for:", order._id);
+            console.log("🔢 Using Order ID for payment:", order.orderId);
+
+            // Create Razorpay order (NEW IMPLEMENTATION)
+            const razorpayResponse = await createRazorpayOrder({
+                orderId: order.orderId,
+                amount: order.total,
+                user: order.user,
+                notes: {
+                    customer_name: userName || order.user?.name,
+                    order_items: order.items.length,
+                    order_created_at: order.createdAt,
+                    subtotal: order.subtotal,
+                    discount: order.totalDiscount,
+                    coupon_discount: order.couponDiscount,
+                    shipping_fee: order.shippingFee,
+                },
+            });
+
+            // Update order with Razorpay details
+            await Order.findByIdAndUpdate(order._id, {
+                razorpayOrderId: razorpayResponse.id,
+                razorpayOrderData: razorpayResponse,
+                paymentTimeoutAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes timeout
+            });
+
+            await order.save();
+
+            razorpayOrderData = razorpayResponse;
+
+            console.log("✅ Razorpay order created successfully:", order._id);
+            console.log("💳 Razorpay Order ID:", razorpayResponse.id);
+        } catch (error) {
+            console.error(
+                "❌ Razorpay order creation failed:",
+                order._id,
+                error
             );
-            console.log("🔢 Using custom Order ID for payment:", order.orderId);
+
+            // If payment creation fails, we should handle this gracefully
+            throw new Error(`Payment order creation failed: ${error.message}`);
+        }
+
+        // =================== HDFC LEGACY CODE - PRESERVED FOR ROLLBACK ===================
+        /*
+        try {
+            console.log("� Creating HDFC payment session for order:", order._id);
+            console.log("�🔢 Using custom Order ID for payment:", order.orderId);
 
             // Create payment session with HDFC (using custom orderId)
             const paymentSessionResponse = await createPaymentSession(order);
@@ -165,33 +231,35 @@ export const placeOrder = async (
                 paymentSessionData: paymentSessionResponse, // Store for verification
             });
 
-            console.log(
-                "✅ Payment session created successfully for order:",
-                order._id
-            );
+            console.log("✅ Payment session created successfully for order:", order._id);
             console.log("💳 Payment URL:", paymentUrl);
         } catch (error) {
-            console.error(
-                "❌ Payment session creation failed for order:",
-                order._id,
-                error
-            );
+            console.error("❌ Payment session creation failed for order:", order._id, error);
 
             // If payment session creation fails, we should handle this gracefully
             // Option 1: Fail the entire order creation
             // Option 2: Mark order as failed and allow manual retry
 
             // For now, we'll fail the order creation
-            throw new Error(
-                `Payment session creation failed: ${error.message}`
-            );
+            throw new Error(`Payment session creation failed: ${error.message}`);
         }
+        */
     }
 
-    // Clear cart including applied coupon
-    cart.items = [];
-    cart.appliedCoupon = undefined;
-    await cart.save();
+    // Clear cart only for COD orders (immediate success)
+    // For online orders, cart will be cleared after payment success via webhook
+    if (paymentMethod === "COD") {
+        cart.items = [];
+        cart.appliedCoupon = undefined;
+        await cart.save();
+        console.log("🛒 Cart cleared for COD order:", order._id);
+    } else {
+        console.log(
+            "🛒 Cart retained for online payment order:",
+            order._id,
+            "- will be cleared on payment success"
+        );
+    }
 
     // Record coupon usage if a coupon was applied
     if (appliedCoupon && appliedCoupon.couponId) {
@@ -219,12 +287,31 @@ export const placeOrder = async (
         })),
     };
 
-    // Add payment URL for online payments
-    if (paymentMethod === "ONLINE" && paymentUrl) {
-        orderResponse.paymentUrl = paymentUrl;
-        orderResponse.requiresPayment = true;
+    // Add payment details for online payments
+    if (paymentMethod === "ONLINE") {
+        if (razorpayOrderData) {
+            // Razorpay payment data (NEW)
+            orderResponse.razorpayOrderId = razorpayOrderData.id;
+            orderResponse.razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+            orderResponse.amount = razorpayOrderData.amount;
+            orderResponse.currency = razorpayOrderData.currency;
+            orderResponse.requiresPayment = true;
+            orderResponse.paymentProvider = "RAZORPAY";
+            orderResponse.paymentTimeout = order.paymentTimeoutAt;
+        }
+
+        // =================== HDFC LEGACY RESPONSE SUPPORT ===================
+        // COMMENTED OUT - NO ONLINE ORDERS YET, PRESERVED FOR FUTURE ROLLBACK
+        /*
+        if (paymentUrl) {
+            orderResponse.paymentUrl = paymentUrl;
+            orderResponse.requiresPayment = true;
+            orderResponse.paymentProvider = "HDFC";
+        }
+        */
     } else {
         orderResponse.requiresPayment = false;
+        orderResponse.paymentProvider = "COD";
     }
 
     return orderResponse;
@@ -302,4 +389,26 @@ export const returnOrder = async (userId, orderId) => {
     await order.save();
     // Optionally, restock items here
     return order;
+};
+
+// =================== STOCK MANAGEMENT (ESSENTIAL ONLY) ===================
+
+/**
+ * Restock items when order is cancelled or payment fails
+ */
+export const restockOrderItems = async (order) => {
+    try {
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(item.product, {
+                $inc: { stock: item.quantity },
+            });
+        }
+        console.log(`📦 Restocked items for order: ${order._id}`);
+    } catch (error) {
+        console.error(
+            `❌ Failed to restock items for order ${order._id}:`,
+            error
+        );
+        throw error;
+    }
 };

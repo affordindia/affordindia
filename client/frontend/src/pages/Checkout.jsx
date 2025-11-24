@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+
+import { validatePhoneNumber } from "../utils/validatePhoneNumber";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { useProfile } from "../context/ProfileContext.jsx";
 import { createOrder } from "../api/order.js";
 import { calculateShipping } from "../api/shipping.js";
+import { verifyRazorpayPayment } from "../api/razorpay.js";
+
 import OrderSummary from "../components/checkout/OrderSummary.jsx";
 import ShippingForm from "../components/checkout/ShippingForm.jsx";
 import BillingForm from "../components/checkout/BillingForm.jsx";
 import PaymentMethod from "../components/checkout/PaymentMethod.jsx";
 import CheckoutProgress from "../components/checkout/CheckoutProgress.jsx";
+import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 
 const Checkout = () => {
     const { user } = useAuth();
-    const { cart, clearCart } = useCart();
+    const { cart, clearCart, refreshCart, loading: cartLoading } = useCart();
     const { addresses, addAddress, refreshUserData } = useProfile();
     const [userName, setUserName] = useState(user?.name || "");
     const [userNameError, setUserNameError] = useState("");
@@ -54,11 +60,14 @@ const Checkout = () => {
     });
     const [billingAddressSameAsShipping, setBillingAddressSameAsShipping] =
         useState(true);
-    const [paymentMethod, setPaymentMethod] = useState("COD");
+    const [paymentMethod, setPaymentMethod] = useState("ONLINE");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [step, setStep] = useState("shipping");
     const [orderProcessing, setOrderProcessing] = useState(false);
+    const [paymentProcessing, setPaymentProcessing] = useState(false);
+    const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+    const [paymentVerifying, setPaymentVerifying] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         shippingFee: 50,
         isFreeShipping: false,
@@ -87,12 +96,25 @@ const Checkout = () => {
         return "";
     };
 
-    // Redirect if cart is empty (but not during order processing)
+    // Redirect if cart is empty (but not during loading, processing, or after successful payment)
     useEffect(() => {
-        if (!orderProcessing && (!cart?.items || cart.items.length === 0)) {
+        if (
+            !cartLoading &&
+            !orderProcessing &&
+            !paymentProcessing &&
+            !paymentSuccessful &&
+            (!cart?.items || cart.items.length === 0)
+        ) {
             navigate("/cart");
         }
-    }, [cart, navigate, orderProcessing]);
+    }, [
+        cart,
+        navigate,
+        orderProcessing,
+        paymentProcessing,
+        cartLoading,
+        paymentSuccessful,
+    ]);
 
     // Sync billing address with shipping address when option is selected
     useEffect(() => {
@@ -292,31 +314,241 @@ const Checkout = () => {
 
             // Handle different payment methods
             if (paymentMethod === "ONLINE") {
-                // For online payment, check if we got a payment URL
-                const paymentUrl = order.paymentUrl || response.paymentUrl;
-                if (paymentUrl) {
-                    // Clear cart before redirecting to payment
-                    await clearCart();
+                console.log(
+                    "🔄 Initiating Razorpay payment for order:",
+                    order._id
+                );
 
-                    // Store order ID in localStorage for return handling
+                // Check if we got Razorpay payment data
+                if (order.razorpayOrderId && order.razorpayKeyId) {
+                    // Show payment processing loader
+                    setPaymentProcessing(true);
+
+                    // Store order ID for status tracking
                     localStorage.setItem("pendingOrderId", order._id);
 
-                    // Redirect to HDFC payment gateway
-                    window.location.href = paymentUrl;
-                    return; // Stop execution here as we're redirecting
+                    // Show loading message
+                    toast.loading("Initializing payment gateway..."); // Load Razorpay script if not already loaded
+                    if (!window.Razorpay) {
+                        const script = document.createElement("script");
+                        script.src =
+                            "https://checkout.razorpay.com/v1/checkout.js";
+                        document.body.appendChild(script);
+                        await new Promise(
+                            (resolve) => (script.onload = resolve)
+                        );
+                    }
+
+                    // Brief delay to ensure smooth UI transition
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+
+                    // Dismiss loading toast
+                    toast.dismiss();
+
+                    // Payment processing flag to prevent race condition between success and dismiss handlers
+                    let paymentProcessed = false;
+
+                    // Razorpay options
+                    const options = {
+                        key: order.razorpayKeyId,
+                        amount: order.amount,
+                        currency: order.currency || "INR",
+                        name: "AffordIndia",
+                        description: `Order Payment - ${order.orderId}`,
+                        image: "/favicon.png",
+                        order_id: order.razorpayOrderId,
+                        prefill: {
+                            name: userName || user?.name || receiverName,
+                            email: user?.email || "",
+                            contact: user.phone || receiverPhone || "",
+                        },
+                        theme: {
+                            color: "#B76E79",
+                        },
+                        handler: async (response) => {
+                            try {
+                                // Set flag immediately to prevent ondismiss from interfering
+                                paymentProcessed = true;
+
+                                // Payment succeeded! Start verification process
+                                setPaymentProcessing(false); // Hide Razorpay modal loader
+                                setPaymentVerifying(true); // Show verification loader
+                                setOrderProcessing(false);
+
+                                console.log(
+                                    "✅ Payment successful, verifying...",
+                                    response
+                                );
+
+                                // Verify payment with backend
+                                const verifyData = await verifyRazorpayPayment({
+                                    razorpay_order_id:
+                                        response.razorpay_order_id,
+                                    razorpay_payment_id:
+                                        response.razorpay_payment_id,
+                                    razorpay_signature:
+                                        response.razorpay_signature,
+                                    orderId: order._id,
+                                });
+
+                                console.log(
+                                    "✅ Payment verified successfully:",
+                                    verifyData
+                                );
+
+                                // Set payment successful flag to prevent cart empty redirect
+                                setPaymentSuccessful(true);
+
+                                // Clear pending order from localStorage
+                                localStorage.removeItem("pendingOrderId");
+
+                                // Show success message first
+                                toast.success(
+                                    "Payment successful! Order confirmed."
+                                );
+
+                                // Clear cart immediately on frontend since we know payment succeeded
+                                // The backend webhook will also clear it, this ensures immediate UI update
+                                try {
+                                    await clearCart(); // This will clear the cart in both frontend context and backend
+                                    window.dispatchEvent(
+                                        new CustomEvent("cartUpdated")
+                                    );
+                                    console.log(
+                                        "✅ Cart cleared immediately after payment success"
+                                    );
+                                } catch (cartClearError) {
+                                    console.warn(
+                                        "⚠️ Failed to clear cart after payment success:",
+                                        cartClearError
+                                    );
+                                    // If clearCart fails, fall back to refresh approach
+                                    try {
+                                        await refreshCart();
+                                        window.dispatchEvent(
+                                            new CustomEvent("cartUpdated")
+                                        );
+                                    } catch (refreshError) {
+                                        console.warn(
+                                            "⚠️ Failed to refresh cart as fallback:",
+                                            refreshError
+                                        );
+                                    }
+                                }
+
+                                // Cart context update is now complete (clearCart returns a Promise that resolves when done)
+
+                                // Navigate directly to order confirmation page
+                                navigate(`/order-confirmation/${order._id}`, {
+                                    replace: true,
+                                    state: {
+                                        paymentSuccess: true,
+                                        paymentData: verifyData,
+                                    },
+                                });
+                            } catch (error) {
+                                // Hide all loaders and reset states on error
+                                setPaymentProcessing(false);
+                                setPaymentVerifying(false);
+                                setLoading(false);
+                                setOrderProcessing(false);
+
+                                console.error(
+                                    "❌ Payment verification failed:",
+                                    error
+                                );
+                                toast.error(
+                                    "Payment verification failed. Please contact support."
+                                );
+
+                                // Navigate directly to payment failed page
+                                navigate(`/payment-failed/${order._id}`, {
+                                    replace: true,
+                                    state: {
+                                        error: error.message,
+                                        canRetry: true,
+                                    },
+                                });
+                            }
+                        },
+                        modal: {
+                            ondismiss: () => {
+                                // Exit early if payment was already processed to prevent race condition
+                                if (paymentProcessed) {
+                                    console.log(
+                                        "🔄 Payment already processed, skipping dismiss handler"
+                                    );
+                                    return;
+                                }
+
+                                // Hide payment processing loader and reset all loading states
+                                setPaymentProcessing(false);
+                                setPaymentVerifying(false);
+                                setLoading(false);
+                                setOrderProcessing(false);
+
+                                console.log(
+                                    "🚫 Payment modal dismissed by user"
+                                );
+                                // Clear pending order from localStorage
+                                localStorage.removeItem("pendingOrderId");
+                                toast.dismiss(); // Clear any pending toasts
+                                // toast.info(
+                                //     "Payment cancelled. You can complete payment anytime from My Orders."
+                                // );
+
+                                // Navigate directly to payment failed page
+                                navigate(`/payment-failed/${order._id}`, {
+                                    replace: true,
+                                    state: {
+                                        error: "Payment was cancelled by user",
+                                        canRetry: true,
+                                    },
+                                });
+                            },
+                        },
+                    };
+
+                    // Create and open Razorpay checkout
+                    const rzp = new window.Razorpay(options);
+                    rzp.open();
+
+                    return; // Stop execution here as payment is being processed
                 } else {
-                    throw new Error("Payment URL not received from server");
+                    throw new Error("Payment data not received from server");
                 }
             } else {
                 // For COD, proceed normally
+                console.log("✅ COD order placed successfully");
+
+                // Set payment successful flag to prevent cart empty redirect
+                setPaymentSuccessful(true);
+                setPaymentVerifying(true); // Show "confirming order" message
 
                 // Clear cart and navigate to confirmation
+                console.log("🧹 Clearing cart for COD order...");
+
                 await clearCart();
-                navigate(`/payment/status/${order._id}`, { replace: true });
+
+                console.log(
+                    "✅ Cart cleared, navigating to order confirmation..."
+                );
+
+                navigate(`/order-confirmation/${order._id}`, { replace: true });
+
+                console.log(
+                    "🚀 Navigation triggered to:",
+                    `/order-confirmation/${order._id}`
+                );
                 return;
             }
         } catch (error) {
-            console.error("Order placement failed:", error);
+            console.error("❌ Order placement failed:", error);
+            console.error("❌ Error details:", {
+                message: error.message,
+                stack: error.stack,
+                response: error.response?.data,
+            });
 
             // Show user-friendly error messages
             let userMessage =
@@ -339,16 +571,56 @@ const Checkout = () => {
             setError(userMessage);
             setLoading(false);
             setOrderProcessing(false);
+            setPaymentProcessing(false);
+            setPaymentVerifying(false);
         }
     };
 
-    // Don't render if cart is empty
+    // Show loading state while cart is loading
+    if (cartLoading) {
+        return (
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ScrollToTop />
+                <div className="text-center py-12">
+                    <Loader size="large" />
+                    <p className="mt-4 text-[#404040]">Loading your cart...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render if cart is empty (after loading is complete)
     if (!cart?.items || cart.items.length === 0) {
         return null;
     }
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            <ScrollToTop />
+            {/* Payment Processing Overlay */}
+            {(paymentProcessing || paymentVerifying) && (
+                <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center shadow-xl">
+                        <div className="mb-4">
+                            <Loader />
+                        </div>
+                        <h3 className="text-lg font-semibold text-[#404040] mb-2">
+                            {paymentVerifying
+                                ? "Confirming Order"
+                                : "Processing Payment"}
+                        </h3>
+                        <p className="text-sm text-[#404040]">
+                            {paymentVerifying
+                                ? "Order successful! Preparing confirmation..."
+                                : "Please wait while we initialize the payment gateway..."}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-3">
+                            Do not refresh or close this page
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Progress Indicator - Commented out temporarily */}
             {/* <CheckoutProgress currentStep={step} /> */}
 
@@ -371,12 +643,12 @@ const Checkout = () => {
 
                     {/* Your Details Section */}
                     <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 shadow-sm">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                        <h3 className="text-lg font-semibold text-[#404040] mb-4">
                             Your Details
                         </h3>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[#404040] mb-2">
                                     Your Name *
                                 </label>
                                 <input
@@ -406,14 +678,14 @@ const Checkout = () => {
                                 )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[#404040] mb-2">
                                     Your Phone
                                 </label>
                                 <input
                                     type="text"
                                     value={user?.phone || ""}
                                     disabled
-                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm cursor-not-allowed"
+                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-[#404040] text-sm cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -433,14 +705,14 @@ const Checkout = () => {
                                 className="w-4 h-4 border-gray-300 rounded focus:ring-gray-400"
                                 style={{ accentColor: "#b76e79" }}
                             />
-                            <span className="font-medium text-gray-800">
+                            <span className="font-medium text-[#404040]">
                                 Ordering for someone else?
                             </span>
                         </label>
                         {isOrderingForSomeoneElse && (
                             <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-gray-200">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-[#404040] mb-2">
                                         Receiver Name *
                                     </label>
                                     <input
@@ -473,7 +745,7 @@ const Checkout = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-[#404040] mb-2">
                                         Receiver Phone *
                                     </label>
                                     <input

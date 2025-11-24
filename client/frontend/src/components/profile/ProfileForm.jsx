@@ -150,7 +150,7 @@ const ProfileForm = () => {
                 {!isEditing ? (
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors"
+                        className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors"
                     >
                         <FaEdit className="text-xs" />
                         Edit
@@ -158,20 +158,20 @@ const ProfileForm = () => {
                 ) : (
                     <div className="flex gap-2">
                         <button
-                            onClick={handleCancel}
-                            disabled={isSaving}
-                            className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors disabled:opacity-50"
-                        >
-                            <FaTimes className="text-xs" />
-                            Cancel
-                        </button>
-                        <button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="flex items-center gap-1 px-3 py-1 text-sm bg-black text-white rounded hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1 px-3 py-1 text-sm bg-[#B76E79] text-white rounded hover:bg-white hover:text-[#B76E79] hover:border hover:border-[#B76E79] transition-colors disabled:opacity-50"
                         >
                             <FaSave className="text-xs" />
                             {isSaving ? "Saving..." : "Save"}
+                        </button>
+                        <button
+                            onClick={handleCancel}
+                            disabled={isSaving}
+                            className="flex items-center gap-1 px-3 py-1 text-sm border border-[#B76E79] text-[#B76E79] bg-white rounded hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50"
+                        >
+                            <FaTimes className="text-xs" />
+                            Cancel
                         </button>
                     </div>
                 )}

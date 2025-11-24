@@ -7,7 +7,7 @@ import {
     FaExclamationTriangle,
     FaSpinner,
 } from "react-icons/fa";
-import { submitContactForm } from "../api/contact.js";
+import { submitContactForm } from "../api/email.js";
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({

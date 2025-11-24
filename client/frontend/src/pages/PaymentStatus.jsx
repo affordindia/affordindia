@@ -578,7 +578,7 @@ const PaymentStatus = () => {
                                         break;
                                     case "pending":
                                         buttonClasses =
-                                            "bg-blue-600 hover:bg-blue-700 text-white";
+                                            "bg-[#B76E79] hover:bg-[#C68F98] text-white";
                                         break;
                                     case "order_error":
                                         buttonClasses =

@@ -37,7 +37,7 @@ const OrderSummary = ({
                     return (
                         <div
                             key={product._id}
-                            className="flex items-center gap-3 p-2 bg-white rounded border"
+                            className="flex items-center gap-3 p-2 bg-white rounded"
                         >
                             <img
                                 src={product.images?.[0] || "/placeholder.png"}
@@ -48,7 +48,7 @@ const OrderSummary = ({
                                 <p className="text-sm font-medium text-[#404040] truncate">
                                     {product.name}
                                 </p>
-                                <p className="text-xs text-gray-600">
+                                <p className="text-xs text-[#404040]">
                                     Qty: {quantity}
                                 </p>
                             </div>
@@ -111,7 +111,7 @@ const OrderSummary = ({
                 {shippingInfo &&
                     !shippingInfo.isFreeShipping &&
                     shippingInfo.remainingForFreeShipping > 0 && (
-                        <div className="text-xs text-gray-600 italic">
+                        <div className="text-xs text-[#404040] italic">
                             Add ₹
                             {shippingInfo.remainingForFreeShipping.toLocaleString()}{" "}
                             more for free shipping
@@ -148,7 +148,7 @@ const OrderSummary = ({
             )}
 
             {/* Security Note */}
-            <div className="mt-4 text-xs text-gray-600 text-center">
+            <div className="mt-4 text-xs text-[#404040] text-center">
                 <p>🔒 Your order is secure and encrypted</p>
             </div>
         </div>

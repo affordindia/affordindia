@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getOrderById } from "../api/order.js";
 import Loader from "../components/common/Loader.jsx";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import { FaCheckCircle, FaTruck, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 
 const OrderConfirmation = () => {
@@ -30,19 +31,25 @@ const OrderConfirmation = () => {
     }, [orderId]);
 
     if (loading) {
-        return <Loader fullScreen={true} />;
+        return (
+            <>
+                <ScrollToTop />
+                <Loader fullScreen={true} />
+            </>
+        );
     }
 
     if (error || !order) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+                <ScrollToTop />
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
                     <p className="text-red-700 mb-4">
                         {error || "Order not found"}
                     </p>
                     <Link
                         to="/orders"
-                        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        className="bg-[#B76E79] border-2 border-[#B76E79] text-white px-4 py-2 rounded hover:bg-[#C68F98] transition-colors"
                     >
                         View All Orders
                     </Link>
@@ -53,6 +60,7 @@ const OrderConfirmation = () => {
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-8">
+            <ScrollToTop />
             {/* Success Header */}
             <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -369,13 +377,13 @@ const OrderConfirmation = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                     to="/orders"
-                    className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors text-center"
+                    className="bg-[#B76E79] border-2 border-[#B76E79] text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-[#B76E79] hover:border-2 hover:border-[#B76E79] transition-colors text-center"
                 >
                     View All Orders
                 </Link>
                 <Link
                     to="/products"
-                    className="bg-white border border-gray-300 text-[#404040] px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center"
+                    className="border-2 border-[#B76E79] text-[#B76E79] bg-white px-6 py-3 rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors text-center"
                 >
                     Continue Shopping
                 </Link>

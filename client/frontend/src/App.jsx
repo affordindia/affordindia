@@ -13,7 +13,8 @@ import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import OrderDetail from "./pages/OrderDetail.jsx";
-import PaymentStatus from "./pages/PaymentStatus.jsx";
+// import PaymentStatus from "./pages/PaymentStatus.jsx";
+import PaymentFailed from "./pages/PaymentFailed.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -29,6 +30,7 @@ import OrderingProduct from "./pages/static/OrderingProduct.jsx";
 import CancelationPolicy from "./pages/static/CancelationPolicy.jsx";
 import ExchangePolicy from "./pages/static/ExchangePolicy.jsx";
 import PaymentPolicy from "./pages/static/PaymentPolicy.jsx";
+import TermsCondition from "./pages/static/TermsCondition.jsx";
 import Faq from "./pages/static/Faq.jsx";
 import AboutUs from "./pages/static/AboutUs.jsx";
 import ShippingDelivery from "./pages/static/OrderingProduct.jsx";
@@ -52,7 +54,7 @@ const App = () => {
                 element={
                     <div className="flex flex-col min-h-screen bg-[#f5f5f5]">
                         {/* Promotional Strip */}
-                        <PromoStrip />
+                        {/* <PromoStrip /> */}
                         <Navbar />
                         <main className="flex-1">
                             <Routes>
@@ -127,20 +129,30 @@ const App = () => {
                                     }
                                 />
 
-                                {/* Unified Payment Status Page - handles success, failure, pending, and errors */}
-                                <Route
+                                {/* Payment Status Pages */}
+                                {/* <Route
                                     path="/payment/status/:orderId"
                                     element={
                                         <ProtectedRoute>
                                             <PaymentStatus />
                                         </ProtectedRoute>
                                     }
-                                />
-                                <Route
+                                /> */}
+                                {/* <Route
                                     path="/payment/status"
                                     element={
                                         <ProtectedRoute>
                                             <PaymentStatus />
+                                        </ProtectedRoute>
+                                    }
+                                /> */}
+
+                                {/* Payment Failed Page */}
+                                <Route
+                                    path="/payment-failed/:orderId"
+                                    element={
+                                        <ProtectedRoute>
+                                            <PaymentFailed />
                                         </ProtectedRoute>
                                     }
                                 />
@@ -163,7 +175,7 @@ const App = () => {
                                     path="/returnpolicy"
                                     element={<ReturnPolicy />}
                                 />
-                                
+
                                 <Route
                                     path="/privacy-policy"
                                     element={<PrivacyPolicy />}
@@ -187,6 +199,10 @@ const App = () => {
                                 <Route
                                     path="/productcare"
                                     element={<ProductCare />}
+                                />
+                                <Route
+                                    path="/terms-and-conditions"
+                                    element={<TermsCondition />}
                                 />
 
                                 <Route

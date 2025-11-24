@@ -16,31 +16,8 @@ const Footer = () => {
     return (
         <footer className="bg-[#ecece8] text-sm text-gray-800 py-10 px-4 mt-12">
             <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                {/* QUICK LINKS */}
-                <div>
-                    <h4 className="font-semibold mb-3">QUICK LINKS</h4>
-                    <ul className="space-y-1">
-                        <li>
-                            <Link
-                                to="/about"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                About Us
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/contact"
-                                onClick={scrollToTop}
-                                className="hover:underline"
-                            >
-                                Contact Us
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
 
+                
                 {/* INFO */}
                 <div>
                     <h4 className="font-semibold mb-3">INFO</h4>
@@ -120,10 +97,43 @@ const Footer = () => {
                                 Privacy Policy
                             </Link>
                         </li>
+                        <li>
+                            <Link
+                                to="/terms-and-conditions"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                Terms & Conditions
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+                {/* QUICK LINKS */}
+                <div>
+                    <h4 className="font-semibold mb-3">QUICK LINKS</h4>
+                    <ul className="space-y-1">
+                        <li>
+                            <Link
+                                to="/about"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                About Us
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/contact"
+                                onClick={scrollToTop}
+                                className="hover:underline"
+                            >
+                                Contact Us
+                            </Link>
+                        </li>
                     </ul>
                 </div>
 
-                {/* SHOP PRODUCTS */}
+                 {/* SHOP PRODUCTS */}
                 <div>
                     <h4 className="font-semibold mb-3">SHOP PRODUCTS</h4>
                     <ul className="space-y-1">
@@ -144,6 +154,9 @@ const Footer = () => {
                         )}
                     </ul>
                 </div>
+
+
+               
 
                 {/* FOLLOW US + Logo */}
                 <div className="flex flex-col items-start">

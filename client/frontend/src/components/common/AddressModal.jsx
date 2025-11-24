@@ -324,11 +324,11 @@ const AddressModal = ({ isOpen, onClose, editingAddress = null }) => {
                             name="isDefault"
                             checked={formData.isDefault}
                             onChange={handleChange}
-                            className="mr-3 text-[#b76e79] focus:ring-gray-400"
+                            className="mr-3 text-[#b76e79] focus:ring-gray-400 accent-[#b76e79]"
                         />
                         <label
                             htmlFor="isDefault"
-                            className="text-sm text-gray-700"
+                            className="text-sm text-[#404040]"
                         >
                             Set as default address
                         </label>
@@ -340,21 +340,14 @@ const AddressModal = ({ isOpen, onClose, editingAddress = null }) => {
                             type="button"
                             onClick={handleClose}
                             disabled={isSubmitting}
-                            className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            className="flex-1 px-4 py-3 bg-white border-2 border-[#B76E79] text-[#B76E79] rounded-lg font-medium hover:bg-[#B76E79] hover:text-white transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 px-4 py-3 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-                            style={{ backgroundColor: "#b76e79" }}
-                            onMouseEnter={(e) =>
-                                (e.target.style.backgroundColor = "#a15c68")
-                            }
-                            onMouseLeave={(e) =>
-                                (e.target.style.backgroundColor = "#b76e79")
-                            }
+                            className="flex-1 px-4 py-3 bg-[#b66e79] border-2 border-[#b66e79] text-white rounded-lg font-medium hover:bg-white hover:text-[#b66e79] transition-colors disabled:opacity-50"
                         >
                             {isSubmitting ? (
                                 <div className="flex items-center justify-center gap-2">

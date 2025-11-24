@@ -39,9 +39,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
     return (
         <div
             className={`w-full p-6 rounded-lg shadow-sm border ${
-                address.isDefault
-                    ? "border-black bg-gray-50"
-                    : "border-gray-400 bg-gray-50"
+                address.isDefault ? "border-[#B76E79]" : "border-gray-400 "
             }`}
         >
             {/* Header */}
@@ -51,7 +49,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                         {address.label}
                     </h3>
                     {address.isDefault && (
-                        <span className="bg-black text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <span className="bg-[#B76E79] text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                             <FaStar className="text-xs" />
                             Default
                         </span>
@@ -71,7 +69,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                 <button
                     onClick={() => onEdit(address)}
                     disabled={loading}
-                    className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] border border-gray-400 text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium"
+                    className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium"
                 >
                     <FaEdit className="text-xs" />
                     Edit
@@ -79,7 +77,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                 <button
                     onClick={() => onDelete(address)}
                     disabled={loading}
-                    className="flex items-center gap-1 px-2 py-2 text-sm bg-gray-200 border border-gray-400 text-red-700 rounded hover:bg-red-100 transition-colors disabled:opacity-50 font-medium min-w-[70px]"
+                    className="flex items-center gap-1 px-2 py-2 text-sm bg-[#DC2626] text-white rounded hover:bg-[#EF4444] transition-colors disabled:opacity-50 font-medium min-w-[70px]"
                 >
                     <FaTrash className="text-xs" />
                     Delete
@@ -88,7 +86,7 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                     <button
                         onClick={handleSetDefault}
                         disabled={loading || isSettingDefault}
-                        className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] border border-gray-400 text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
+                        className="flex items-center gap-1 px-4 py-2 text-sm bg-[#B76E79] text-white rounded hover:bg-[#C68F98] transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
                     >
                         {isSettingDefault ? "Setting..." : "Set Default"}
                     </button>
