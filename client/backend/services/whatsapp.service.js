@@ -1,10 +1,5 @@
 import axios from "axios";
 
-/**
- * WhatsApp Service using MSG91
- * Simple service functions for different message types
- */
-
 // MSG91 API Configuration
 const MSG91_CONFIG = {
     authKey: process.env.MSG91_AUTH_KEY,
@@ -12,11 +7,6 @@ const MSG91_CONFIG = {
     senderId: process.env.MSG91_SENDER_ID,
 };
 
-/**
- * Validate and format phone number for Indian numbers
- * @param {string} phone - Phone number
- * @returns {string} - Formatted phone number
- */
 const formatPhoneNumber = (phone) => {
     // Remove all non-digit characters
     let cleaned = phone.replace(/\D/g, "");
@@ -35,13 +25,6 @@ const formatPhoneNumber = (phone) => {
     return cleaned;
 };
 
-/**
- * Send basic WhatsApp message using MSG91
- * @param {string} mobile - Phone number
- * @param {string} templateId - MSG91 template ID
- * @param {Array} templateData - Template variables in order
- * @returns {Promise<Object>} - API response
- */
 const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
     try {
         const formattedMobile = formatPhoneNumber(mobile);
@@ -107,12 +90,6 @@ const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
     }
 };
 
-/**
- * Send OTP message
- * @param {string} mobile - Phone number
- * @param {string} otp - OTP code
- * @returns {Promise<Object>}
- */
 export const sendOTPMessage = async (mobile, otp) => {
     const templateId = process.env.WHATSAPP_TEMPLATE_OTP;
     const templateData = [otp];
@@ -120,13 +97,6 @@ export const sendOTPMessage = async (mobile, otp) => {
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send login alert message
- * @param {string} mobile - Phone number
- * @param {string} deviceInfo - Device/browser info
- * @param {string} timestamp - Login time
- * @returns {Promise<Object>}
- */
 export const sendLoginAlert = async (
     mobile,
     deviceInfo = "Unknown Device",
@@ -138,15 +108,6 @@ export const sendLoginAlert = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send order placed confirmation
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {number} amount - Order amount
- * @param {string} deliveryDate - Expected delivery date
- * @returns {Promise<Object>}
- */
 export const sendOrderPlaced = async (
     mobile,
     customerName,
@@ -160,15 +121,6 @@ export const sendOrderPlaced = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send order status update
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {string} status - New order status
- * @param {string} trackingInfo - Tracking details (optional)
- * @returns {Promise<Object>}
- */
 export const sendOrderStatusUpdate = async (
     mobile,
     customerName,
@@ -184,15 +136,6 @@ export const sendOrderStatusUpdate = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send payment confirmation
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {number} amount - Payment amount
- * @param {string} paymentMethod - Payment method used
- * @returns {Promise<Object>}
- */
 export const sendPaymentConfirmation = async (
     mobile,
     customerName,
@@ -206,16 +149,6 @@ export const sendPaymentConfirmation = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send order shipped notification
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {string} trackingNumber - Tracking number
- * @param {string} courierName - Courier company name
- * @param {string} expectedDelivery - Expected delivery date
- * @returns {Promise<Object>}
- */
 export const sendOrderShipped = async (
     mobile,
     customerName,
@@ -236,14 +169,6 @@ export const sendOrderShipped = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send order delivered confirmation
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {string} deliveryTime - Actual delivery time
- * @returns {Promise<Object>}
- */
 export const sendOrderDelivered = async (
     mobile,
     customerName,
@@ -256,15 +181,6 @@ export const sendOrderDelivered = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send promotional/marketing message
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} offerDetails - Offer details
- * @param {string} validUntil - Offer validity
- * @param {string} promoCode - Promo code (optional)
- * @returns {Promise<Object>}
- */
 export const sendPromotionalMessage = async (
     mobile,
     customerName,
@@ -280,15 +196,6 @@ export const sendPromotionalMessage = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Send order cancellation notification
- * @param {string} mobile - Phone number
- * @param {string} customerName - Customer name
- * @param {string} orderId - Order ID
- * @param {string} reason - Cancellation reason
- * @param {string} refundInfo - Refund information
- * @returns {Promise<Object>}
- */
 export const sendOrderCancelled = async (
     mobile,
     customerName,
@@ -302,10 +209,6 @@ export const sendOrderCancelled = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-/**
- * Test WhatsApp service configuration
- * @returns {Promise<Object>}
- */
 export const testWhatsAppService = async () => {
     try {
         if (!MSG91_CONFIG.authKey || !MSG91_CONFIG.senderId) {
