@@ -11,7 +11,7 @@ const config = {
     },
     shipping: {
         minOrderForFree: 1000, // Orders >= this get free shipping
-        shippingFee: 0, // Shipping fee if below minOrderForFree
+        shippingFee: 50, // Shipping fee if below minOrderForFree
         discount: 0, // Default discount (can be extended)
     },
     // Add other global configs here as needed
