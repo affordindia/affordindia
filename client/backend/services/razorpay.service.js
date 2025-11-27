@@ -319,7 +319,8 @@ async function handlePaymentCaptured(payment) {
 
         const order = await Order.findOne({
             razorpayOrderId: payment.order_id,
-        });
+        }).populate("user", "name phone");
+
         if (!order) {
             console.error("❌ Order not found for payment:", payment.id);
             return;
@@ -343,6 +344,14 @@ async function handlePaymentCaptured(payment) {
             const customerPhone = order.user?.phone || order.receiverPhone;
             const customerName =
                 order.userName || order.user?.name || "Customer";
+
+            console.log("📱 Checking WhatsApp notification data:", {
+                customerPhone,
+                customerName,
+                orderId: order.orderId,
+                userPhone: order.user?.phone,
+                receiverPhone: order.receiverPhone,
+            });
 
             if (customerPhone) {
                 // Send payment confirmation
@@ -377,6 +386,15 @@ async function handlePaymentCaptured(payment) {
                 console.log(
                     "📱 Order placed WhatsApp sent for online order:",
                     order.orderId
+                );
+            } else {
+                console.log(
+                    "❌ No customer phone found for WhatsApp notifications:",
+                    {
+                        userId: order.user?._id,
+                        userPhone: order.user?.phone,
+                        receiverPhone: order.receiverPhone,
+                    }
                 );
             }
         } catch (whatsappError) {
