@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
 import { createRazorpayOrder } from "./razorpay.service.js";
+import { sendOrderPlaced } from "./whatsapp.service.js";
 
 // HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
 // PRESERVED FOR FUTURE ROLLBACK IF NEEDED
@@ -253,6 +254,39 @@ export const placeOrder = async (
         cart.appliedCoupon = undefined;
         await cart.save();
         console.log("🛒 Cart cleared for COD order:", order._id);
+
+        // Send WhatsApp order placed notification for COD
+        try {
+            const customerPhone = receiverPhone || user.phone;
+            const customerName = userName || user.name || "Customer";
+            const deliveryDate = new Date(
+                Date.now() + 7 * 24 * 60 * 60 * 1000
+            ).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            });
+
+            if (customerPhone) {
+                await sendOrderPlaced(
+                    customerPhone,
+                    customerName,
+                    order.orderId,
+                    order.total,
+                    deliveryDate
+                );
+                console.log(
+                    "📱 Order placed WhatsApp sent for COD order:",
+                    order.orderId
+                );
+            }
+        } catch (whatsappError) {
+            console.error(
+                "❌ Failed to send order placed WhatsApp:",
+                whatsappError
+            );
+            // Don't fail the entire order process if WhatsApp fails
+        }
     } else {
         console.log(
             "🛒 Cart retained for online payment order:",
