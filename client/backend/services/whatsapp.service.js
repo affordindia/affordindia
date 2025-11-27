@@ -8,45 +8,78 @@ const MSG91_CONFIG = {
 };
 
 const formatPhoneNumber = (phone) => {
+    if (!phone) {
+        throw new Error("Phone number is required");
+    }
+
     // Remove all non-digit characters
     let cleaned = phone.replace(/\D/g, "");
+
+    // Validate minimum length
+    if (cleaned.length < 10) {
+        throw new Error("Phone number must be at least 10 digits");
+    }
 
     // If starts with 91, keep as is
     if (cleaned.startsWith("91") && cleaned.length === 12) {
         return cleaned;
     }
 
-    // If 10 digits, add 91 prefix
+    // If starts with 0, remove it (Indian mobile format)
+    if (cleaned.startsWith("0") && cleaned.length === 11) {
+        cleaned = cleaned.substring(1);
+    }
+
+    // If 10 digits, add 91 prefix for India
     if (cleaned.length === 10) {
+        // Validate Indian mobile number pattern (starts with 6,7,8,9)
+        if (!/^[6-9]/.test(cleaned)) {
+            throw new Error("Invalid Indian mobile number format");
+        }
         return "91" + cleaned;
     }
 
-    // Return as is if already formatted
+    // If other country codes, validate length
+    if (cleaned.length > 15 || cleaned.length < 10) {
+        throw new Error("Invalid phone number length");
+    }
+
     return cleaned;
 };
 
 const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
     try {
+        if (!templateId) {
+            throw new Error("Template ID is required");
+        }
+
         const formattedMobile = formatPhoneNumber(mobile);
+
+        // Create components object for template variables
+        const components = {};
+        templateData.forEach((data, index) => {
+            components[`body_${index + 1}`] = {
+                type: "text",
+                value: data.toString(),
+            };
+        });
 
         const payload = {
             integrated_number: MSG91_CONFIG.senderId,
             content_type: "template",
             payload: {
-                to: formattedMobile,
+                messaging_product: "whatsapp",
                 type: "template",
                 template: {
                     name: templateId,
                     language: {
                         code: "en",
+                        policy: "deterministic",
                     },
-                    components: [
+                    to_and_components: [
                         {
-                            type: "body",
-                            parameters: templateData.map((data) => ({
-                                type: "text",
-                                text: data.toString(),
-                            })),
+                            to: [formattedMobile],
+                            components: components,
                         },
                     ],
                 },
@@ -61,19 +94,21 @@ const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
                     authkey: MSG91_CONFIG.authKey,
                     "Content-Type": "application/json",
                 },
+                timeout: 30000,
             }
         );
 
         console.log("✅ WhatsApp message sent successfully:", {
             mobile: formattedMobile,
             templateId,
-            response: response.data,
+            messageId: response.data?.message_id || response.data?.id,
         });
 
         return {
             success: true,
             data: response.data,
             mobile: formattedMobile,
+            messageId: response.data?.message_id || response.data?.id,
         };
     } catch (error) {
         console.error("❌ WhatsApp message failed:", {
@@ -209,42 +244,65 @@ export const sendOrderCancelled = async (
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-export const testWhatsAppService = async () => {
-    try {
-        if (!MSG91_CONFIG.authKey || !MSG91_CONFIG.senderId) {
-            throw new Error(
-                "MSG91 configuration missing. Please check environment variables."
-            );
-        }
+export const sendPaymentFailed = async (
+    mobile,
+    customerName,
+    orderId,
+    failureReason = "Payment processing failed"
+) => {
+    const templateId = process.env.WHATSAPP_TEMPLATE_PAYMENT_FAILED;
+    const templateData = [customerName, orderId, failureReason];
 
-        return {
-            success: true,
-            message: "WhatsApp service configured successfully",
-            config: {
-                hasAuthKey: !!MSG91_CONFIG.authKey,
-                hasSenderId: !!MSG91_CONFIG.senderId,
-                baseUrl: MSG91_CONFIG.baseUrl,
-            },
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error.message,
-        };
-    }
+    return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
 
-// Helper function to get all available template functions
-export const getAvailableTemplates = () => {
-    return {
-        otp: "sendOTPMessage",
-        loginAlert: "sendLoginAlert",
-        orderPlaced: "sendOrderPlaced",
-        orderStatus: "sendOrderStatusUpdate",
-        paymentSuccess: "sendPaymentConfirmation",
-        orderShipped: "sendOrderShipped",
-        orderDelivered: "sendOrderDelivered",
-        promotional: "sendPromotionalMessage",
-        orderCancelled: "sendOrderCancelled",
-    };
+export const sendOrderTracking = async (
+    mobile,
+    customerName,
+    orderId,
+    trackingNumber,
+    courierName,
+    currentStatus,
+    location = ""
+) => {
+    const templateId = process.env.WHATSAPP_TEMPLATE_ORDER_TRACKING;
+    const templateData = location
+        ? [
+              customerName,
+              orderId,
+              trackingNumber,
+              courierName,
+              currentStatus,
+              location,
+          ]
+        : [customerName, orderId, trackingNumber, courierName, currentStatus];
+
+    return await sendWhatsAppMessage(mobile, templateId, templateData);
+};
+
+export const sendReturnRequest = async (
+    mobile,
+    customerName,
+    orderId,
+    returnRequestId,
+    status = "initiated"
+) => {
+    const templateId = process.env.WHATSAPP_TEMPLATE_RETURN_REQUEST;
+    const templateData = [customerName, orderId, returnRequestId, status];
+
+    return await sendWhatsAppMessage(mobile, templateId, templateData);
+};
+
+export const sendWelcomeMessage = async (mobile, customerName) => {
+    const templateId = process.env.WHATSAPP_TEMPLATE_WELCOME;
+    const templateData = [customerName];
+
+    return await sendWhatsAppMessage(mobile, templateId, templateData);
+};
+
+export const sendPasswordReset = async (mobile, customerName, resetCode) => {
+    const templateId = process.env.WHATSAPP_TEMPLATE_PASSWORD_RESET;
+    const templateData = [customerName, resetCode];
+
+    return await sendWhatsAppMessage(mobile, templateId, templateData);
 };
