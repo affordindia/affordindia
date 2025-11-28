@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
 import { createRazorpayOrder } from "./razorpay.service.js";
+import { sendOrderPlaced } from "./whatsapp.service.js";
 
 // HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
 // PRESERVED FOR FUTURE ROLLBACK IF NEEDED
@@ -39,15 +40,19 @@ export const placeOrder = async (
 
     if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
+    // Get user data for later use (name updates and WhatsApp notifications)
+    const currentUser = await User.findById(userId);
+
     // Update user's name if provided and not already set
     if (userName && userName.trim()) {
         try {
-            const currentUser = await User.findById(userId);
             if (
                 currentUser &&
                 (!currentUser.name || currentUser.name.trim() === "")
             ) {
                 await User.findByIdAndUpdate(userId, { name: userName.trim() });
+                // Update the currentUser object to reflect the change
+                currentUser.name = userName.trim();
             }
         } catch (error) {
             console.error("Failed to update user name:", error);
@@ -253,6 +258,40 @@ export const placeOrder = async (
         cart.appliedCoupon = undefined;
         await cart.save();
         console.log("🛒 Cart cleared for COD order:", order._id);
+
+        // Send WhatsApp order placed notification for COD
+        try {
+            // Use the currentUser data we fetched earlier
+            const customerPhone = receiverPhone || currentUser?.phone;
+            const customerName = userName || currentUser?.name || "Customer";
+            const deliveryDate = new Date(
+                Date.now() + 7 * 24 * 60 * 60 * 1000
+            ).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            });
+
+            if (customerPhone) {
+                await sendOrderPlaced(
+                    customerPhone,
+                    customerName,
+                    order.orderId,
+                    order.total,
+                    deliveryDate
+                );
+                console.log(
+                    "📱 Order placed WhatsApp sent for COD order:",
+                    order.orderId
+                );
+            }
+        } catch (whatsappError) {
+            console.error(
+                "❌ Failed to send order placed WhatsApp:",
+                whatsappError
+            );
+            // Don't fail the entire order process if WhatsApp fails
+        }
     } else {
         console.log(
             "🛒 Cart retained for online payment order:",

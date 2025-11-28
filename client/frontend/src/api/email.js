@@ -63,6 +63,30 @@ export const sendOrderShippedEmail = async (orderData, customerEmail) => {
 };
 
 /**
+ * Submit return/cancel request (sends admin notification + user auto-reply)
+ * @param {Object} requestData - Return/Cancel request data
+ * @param {string} requestData.name - Customer name
+ * @param {string} requestData.email - Customer email
+ * @param {string} requestData.orderId - Order ID
+ * @param {string} requestData.reason - Selected reason
+ * @param {string} requestData.customReason - Custom reason if "Other" selected
+ * @param {string} requestData.type - "return" or "cancel"
+ * @returns {Promise<Object>} API response
+ */
+export const submitReturnCancelRequest = async (requestData) => {
+    console.log("API CALL: submitReturnCancelRequest", {
+        name: requestData.name,
+        email: requestData.email,
+        orderId: requestData.orderId,
+        type: requestData.type,
+        reason: requestData.reason,
+    });
+
+    const res = await api.post("/email/return-cancel", requestData);
+    return res.data;
+};
+
+/**
  * Check email service health
  * @returns {Promise<Object>} Health status
  */

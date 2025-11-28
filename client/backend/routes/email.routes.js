@@ -6,6 +6,7 @@
 import express from "express";
 import {
     submitContactForm,
+    submitReturnCancelRequest,
     sendOrderConfirmation,
     sendOrderShipped,
     getEmailHealth,
@@ -20,6 +21,14 @@ const router = express.Router();
  * @body    { name, email, message }
  */
 router.post("/contact", submitContactForm);
+
+/**
+ * @route   POST /api/email/return-cancel
+ * @desc    Submit return/cancel request (sends admin notification + user acknowledgment)
+ * @access  Public
+ * @body    { name, email, orderId, reason, type }
+ */
+router.post("/return-cancel", submitReturnCancelRequest);
 
 /**
  * @route   POST /api/email/order-confirmation

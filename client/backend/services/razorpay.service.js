@@ -4,6 +4,11 @@ import razorpayConfig from "../config/razorpay.config.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import Cart from "../models/cart.model.js";
+import {
+    sendPaymentConfirmation,
+    sendPaymentFailed,
+    sendOrderPlaced,
+} from "./whatsapp.service.js";
 
 // Initialize Razorpay instance
 const razorpay = new Razorpay({
@@ -314,7 +319,8 @@ async function handlePaymentCaptured(payment) {
 
         const order = await Order.findOne({
             razorpayOrderId: payment.order_id,
-        });
+        }).populate("user", "name phone");
+
         if (!order) {
             console.error("❌ Order not found for payment:", payment.id);
             return;
@@ -332,6 +338,72 @@ async function handlePaymentCaptured(payment) {
         };
 
         await order.save();
+
+        // Send WhatsApp payment confirmation
+        try {
+            const customerPhone = order.user?.phone || order.receiverPhone;
+            const customerName =
+                order.userName || order.user?.name || "Customer";
+
+            console.log("📱 Checking WhatsApp notification data:", {
+                customerPhone,
+                customerName,
+                orderId: order.orderId,
+                userPhone: order.user?.phone,
+                receiverPhone: order.receiverPhone,
+            });
+
+            if (customerPhone) {
+                // Send payment confirmation
+                await sendPaymentConfirmation(
+                    customerPhone,
+                    customerName,
+                    order.orderId,
+                    order.total,
+                    payment.method || "Online"
+                );
+                console.log(
+                    "📱 Payment confirmation WhatsApp sent for order:",
+                    order.orderId
+                );
+
+                // Send order placed confirmation (since this is when order is actually confirmed for online payments)
+                const deliveryDate = new Date(
+                    Date.now() + 7 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                });
+
+                await sendOrderPlaced(
+                    customerPhone,
+                    customerName,
+                    order.orderId,
+                    order.total,
+                    deliveryDate
+                );
+                console.log(
+                    "📱 Order placed WhatsApp sent for online order:",
+                    order.orderId
+                );
+            } else {
+                console.log(
+                    "❌ No customer phone found for WhatsApp notifications:",
+                    {
+                        userId: order.user?._id,
+                        userPhone: order.user?.phone,
+                        receiverPhone: order.receiverPhone,
+                    }
+                );
+            }
+        } catch (whatsappError) {
+            console.error(
+                "❌ Failed to send WhatsApp notifications:",
+                whatsappError
+            );
+            // Don't fail the entire payment process if WhatsApp fails
+        }
 
         // Deduct stock only on successful payment
         await deductStockForPayment(order);
@@ -374,7 +446,7 @@ async function handlePaymentFailed(payment) {
 
         const order = await Order.findOne({
             razorpayOrderId: payment.order_id,
-        });
+        }).populate("user", "name phone");
         if (!order) {
             console.error("❌ Order not found for payment:", payment.id);
             return;
@@ -404,7 +476,49 @@ async function handlePaymentFailed(payment) {
 
         await order.save();
 
-        console.log("❌ Payment failure processed for order:", order.orderId);
+        // Send WhatsApp payment failure notification
+        try {
+            const customerPhone = order.user?.phone || order.receiverPhone;
+            const customerName =
+                order.userName || order.user?.name || "Customer";
+
+            console.log("📱 Checking WhatsApp notification data:", {
+                customerPhone,
+                customerName,
+                orderId: order.orderId,
+                userPhone: order.user?.phone,
+                receiverPhone: order.receiverPhone,
+            });
+
+            if (customerPhone) {
+                await sendPaymentFailed(
+                    customerPhone,
+                    customerName,
+                    order.orderId,
+                    payment.error_description || "Payment processing failed"
+                );
+                console.log(
+                    "📱 Payment failure WhatsApp sent for order:",
+                    order.orderId
+                );
+            } else {
+                console.log(
+                    "❌ No customer phone found for WhatsApp notifications:",
+                    {
+                        userId: order.user?._id,
+                        userPhone: order.user?.phone,
+                        receiverPhone: order.receiverPhone,
+                    }
+                );
+            }
+        } catch (whatsappError) {
+            console.error(
+                "❌ Failed to send payment failure WhatsApp:",
+                whatsappError
+            );
+        }
+
+        console.log("❌ Payment failed processed for order:", order.orderId);
     } catch (error) {
         console.error("❌ Failed to handle payment failure:", error);
     }

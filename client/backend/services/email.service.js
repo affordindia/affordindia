@@ -126,6 +126,60 @@ export const sendContactFormEmails = async (contactData) => {
 };
 
 /**
+ * Send return/cancel request emails (admin notification + user auto-reply)
+ */
+export const sendReturnCancelRequestEmails = async (requestData) => {
+    try {
+        const config = getEmailConfig();
+        const { name, email, orderId, reason, type } = requestData;
+
+        // Send admin notification email
+        const adminResult = await sendTemplateEmail(
+            config.templates.returnCancelAdmin,
+            config.from.email, // Send to admin email
+            {
+                name: name,
+                email: email,
+                orderId: orderId,
+                reason: reason,
+                type: type, // "return" or "cancel"
+                submitted_on: new Date().toLocaleString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                }),
+            }
+        );
+
+        // Send user auto-reply email
+        const userResult = await sendTemplateEmail(
+            config.templates.returnCancelUser,
+            email,
+            {
+                name: name,
+                // orderId: orderId,
+                // type: type,
+                // support_email: config.from.email,
+                // support_phone: "+91 9211501006",
+                // website_url: process.env.FRONTEND_URL || "https://affordindia.com",
+            }
+        );
+
+        return {
+            success: true,
+            admin: adminResult,
+            user: userResult,
+        };
+    } catch (error) {
+        console.error("❌ Error sending return/cancel request emails:", error);
+        throw error;
+    }
+};
+
+/**
  * Send order confirmation email
  */
 export const sendOrderConfirmationEmail = async (customerEmail, orderData) => {
