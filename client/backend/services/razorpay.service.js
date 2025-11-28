@@ -482,6 +482,14 @@ async function handlePaymentFailed(payment) {
             const customerName =
                 order.userName || order.user?.name || "Customer";
 
+            console.log("📱 Checking WhatsApp notification data:", {
+                customerPhone,
+                customerName,
+                orderId: order.orderId,
+                userPhone: order.user?.phone,
+                receiverPhone: order.receiverPhone,
+            });
+
             if (customerPhone) {
                 await sendPaymentFailed(
                     customerPhone,
@@ -492,6 +500,15 @@ async function handlePaymentFailed(payment) {
                 console.log(
                     "📱 Payment failure WhatsApp sent for order:",
                     order.orderId
+                );
+            } else {
+                console.log(
+                    "❌ No customer phone found for WhatsApp notifications:",
+                    {
+                        userId: order.user?._id,
+                        userPhone: order.user?.phone,
+                        receiverPhone: order.receiverPhone,
+                    }
                 );
             }
         } catch (whatsappError) {
