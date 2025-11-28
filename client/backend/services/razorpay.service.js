@@ -446,7 +446,7 @@ async function handlePaymentFailed(payment) {
 
         const order = await Order.findOne({
             razorpayOrderId: payment.order_id,
-        });
+        }).populate("user", "name phone");
         if (!order) {
             console.error("❌ Order not found for payment:", payment.id);
             return;
