@@ -425,6 +425,19 @@ const ProductDetail = () => {
                                     Featured
                                 </span>
                             )}
+
+                            {/* Returnable Status */}
+                            <span
+                                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    product.isReturnable !== false
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                }`}
+                            >
+                                {product.isReturnable !== false
+                                    ? "Returnable"
+                                    : "Non-Returnable"}
+                            </span>
                         </div>
                     </div>
 

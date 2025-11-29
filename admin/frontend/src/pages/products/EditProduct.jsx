@@ -12,15 +12,16 @@ const EditProduct = () => {
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    productDescription: "",
+        name: "",
+        description: "",
+        productDescription: "",
         price: "",
         category: "",
         subcategories: [],
         stock: "",
         discount: "",
         isFeatured: false,
+        isReturnable: true,
     });
     const [existingImages, setExistingImages] = useState([]);
     const [newImages, setNewImages] = useState([]);
@@ -49,6 +50,10 @@ const EditProduct = () => {
                     stock: product.stock?.toString() || "",
                     discount: product.discount?.toString() || "",
                     isFeatured: product.isFeatured || false,
+                    isReturnable:
+                        product.isReturnable !== undefined
+                            ? product.isReturnable
+                            : true,
                 });
                 setExistingImages(product.images || []);
             } else {
@@ -533,6 +538,26 @@ const EditProduct = () => {
                             <p className="text-sm text-admin-text-secondary mt-1">
                                 Featured products will be highlighted on the
                                 homepage
+                            </p>
+                        </div>
+
+                        {/* Returnable Toggle */}
+                        <div className="md:col-span-2">
+                            <label className="flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    name="isReturnable"
+                                    checked={formData.isReturnable}
+                                    onChange={handleInputChange}
+                                    className="w-4 h-4 text-admin-primary bg-admin-card border-admin-border rounded focus:ring-admin-primary focus:ring-2"
+                                />
+                                <span className="text-sm font-medium text-admin-text">
+                                    Returnable Product
+                                </span>
+                            </label>
+                            <p className="text-sm text-admin-text-secondary mt-1">
+                                Allow customers to return this product if
+                                they're not satisfied
                             </p>
                         </div>
                     </div>

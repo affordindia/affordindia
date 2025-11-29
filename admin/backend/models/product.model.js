@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema(
             min: 0,
             max: 100,
         },
+        isReturnable: {
+            type: Boolean,
+            default: true, // Most products are returnable by default
+        },
     },
     { timestamps: true }
 );

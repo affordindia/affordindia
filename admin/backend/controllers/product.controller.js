@@ -59,6 +59,11 @@ export const createProduct = async (req, res) => {
         if (productData.isFeatured !== undefined) {
             productData.isFeatured = convertToBoolean(productData.isFeatured);
         }
+        if (productData.isReturnable !== undefined) {
+            productData.isReturnable = convertToBoolean(
+                productData.isReturnable
+            );
+        }
 
         const product = await createProductService(productData);
         res.status(201).json(product);
@@ -176,6 +181,9 @@ export const updateProduct = async (req, res) => {
         // Convert checkbox values to boolean
         if (updateData.isFeatured !== undefined) {
             updateData.isFeatured = convertToBoolean(updateData.isFeatured);
+        }
+        if (updateData.isReturnable !== undefined) {
+            updateData.isReturnable = convertToBoolean(updateData.isReturnable);
         }
 
         const product = await updateProductService(req.params.id, updateData);
