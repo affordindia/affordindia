@@ -48,7 +48,7 @@ const Orders = () => {
         customerEmail: "",
     });
 
-    const ordersPerPage = 12;
+    const ordersPerPage = 25;
 
     const orderStatusOptions = [
         "pending",
@@ -77,28 +77,34 @@ const Orders = () => {
         setLoading(true);
         setError(null);
         try {
-            const params = {
-                skip: (currentPage - 1) * ordersPerPage,
-                limit: ordersPerPage,
+            const filters = {
+                // Add search filter
+                ...(searchTerm && { search: searchTerm }),
+
+                // Add applied filters
+                ...Object.keys(appliedFilters).reduce((acc, key) => {
+                    const value = appliedFilters[key];
+                    if (Array.isArray(value)) {
+                        if (value.length > 0) {
+                            acc[key] = value;
+                        }
+                    } else if (value !== "" && value !== false) {
+                        acc[key] = value;
+                    }
+                    return acc;
+                }, {}),
             };
 
-            // Add search filter
-            if (searchTerm) params.search = searchTerm;
+            const pagination = {
+                skip: (currentPage - 1) * ordersPerPage,
+                limit: ordersPerPage,
+                sort: { createdAt: -1 },
+            };
 
-            // Add applied filters
-            Object.keys(appliedFilters).forEach((key) => {
-                const value = appliedFilters[key];
-                if (Array.isArray(value)) {
-                    if (value.length > 0) {
-                        params[key] = value;
-                    }
-                } else if (value !== "" && value !== false) {
-                    params[key] = value;
-                }
-            });
+            console.log("Fetching orders with filters:", filters);
+            console.log("Fetching orders with pagination:", pagination);
 
-            console.log("Fetching orders with params:", params);
-            const response = await getOrders(params);
+            const response = await getOrders(filters, pagination);
             console.log("Orders API result:", response);
 
             if (response.success) {

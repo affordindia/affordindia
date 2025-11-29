@@ -145,8 +145,10 @@ export async function getAllOrders(req, res, next) {
                             ? new mongoose.Types.ObjectId(req.query.search)
                             : null,
                     },
+                    { orderId: searchRegex }, // Search by orderId
                     { "userDetails.name": searchRegex },
                     { "userDetails.email": searchRegex },
+                    { "userDetails.phone": searchRegex }, // Added phone search for user
                     { receiverName: searchRegex },
                     { receiverPhone: searchRegex },
                     { trackingNumber: searchRegex },
