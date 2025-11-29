@@ -104,9 +104,7 @@ export const getDashboardStatsService = async () => {
                 .populate("user", "name phone")
                 .sort({ createdAt: -1 })
                 .limit(5)
-                .select(
-                    "orderNumber total status paymentStatus createdAt user"
-                ),
+                .select("orderId total status paymentStatus createdAt user"),
 
             // Low stock products
             // Low stock products (all for count, limited for display)
@@ -213,7 +211,7 @@ export const getDashboardStatsService = async () => {
             recentActivity: {
                 recentOrders: recentOrders.map((order) => ({
                     id: order._id,
-                    orderNumber: order.orderNumber,
+                    orderId: order.orderId,
                     customer: order.user?.name || order.user?.phone || "Guest",
                     total: order.total,
                     status: order.status,

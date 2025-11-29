@@ -264,11 +264,6 @@ const OrderDetail = () => {
         );
     };
 
-    // Helper function to get order ID display
-    const getOrderId = (order) => {
-        return order._id?.toString().slice(-8).toUpperCase() || "N/A";
-    };
-
     if (loading) {
         return <Loader fullScreen={true} />;
     }
@@ -332,7 +327,7 @@ const OrderDetail = () => {
                         <div className="flex items-center gap-6">
                             <div>
                                 <h1 className="text-2xl font-bold text-admin-text">
-                                    Order #{getOrderId(order)}
+                                    Order #{order.orderId}
                                 </h1>
                                 <p className="text-admin-text-secondary">
                                     Placed on {formatDate(order.createdAt)}
@@ -1045,7 +1040,7 @@ const OrderDetail = () => {
                         </h3>
                         <p className="text-admin-text-secondary mb-6">
                             Are you sure you want to delete order #
-                            {getOrderId(order)}? This action cannot be undone.
+                            {order.orderId}? This action cannot be undone.
                         </p>
                         <div className="flex gap-3">
                             <button

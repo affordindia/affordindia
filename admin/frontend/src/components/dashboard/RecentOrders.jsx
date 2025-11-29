@@ -28,7 +28,7 @@ const RecentOrders = ({ stats, formatCurrency }) => {
                         >
                             <div>
                                 <p className="font-medium text-admin-text">
-                                    #{order.orderNumber}
+                                    #{order.orderId}
                                 </p>
                                 <p className="text-sm text-admin-text-secondary">
                                     {order.customer}

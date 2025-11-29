@@ -246,11 +246,6 @@ const Orders = () => {
         return "N/A";
     };
 
-    // Helper function to get order ID display
-    const getOrderId = (order) => {
-        return order._id?.toString().slice(-8).toUpperCase() || "N/A";
-    };
-
     const totalPages = Math.ceil(totalOrders / ordersPerPage);
 
     if (loading) {
@@ -688,7 +683,7 @@ const Orders = () => {
                                         <td className="px-6 py-4">
                                             <div>
                                                 <div className="font-medium text-admin-text">
-                                                    #{getOrderId(order)}
+                                                    #{order.orderId}
                                                 </div>
                                                 {order.trackingNumber && (
                                                     <div className="text-sm text-admin-primary">

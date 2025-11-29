@@ -120,7 +120,7 @@ export const getUserByIdService = async (userId) => {
             Order.find({ user: userId })
                 .sort({ createdAt: -1 })
                 .limit(5)
-                .select("orderNumber total status paymentStatus createdAt"),
+                .select("orderId total status paymentStatus createdAt"),
         ]);
 
     return {

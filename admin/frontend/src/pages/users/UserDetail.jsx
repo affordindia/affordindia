@@ -361,7 +361,7 @@ const UserDetail = () => {
                                     >
                                         <div>
                                             <p className="font-medium text-admin-text">
-                                                Order #{order._id?.slice(-6)}
+                                                Order #{order.orderId || "N/A"}
                                             </p>
                                             <p className="text-sm text-admin-text-secondary">
                                                 {formatDate(order.createdAt)}
