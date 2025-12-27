@@ -6,6 +6,7 @@ import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
 import { createRazorpayOrder } from "./razorpay.service.js";
 import { sendOrderPlaced } from "./whatsapp.service.js";
+import { createShiprocketOrder } from "../../../admin/backend/services/shiprocket.service.js";
 
 // HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
 // PRESERVED FOR FUTURE ROLLBACK IF NEEDED
@@ -258,6 +259,31 @@ export const placeOrder = async (
         cart.appliedCoupon = undefined;
         await cart.save();
         console.log("🛒 Cart cleared for COD order:", order._id);
+
+        // Create Shiprocket order for COD
+        try {
+            console.log("📦 Creating Shiprocket order for COD:", order.orderId);
+            
+            // Populate order with product and user details
+            const populatedOrder = await Order.findById(order._id)
+                .populate('items.product')
+                .populate('user');
+            
+            const shiprocketResponse = await createShiprocketOrder(populatedOrder, currentUser);
+            
+            if (shiprocketResponse) {
+                order.shiprocket = {
+                    orderId: shiprocketResponse.order_id,
+                    shipmentId: shiprocketResponse.shipment_id,
+                    createdAt: new Date(),
+                };
+                await order.save();
+                console.log("✅ Shiprocket order created:", shiprocketResponse.order_id);
+            }
+        } catch (shiprocketError) {
+            console.error("❌ Shiprocket order creation failed:", shiprocketError.message);
+            // Don't throw - allow order to succeed even if Shiprocket fails
+        }
 
         // Send WhatsApp order placed notification for COD
         try {
