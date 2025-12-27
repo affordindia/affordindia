@@ -8,6 +8,7 @@ import {
     validateStockForRetry,
 } from "../services/razorpay.service.js";
 import Order from "../models/order.model.js";
+import { createShiprocketOrder } from "../../../admin/backend/services/shiprocket.service.js";
 import { body, param, validationResult } from "express-validator";
 
 /**
@@ -225,6 +226,31 @@ export const verifyPayment = async (req, res, next) => {
         };
 
         await order.save();
+
+        // Create Shiprocket order after successful payment
+        try {
+            console.log("📦 Creating Shiprocket order after payment success:", order.orderId);
+            
+            // Populate order with product and user details
+            const populatedOrder = await Order.findById(order._id)
+                .populate('items.product')
+                .populate('user');
+            
+            const shiprocketResponse = await createShiprocketOrder(populatedOrder, populatedOrder.user);
+            
+            if (shiprocketResponse) {
+                order.shiprocket = {
+                    orderId: shiprocketResponse.order_id,
+                    shipmentId: shiprocketResponse.shipment_id,
+                    createdAt: new Date(),
+                };
+                await order.save();
+                console.log("✅ Shiprocket order created:", shiprocketResponse.order_id);
+            }
+        } catch (shiprocketError) {
+            console.error("❌ Shiprocket order creation failed:", shiprocketError.message);
+            // Don't throw - allow order to succeed even if Shiprocket fails
+        }
 
         // Note: Stock confirmation will be handled by webhook or can be done here
         // For immediate confirmation, uncomment the next line:
