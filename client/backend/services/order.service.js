@@ -6,7 +6,6 @@ import { calculateShipping } from "./shipping.service.js";
 import { recordCouponUsage } from "./coupon.service.js";
 import { createRazorpayOrder } from "./razorpay.service.js";
 import { sendOrderPlaced } from "./whatsapp.service.js";
-import { createShiprocketOrder } from "../../../admin/backend/services/shiprocket.service.js";
 
 // HDFC LEGACY IMPORT - COMMENTED OUT FOR RAZORPAY MIGRATION
 // PRESERVED FOR FUTURE ROLLBACK IF NEEDED
@@ -260,25 +259,33 @@ export const placeOrder = async (
         await cart.save();
         console.log("🛒 Cart cleared for COD order:", order._id);
 
-        // Create Shiprocket order for COD
+        // Create Shiprocket order for COD via admin API
         try {
             console.log("📦 Creating Shiprocket order for COD:", order.orderId);
             
-            // Populate order with product and user details
-            const populatedOrder = await Order.findById(order._id)
-                .populate('items.product')
-                .populate('user');
+            const adminBaseUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5000";
+            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/shiprocket/orders/create`);
             
-            const shiprocketResponse = await createShiprocketOrder(populatedOrder, currentUser);
+            const response = await fetch(`${adminBaseUrl}/api/shiprocket/orders/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order._id.toString() })
+            });
             
-            if (shiprocketResponse) {
-                order.shiprocket = {
-                    orderId: shiprocketResponse.order_id,
-                    shipmentId: shiprocketResponse.shipment_id,
-                    createdAt: new Date(),
-                };
-                await order.save();
-                console.log("✅ Shiprocket order created:", shiprocketResponse.order_id);
+            console.log("📦 Response status:", response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("❌ Admin API error:", response.status, errorText);
+                throw new Error(`Admin API returned ${response.status}`);
+            }
+            
+            const shiprocketResponse = await response.json();
+            
+            if (shiprocketResponse?.success && shiprocketResponse?.data) {
+                console.log("✅ Shiprocket order created:", shiprocketResponse.data.shiprocketOrderId);
+            } else {
+                console.error("❌ Shiprocket API response:", shiprocketResponse);
             }
         } catch (shiprocketError) {
             console.error("❌ Shiprocket order creation failed:", shiprocketError.message);

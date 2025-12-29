@@ -30,10 +30,13 @@ app.use(
         origin: [
             "http://localhost:5173",
             "http://localhost:5174",
+            "http://localhost:5001",
             "https://admin-portal-affordindia.vercel.app",
             "https://admin.affordindia.com",
             "https://admin.affordindia.in",
             "https://admin.affordindia.co.in",
+            "https://affordindia.vercel.app",
+            "https://www.affordindia.com",
         ],
         credentials: true,
     })
