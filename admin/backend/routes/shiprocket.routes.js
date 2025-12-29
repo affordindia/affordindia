@@ -4,6 +4,15 @@ import { verifyAdminAuth } from '../middlewares/adminAuth.middleware.js';
 
 const router = express.Router();
 
+// GET handler for webhook verification (Shiprocket might test with GET)
+router.get('/webhook', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'Shiprocket webhook endpoint is active',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Public webhook endpoint - called by Shiprocket (no authentication required)
 router.post('/webhook', handleShiprocketWebhook);
 

@@ -339,6 +339,37 @@ async function handlePaymentCaptured(payment) {
 
         await order.save();
 
+        // Create Shiprocket order after successful payment via admin API
+        try {
+            console.log("📦 Creating Shiprocket order after webhook payment success:", order.orderId);
+            
+            const adminBaseUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5000";
+            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/shiprocket/orders/create`);
+            
+            const response = await fetch(`${adminBaseUrl}/api/shiprocket/orders/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order._id.toString() })
+            });
+            
+            console.log("📦 Response status:", response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("❌ Admin API error:", response.status, errorText);
+            } else {
+                const shiprocketResponse = await response.json();
+                if (shiprocketResponse?.success && shiprocketResponse?.data) {
+                    console.log("✅ Shiprocket order created from webhook:", shiprocketResponse.data.shiprocketOrderId);
+                } else {
+                    console.error("❌ Shiprocket API response:", shiprocketResponse);
+                }
+            }
+        } catch (shiprocketError) {
+            console.error("❌ Shiprocket order creation failed:", shiprocketError.message);
+            // Don't throw - allow payment processing to succeed even if Shiprocket fails
+        }
+
         // Send WhatsApp payment confirmation
         try {
             const customerPhone = order.user?.phone || order.receiverPhone;
