@@ -6,9 +6,19 @@ import Order from '../models/order.model.js';
 export const handleShiprocketWebhook = async (req, res, next) => {
     try {
         console.log('📦 Received Shiprocket webhook');
+        console.log('📦 Headers:', JSON.stringify(req.headers, null, 2));
         
         const webhookData = req.body;
         console.log('📦 Webhook data:', JSON.stringify(webhookData, null, 2));
+
+        // If it's a test/ping request with no data, return success
+        if (!webhookData || Object.keys(webhookData).length === 0) {
+            console.log('📦 Empty webhook (test ping) - returning success');
+            return res.status(200).json({
+                success: true,
+                message: 'Webhook endpoint is active'
+            });
+        }
 
         // Extract key fields from webhook
         const {
@@ -101,15 +111,17 @@ export const handleShiprocketWebhook = async (req, res, next) => {
         await order.save();
         console.log('✅ Order updated:', order.orderId, 'Status:', current_status);
 
-        res.json({
+        return res.status(200).json({
             success: true,
             message: 'Webhook processed successfully'
         });
     } catch (error) {
         console.error('❌ Webhook processing error:', error);
-        res.status(500).json({
+        // Return 200 even on error so Shiprocket doesn't mark endpoint as failed
+        return res.status(200).json({
             success: false,
-            message: error.message
+            message: 'Webhook received but processing failed',
+            error: error.message
         });
     }
 };
