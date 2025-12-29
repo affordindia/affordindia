@@ -15,6 +15,7 @@ export const handleShiprocketWebhook = async (req, res, next) => {
             awb,
             sr_order_id,
             order_id,
+            channel_order_id, // This is YOUR order ID
             current_status,
             current_status_id,
             shipment_status,
@@ -31,6 +32,7 @@ export const handleShiprocketWebhook = async (req, res, next) => {
         // Status mapping from Shiprocket to internal system
         const statusMapping = {
             'DELIVERED': 'delivered',
+            'Delivered': 'delivered',
             'READY_TO_SHIP': 'processing',
             'SHIPPED': 'shipped',
             'PICKED UP': 'shipped',
@@ -41,18 +43,18 @@ export const handleShiprocketWebhook = async (req, res, next) => {
             'RETURNED': 'returned',
         };
 
-        // Find order by AWB or Shiprocket order ID
+        // Find order by multiple fields
         let order = await Order.findOne({
             $or: [
                 { 'shiprocket.awbCode': awb },
-                { 'shiprocket.orderId': sr_order_id || order_id },
-                { orderId: order_id }
+                { 'shiprocket.orderId': order_id },
+                { orderId: channel_order_id } // Use channel_order_id to find your order
             ]
         });
 
         if (!order) {
-            console.log('⚠️ Order not found for AWB:', awb, 'SR Order ID:', sr_order_id);
-            return res.status(404).json({
+            console.log('⚠️ Order not found for AWB:', awb, 'Shiprocket Order ID:', order_id, 'Channel Order ID:', channel_order_id);
+            return res.status(200).json({
                 success: false,
                 message: 'Order not found'
             });
@@ -66,7 +68,7 @@ export const handleShiprocketWebhook = async (req, res, next) => {
         order.shiprocket = {
             ...order.shiprocket,
             awbCode: awb,
-            orderId: sr_order_id || order_id,
+            orderId: order_id, // Shiprocket order ID
             courierId: courier_id,
             courierName: courier_name,
             status: current_status,
@@ -77,6 +79,7 @@ export const handleShiprocketWebhook = async (req, res, next) => {
             pickupScheduledDate: pickup_scheduled_date,
             awbAssignedDate: awb_assigned_date,
             lastUpdated: new Date(),
+            scans: scans || [], // Store tracking scans
             webhookEvents: [...(order.shiprocket.webhookEvents || []), {
                 status: current_status,
                 receivedAt: new Date(),
