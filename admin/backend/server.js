@@ -66,9 +66,11 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/config", configRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", invoiceRoutes);
-app.use("/api/shiprocket", shiprocketRoutes);
+app.use("/api/logistics", shiprocketRoutes); // Changed from /shiprocket to /logistics (Shiprocket doesn't allow their name in webhook URLs)
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+   
 });

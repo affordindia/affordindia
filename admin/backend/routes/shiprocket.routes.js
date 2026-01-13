@@ -4,19 +4,19 @@ import { verifyAdminAuth } from '../middlewares/adminAuth.middleware.js';
 
 const router = express.Router();
 
-// GET handler for webhook verification (Shiprocket might test with GET)
+// GET handler for webhook verification (shipping provider might test with GET)
 router.get('/webhook', (req, res) => {
     res.status(200).json({
         success: true,
-        message: 'Shiprocket webhook endpoint is active',
+        message: 'Shipping webhook endpoint is active',
         timestamp: new Date().toISOString()
     });
 });
 
-// Public webhook endpoint - called by Shiprocket (no authentication required)
+// Public webhook endpoint - called by shipping provider (no authentication required)
 router.post('/webhook', handleShiprocketWebhook);
 
-// API endpoint for client backend to create Shiprocket orders (public, can be called from client backend)
+// API endpoint for client backend to create shipping orders (public, can be called from client backend)
 router.post('/orders/create', createShiprocketOrderHandler);
 
 // Admin endpoint to manually sync order status from Shiprocket

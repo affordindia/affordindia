@@ -83,11 +83,37 @@ const orderSchema = new mongoose.Schema(
             discountValue: Number,
         },
         notes: { type: String },
+        
+        // =================== SHIPROCKET INTEGRATION FIELDS ===================
+        shiprocket: {
+            orderId: { type: String }, // Shiprocket order ID
+            shipmentId: { type: String }, // Shiprocket shipment ID
+            awbCode: { type: String }, // AWB (Air Waybill) tracking code
+            courierId: { type: String },
+            courierName: { type: String },
+            status: { type: String }, // Current Shiprocket status
+            statusId: { type: Number },
+            shipmentStatus: { type: String },
+            shipmentStatusId: { type: Number },
+            etd: { type: String }, // Estimated delivery date
+            pickupScheduledDate: { type: String },
+            awbAssignedDate: { type: String },
+            lastUpdated: { type: Date },
+            scans: [{ type: Object }], // Tracking scan history
+            webhookEvents: [{
+                status: String,
+                receivedAt: Date,
+                data: Object
+            }],
+            createdAt: { type: Date }
+        },
     },
     { timestamps: true }
 );
 
 orderSchema.index({ user: 1 });
+orderSchema.index({ 'shiprocket.awbCode': 1 });
+orderSchema.index({ 'shiprocket.orderId': 1 });
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
