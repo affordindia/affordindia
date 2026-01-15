@@ -32,6 +32,12 @@ const productSchema = new mongoose.Schema(
             min: 0,
             max: 100,
         },
+        dimensions: {
+            length: { type: Number, default: 10 }, // in cm
+            breadth: { type: Number, default: 10 }, // in cm
+            height: { type: Number, default: 5 }, // in cm
+            weight: { type: Number, default: 0.5 } // in kg
+        },
     },
     { timestamps: true }
 );

@@ -934,6 +934,183 @@ const OrderDetail = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Shiprocket Tracking Information */}
+                    {order.shiprocket && (
+                        <div className="bg-admin-card rounded-lg border border-admin-border overflow-hidden">
+                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 border-b border-admin-border">
+                                <h2 className="text-lg font-semibold text-admin-text flex items-center gap-2">
+                                    <FaTruck className="text-blue-600" />
+                                    Shiprocket Tracking Details
+                                </h2>
+                            </div>
+                            <div className="p-6">
+                                {/* Main Tracking Info Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    {order.shiprocket.orderId && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Shiprocket Order ID
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                {order.shiprocket.orderId}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.awbCode && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                AWB Tracking Number
+                                            </div>
+                                            <div className="font-semibold text-admin-text flex items-center gap-2">
+                                                {order.shiprocket.awbCode}
+                                                <a
+                                                    href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-700"
+                                                >
+                                                    <FaEye />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.courierName && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Courier Partner
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                {order.shiprocket.courierName}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.status && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Shipment Status
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                                                    {order.shiprocket.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.etd && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Expected Delivery Date
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                {new Date(order.shiprocket.etd).toLocaleDateString('en-IN', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric'
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.pickupScheduledDate && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Pickup Scheduled
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                {order.shiprocket.pickupScheduledDate}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {order.shiprocket.lastUpdated && (
+                                        <div>
+                                            <div className="text-sm text-admin-text-secondary mb-1">
+                                                Last Updated
+                                            </div>
+                                            <div className="font-semibold text-admin-text">
+                                                {new Date(order.shiprocket.lastUpdated).toLocaleString()}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Tracking Timeline */}
+                                {order.shiprocket.scans && order.shiprocket.scans.length > 0 && (
+                                    <div className="border-t border-admin-border pt-6">
+                                        <h3 className="text-base font-semibold text-admin-text mb-4 flex items-center gap-2">
+                                            <FaClock />
+                                            Tracking Timeline
+                                        </h3>
+                                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                                            {order.shiprocket.scans.map((scan, index) => (
+                                                <div key={index} className="flex gap-4">
+                                                    <div className="flex flex-col items-center">
+                                                        <div className={`w-4 h-4 rounded-full ${index === 0 ? 'bg-green-500' : 'bg-blue-500'}`}></div>
+                                                        {index !== order.shiprocket.scans.length - 1 && (
+                                                            <div className="w-0.5 flex-1 bg-gray-300 mt-2"></div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 pb-6">
+                                                        <div className="font-semibold text-admin-text">
+                                                            {scan.activity || scan.status}
+                                                        </div>
+                                                        {scan.location && (
+                                                            <div className="text-sm text-admin-text-secondary flex items-center gap-1 mt-1">
+                                                                <FaMapMarkerAlt className="text-xs" />
+                                                                {scan.location}
+                                                            </div>
+                                                        )}
+                                                        <div className="text-xs text-admin-text-secondary mt-1">
+                                                            {new Date(scan.date || scan.time).toLocaleString('en-IN', {
+                                                                day: 'numeric',
+                                                                month: 'short',
+                                                                year: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Webhook Events (Collapsible) */}
+                                {order.shiprocket.webhookEvents && order.shiprocket.webhookEvents.length > 0 && (
+                                    <details className="border-t border-admin-border pt-6 mt-6">
+                                        <summary className="cursor-pointer text-base font-semibold text-admin-text mb-4 flex items-center gap-2">
+                                            Webhook History ({order.shiprocket.webhookEvents.length} events)
+                                        </summary>
+                                        <div className="space-y-2 max-h-64 overflow-y-auto pl-4">
+                                            {order.shiprocket.webhookEvents.map((event, index) => (
+                                                <div key={index} className="text-sm border-l-2 border-gray-300 pl-3 py-2">
+                                                    <div className="font-medium text-admin-text">{event.status}</div>
+                                                    <div className="text-xs text-admin-text-secondary">
+                                                        {new Date(event.receivedAt).toLocaleString()}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </details>
+                                )}
+
+                                {/* Track on Shiprocket Button */}
+                                {order.shiprocket.awbCode && (
+                                    <div className="border-t border-admin-border pt-6 mt-6">
+                                        <a
+                                            href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+                                        >
+                                            <FaTruck />
+                                            Track on Shiprocket
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

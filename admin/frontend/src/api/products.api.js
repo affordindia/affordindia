@@ -59,8 +59,14 @@ export const createProduct = async (productData) => {
                     value = value.toString();
                 }
 
+                // Handle nested objects (like dimensions)
+                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                    Object.keys(value).forEach((nestedKey) => {
+                        formData.append(`${key}[${nestedKey}]`, value[nestedKey]);
+                    });
+                }
                 // Handle arrays properly (especially subcategories)
-                if (Array.isArray(value)) {
+                else if (Array.isArray(value)) {
                     value.forEach((item) => {
                         formData.append(`${key}[]`, item);
                     });
@@ -115,8 +121,14 @@ export const updateProduct = async (id, productData) => {
                     value = value.toString();
                 }
 
+                // Handle nested objects (like dimensions)
+                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                    Object.keys(value).forEach((nestedKey) => {
+                        formData.append(`${key}[${nestedKey}]`, value[nestedKey]);
+                    });
+                }
                 // Handle arrays properly (especially subcategories)
-                if (Array.isArray(value)) {
+                else if (Array.isArray(value)) {
                     value.forEach((item) => {
                         formData.append(`${key}[]`, item);
                     });

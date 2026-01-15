@@ -4,21 +4,24 @@ import { calculateShipping } from "./shipping.service.js";
 
 // Helper function to transform cart items for frontend
 const transformCartItems = (items) => {
-    return items.map((item) => ({
-        _id: item._id,
-        product: {
-            _id: item.product._id,
-            name: item.product.name,
-            images: item.product.images,
-            stock: item.product.stock,
-            price: item.product.price,
-            discount: item.product.discount ?? 0,
-            category: item.product.category, // Include category for coupon validation
-        },
-        quantity: item.quantity,
-        priceAtAdd: item.priceAtAdd,
-        currentPrice: item.product.price,
-    }));
+    // Filter out items with null products (deleted products)
+    return items
+        .filter((item) => item.product !== null)
+        .map((item) => ({
+            _id: item._id,
+            product: {
+                _id: item.product._id,
+                name: item.product.name,
+                images: item.product.images,
+                stock: item.product.stock,
+                price: item.product.price,
+                discount: item.product.discount ?? 0,
+                category: item.product.category, // Include category for coupon validation
+            },
+            quantity: item.quantity,
+            priceAtAdd: item.priceAtAdd,
+            currentPrice: item.product.price,
+        }));
 };
 
 // Helper function to calculate cart totals including coupon discount and shipping
@@ -122,6 +125,21 @@ export const getUserCart = async (userId, recalculateCoupons = true) => {
             path: "items.product",
             select: "name price images stock discount category",
         });
+
+        // Remove items with null products (deleted products)
+        const validItems = cart.items.filter((item) => item.product !== null);
+        if (validItems.length !== cart.items.length) {
+            // Remove null product items from database
+            await Cart.findOneAndUpdate(
+                { user: userId },
+                {
+                    $pull: {
+                        items: { product: null },
+                    },
+                }
+            );
+            cart.items = validItems;
+        }
 
         // Recalculate applied coupon when requested (default true) or when cart is empty with coupon
         if (

@@ -1064,8 +1064,75 @@ const OrderDetail = () => {
                             </div>
                         </div>
 
+                        {/* Shiprocket Tracking Information */}
+                        {order.shiprocket?.awbCode && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2 text-sm">
+                                    <FaTruck />
+                                    Shipment Tracking
+                                </h3>
+                                <div className="space-y-3">
+                                    {/* Tracking Details */}
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <p className="text-gray-600 font-medium">AWB Number</p>
+                                            <p className="text-blue-900 font-semibold">{order.shiprocket.awbCode}</p>
+                                        </div>
+                                        {order.shiprocket.courierName && (
+                                            <div>
+                                                <p className="text-gray-600 font-medium">Courier</p>
+                                                <p className="text-blue-900 font-semibold">{order.shiprocket.courierName}</p>
+                                            </div>
+                                        )}
+                                        {order.shiprocket.status && (
+                                            <div>
+                                                <p className="text-gray-600 font-medium">Status</p>
+                                                <p className="text-blue-900 font-semibold">{order.shiprocket.status}</p>
+                                            </div>
+                                        )}
+                                        {order.shiprocket.etd && (
+                                            <div>
+                                                <p className="text-gray-600 font-medium">Expected Delivery</p>
+                                                <p className="text-blue-900 font-semibold">{new Date(order.shiprocket.etd).toLocaleDateString()}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Track Button */}
+                                    <a
+                                        href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-4 py-2 rounded-md transition-colors w-full justify-center"
+                                    >
+                                        <FaTruck />
+                                        Track Live Location
+                                    </a>
+
+                                    {/* Tracking Timeline */}
+                                    {order.shiprocket.scans && order.shiprocket.scans.length > 0 && (
+                                        <div className="mt-3 pt-3 border-t border-blue-200">
+                                            <p className="text-xs font-semibold text-blue-900 mb-2">Tracking History</p>
+                                            <div className="space-y-2 max-h-48 overflow-y-auto">
+                                                {order.shiprocket.scans.slice(0, 5).map((scan, index) => (
+                                                    <div key={index} className="flex items-start gap-2 text-xs">
+                                                        <div className="min-w-[6px] h-[6px] rounded-full bg-blue-600 mt-1.5"></div>
+                                                        <div className="flex-1">
+                                                            <p className="text-blue-900 font-medium">{scan.activity || scan.status}</p>
+                                                            <p className="text-gray-600">{scan.location}</p>
+                                                            <p className="text-gray-500 text-[10px]">{new Date(scan.date || scan.time).toLocaleString()}</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Order Status Timeline */}
-                        {order.status === "shipped" && (
+                        {order.status === "shipped" && !order.shiprocket?.awbCode && (
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                                 <h3 className="font-semibold text-purple-900 mb-2 flex items-center gap-2 text-sm">
                                     <FaTruck />
@@ -1095,6 +1162,13 @@ const OrderDetail = () => {
                                     Your order has been successfully delivered.
                                     Thank you for shopping with us!
                                 </p>
+                                {order.shiprocket?.scans && order.shiprocket.scans.length > 0 && (
+                                    <div className="mt-2 pt-2 border-t border-green-200">
+                                        <p className="text-xs text-green-800">
+                                            <strong>Delivered on:</strong> {new Date(order.shiprocket.scans[order.shiprocket.scans.length - 1].date || order.deliveredAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

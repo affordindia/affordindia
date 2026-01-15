@@ -36,6 +36,12 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: true, // Most products are returnable by default
         },
+        dimensions: {
+            length: { type: Number, default: 10 }, // in cm
+            breadth: { type: Number, default: 10 }, // in cm
+            height: { type: Number, default: 5 }, // in cm
+            weight: { type: Number, default: 0.5 } // in kg
+        },
     },
     { timestamps: true }
 );

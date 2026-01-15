@@ -31,6 +31,20 @@ export const createProduct = async (req, res) => {
             delete req.body["subcategories[]"];
         }
 
+        // Handle dimensions object from FormData
+        if (req.body["dimensions[length]"] !== undefined) {
+            req.body.dimensions = {
+                length: parseFloat(req.body["dimensions[length]"]) || 10,
+                breadth: parseFloat(req.body["dimensions[breadth]"]) || 10,
+                height: parseFloat(req.body["dimensions[height]"]) || 5,
+                weight: parseFloat(req.body["dimensions[weight]"]) || 0.5
+            };
+            delete req.body["dimensions[length]"];
+            delete req.body["dimensions[breadth]"];
+            delete req.body["dimensions[height]"];
+            delete req.body["dimensions[weight]"];
+        }
+
         // Check for duplicate before uploading images
         const { name, category, subcategories } = req.body;
         const existing = await Product.findOne({ name, category });
@@ -159,6 +173,20 @@ export const updateProduct = async (req, res) => {
                 ? req.body["subcategories[]"]
                 : [req.body["subcategories[]"]];
             delete req.body["subcategories[]"];
+        }
+
+        // Handle dimensions object from FormData
+        if (req.body["dimensions[length]"] !== undefined) {
+            req.body.dimensions = {
+                length: parseFloat(req.body["dimensions[length]"]) || 10,
+                breadth: parseFloat(req.body["dimensions[breadth]"]) || 10,
+                height: parseFloat(req.body["dimensions[height]"]) || 5,
+                weight: parseFloat(req.body["dimensions[weight]"]) || 0.5
+            };
+            delete req.body["dimensions[length]"];
+            delete req.body["dimensions[breadth]"];
+            delete req.body["dimensions[height]"];
+            delete req.body["dimensions[weight]"];
         }
 
         let imageUrls = [];

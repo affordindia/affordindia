@@ -22,6 +22,12 @@ const EditProduct = () => {
         discount: "",
         isFeatured: false,
         isReturnable: true,
+        dimensions: {
+            length: 10,
+            breadth: 10,
+            height: 5,
+            weight: 0.5
+        }
     });
     const [existingImages, setExistingImages] = useState([]);
     const [newImages, setNewImages] = useState([]);
@@ -54,6 +60,12 @@ const EditProduct = () => {
                         product.isReturnable !== undefined
                             ? product.isReturnable
                             : true,
+                    dimensions: {
+                        length: product.dimensions?.length || 10,
+                        breadth: product.dimensions?.breadth || 10,
+                        height: product.dimensions?.height || 5,
+                        weight: product.dimensions?.weight || 0.5
+                    }
                 });
                 setExistingImages(product.images || []);
             } else {
@@ -117,6 +129,17 @@ const EditProduct = () => {
                 subcategories: "",
             }));
         }
+    };
+
+    const handleDimensionChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            dimensions: {
+                ...prev.dimensions,
+                [name]: value === "" ? "" : parseFloat(value) || 0
+            }
+        }));
     };
 
     const handleNewImageUpload = (e) => {
@@ -474,6 +497,85 @@ const EditProduct = () => {
                                               (1 - formData.discount / 100)
                                       ).toLocaleString()}`
                                     : "Enter percentage discount (0-100)"}
+                            </p>
+                        </div>
+
+                        {/* Shipping Dimensions */}
+                        <div className="md:col-span-2 border-t border-admin-border pt-4 mt-2">
+                            <h4 className="text-md font-semibold text-admin-text mb-4">
+                                Shipping Dimensions
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                {/* Length */}
+                                <div>
+                                    <label className="block text-sm font-medium text-admin-text mb-2">
+                                        Length (cm)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="length"
+                                        value={formData.dimensions.length}
+                                        onChange={handleDimensionChange}
+                                        min="0"
+                                        step="0.1"
+                                        className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
+                                        placeholder="10"
+                                    />
+                                </div>
+
+                                {/* Breadth */}
+                                <div>
+                                    <label className="block text-sm font-medium text-admin-text mb-2">
+                                        Breadth (cm)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="breadth"
+                                        value={formData.dimensions.breadth}
+                                        onChange={handleDimensionChange}
+                                        min="0"
+                                        step="0.1"
+                                        className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
+                                        placeholder="10"
+                                    />
+                                </div>
+
+                                {/* Height */}
+                                <div>
+                                    <label className="block text-sm font-medium text-admin-text mb-2">
+                                        Height (cm)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="height"
+                                        value={formData.dimensions.height}
+                                        onChange={handleDimensionChange}
+                                        min="0"
+                                        step="0.1"
+                                        className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
+                                        placeholder="5"
+                                    />
+                                </div>
+
+                                {/* Weight */}
+                                <div>
+                                    <label className="block text-sm font-medium text-admin-text mb-2">
+                                        Weight (kg)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="weight"
+                                        value={formData.dimensions.weight}
+                                        onChange={handleDimensionChange}
+                                        min="0"
+                                        step="0.01"
+                                        className="w-full px-3 py-2 border border-admin-border rounded-lg focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
+                                        placeholder="0.5"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-sm text-admin-text-secondary mt-2">
+                                These dimensions will be used for shipping calculations with Shiprocket
                             </p>
                         </div>
 

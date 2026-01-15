@@ -691,7 +691,12 @@ const Orders = () => {
                                                 <div className="font-medium text-admin-text">
                                                     #{order.orderId}
                                                 </div>
-                                                {order.trackingNumber && (
+                                                {order.shiprocket?.awbCode && (
+                                                    <div className="text-sm text-blue-600 font-medium">
+                                                        AWB: {order.shiprocket.awbCode}
+                                                    </div>
+                                                )}
+                                                {order.trackingNumber && !order.shiprocket?.awbCode && (
                                                     <div className="text-sm text-admin-primary">
                                                         Track:{" "}
                                                         {order.trackingNumber}

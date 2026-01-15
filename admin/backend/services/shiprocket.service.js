@@ -215,20 +215,35 @@ function formatAddress(address) {
 function calculateTotalWeight(items) {
     let totalWeight = 0;
     for (const item of items) {
-        const weight = item.product?.weight || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.weight;
+        const weight = item.product?.dimensions?.weight || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.weight;
         totalWeight += weight * item.quantity;
     }
     return Math.max(totalWeight, 0.5); // Minimum 0.5kg
 }
 
 function calculateTotalLength(items) {
-    return SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.length;
+    let maxLength = 0;
+    for (const item of items) {
+        const length = item.product?.dimensions?.length || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.length;
+        maxLength = Math.max(maxLength, length);
+    }
+    return maxLength || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.length;
 }
 
 function calculateMaxBreadth(items) {
-    return SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.breadth;
+    let maxBreadth = 0;
+    for (const item of items) {
+        const breadth = item.product?.dimensions?.breadth || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.breadth;
+        maxBreadth = Math.max(maxBreadth, breadth);
+    }
+    return maxBreadth || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.breadth;
 }
 
 function calculateTotalHeight(items) {
-    return SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.height;
+    let maxHeight = 0;
+    for (const item of items) {
+        const height = item.product?.dimensions?.height || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.height;
+        maxHeight = Math.max(maxHeight, height);
+    }
+    return maxHeight || SHIPROCKET_CONFIG.DEFAULT_DIMENSIONS.height;
 }
