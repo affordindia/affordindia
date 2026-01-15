@@ -344,9 +344,9 @@ async function handlePaymentCaptured(payment) {
             console.log("📦 Creating Shiprocket order after webhook payment success:", order.orderId);
             
             const adminBaseUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5000";
-            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/shiprocket/orders/create`);
+            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/logistics/orders/create`);
             
-            const response = await fetch(`${adminBaseUrl}/api/shiprocket/orders/create`, {
+            const response = await fetch(`${adminBaseUrl}/api/logistics/orders/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: order._id.toString() })
