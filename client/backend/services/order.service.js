@@ -40,6 +40,43 @@ export const placeOrder = async (
 
     if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
+    // Filter out items with null products (deleted products) and clean up cart
+    const itemsWithNullProducts = cart.items.filter((item) => item.product === null);
+    if (itemsWithNullProducts.length > 0) {
+        console.log(`🧹 Cleaning up ${itemsWithNullProducts.length} deleted products from cart`);
+        
+        // Get the _id values of items to remove
+        const itemIdsToRemove = itemsWithNullProducts.map((item) => item._id);
+        
+        // Remove items by their _id
+        await Cart.findOneAndUpdate(
+            { user: userId },
+            {
+                $pull: {
+                    items: { _id: { $in: itemIdsToRemove } },
+                },
+            }
+        );
+        
+        // Refetch the cart with valid products only
+        const cleanedCart = await Cart.findOne({ user: userId }).populate("items.product");
+        if (!cleanedCart || cleanedCart.items.length === 0) {
+            throw new Error("Cart is empty after removing unavailable products");
+        }
+        
+        // Verify all products are valid
+        const stillHasNullProducts = cleanedCart.items.some((item) => item.product === null);
+        if (stillHasNullProducts) {
+            throw new Error("Unable to clean cart properly. Please contact support.");
+        }
+        
+        cart.items = cleanedCart.items;
+        console.log(`✅ Cart cleaned. Remaining items: ${cart.items.length}`);
+    }
+
+    // Check again if cart is empty after cleanup
+    if (cart.items.length === 0) throw new Error("Cart is empty");
+
     // Get user data for later use (name updates and WhatsApp notifications)
     const currentUser = await User.findById(userId);
 
@@ -264,9 +301,9 @@ export const placeOrder = async (
             console.log("📦 Creating Shiprocket order for COD:", order.orderId);
             
             const adminBaseUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5000";
-            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/shiprocket/orders/create`);
+            console.log("📦 Calling admin API:", `${adminBaseUrl}/api/logistics/orders/create`);
             
-            const response = await fetch(`${adminBaseUrl}/api/shiprocket/orders/create`, {
+            const response = await fetch(`${adminBaseUrl}/api/logistics/orders/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: order._id.toString() })
