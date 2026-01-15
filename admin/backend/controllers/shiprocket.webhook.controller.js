@@ -108,7 +108,7 @@ export const handleShiprocketWebhook = async (req, res, next) => {
             order.deliveredAt = new Date();
         }
 
-        await order.save();
+        await order.save({ validateModifiedOnly: true });
         console.log('✅ Order updated:', order.orderId, 'Status:', current_status);
 
         return res.status(200).json({
