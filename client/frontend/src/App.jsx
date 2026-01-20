@@ -41,11 +41,11 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 const App = () => {
-    // return (
-    //     <div className="h-screen flex items-center justify-center">
-    //         <h1>Site under maintenance. Please check back later.</h1>
-    //     </div>
-    // );
+    return (
+        <div className="h-screen flex items-center justify-center">
+            <h1>Site under maintenance. Please check back later.</h1>
+        </div>
+    );
 
     const { login } = useAuth();
 
