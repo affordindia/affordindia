@@ -18,6 +18,7 @@ import shippingRoutes from "./routes/shipping.routes.js";
 import razorpayRoutes from "./routes/razorpay.routes.js";
 import invoiceRoutes from "./routes/invoice.routes.js";
 import emailRoutes from "./routes/email.routes.js";
+import whatsappRoutes from "./routes/whatsapp.routes.js";
 // import paymentRoutes from "./routes/payment.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
@@ -68,6 +69,7 @@ app.use("/api/shipping", shippingRoutes);
 app.use("/api/razorpay", razorpayRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 // Error handler middleware
 app.use(errorHandler);

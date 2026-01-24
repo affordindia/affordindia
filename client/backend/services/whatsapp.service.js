@@ -163,7 +163,12 @@ export const sendOrderStatusUpdate = async (
     status,
     trackingInfo = ""
 ) => {
-    const templateId = process.env.WHATSAPP_TEMPLATE_ORDER_STATUS;
+    // Use shipment tracking template if trackingInfo provided (from webhook)
+    // Otherwise use regular order status template
+    const templateId = trackingInfo 
+        ? process.env.WHATSAPP_TEMPLATE_SHIPMENT_TRACKING
+        : process.env.WHATSAPP_TEMPLATE_ORDER_STATUS;
+    
     const templateData = trackingInfo
         ? [customerName, orderId, status, trackingInfo]
         : [customerName, orderId, status];

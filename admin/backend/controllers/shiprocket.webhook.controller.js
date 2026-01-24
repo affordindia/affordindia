@@ -1,4 +1,71 @@
 import Order from '../models/order.model.js';
+import axios from 'axios';
+
+/**
+ * Send WhatsApp notification for shipment status updates
+ */
+const sendShipmentWhatsApp = async (order, status, courierName, awbCode, etd) => {
+    try {
+        // Map Shiprocket status to customer-friendly message
+        const statusMessages = {
+            'PICKED UP': {
+                status: 'picked up',
+                trackingInfo: `✅ Picked up by ${courierName || 'courier'}\nAWB: ${awbCode || 'N/A'}`
+            },
+            'IN TRANSIT': {
+                status: 'in transit',
+                trackingInfo: `📦 Moving via ${courierName || 'courier'}\nExpected: ${etd || 'Soon'}`
+            },
+            'OUT FOR DELIVERY': {
+                status: 'out for delivery',
+                trackingInfo: `🚚 ${courierName || 'Courier'} is delivering today!`
+            },
+            'DELIVERED': {
+                status: 'delivered',
+                trackingInfo: `🎉 Delivered successfully!\nThank you for shopping with Affordindia`
+            }
+        };
+
+        const message = statusMessages[status];
+        if (!message) {
+            console.log('⏭️ No WhatsApp template for status:', status);
+            return;
+        }
+
+        if (!order.receiverPhone) {
+            console.log('⚠️ No phone number for order:', order.orderId);
+            return;
+        }
+
+        // Call client backend WhatsApp service
+        const response = await axios.post(
+            'https://client-backend-5mnc.onrender.com/api/whatsapp/order-status',
+            {
+                mobile: order.receiverPhone,
+                customerName: order.receiverName || 'Customer',
+                orderId: order.orderId,
+                status: message.status,
+                trackingInfo: message.trackingInfo
+            },
+            { timeout: 10000 }
+        );
+
+        console.log('✅ Shipment WhatsApp sent:', {
+            orderId: order.orderId,
+            status: status,
+            phone: order.receiverPhone
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('❌ Shipment WhatsApp failed:', {
+            orderId: order.orderId,
+            status: status,
+            error: error.message
+        });
+        // Don't throw - WhatsApp failure shouldn't break webhook
+    }
+};
 
 /**
  * Handle Shiprocket webhook for order status updates
@@ -110,6 +177,12 @@ export const handleShiprocketWebhook = async (req, res, next) => {
 
         await order.save({ validateModifiedOnly: true });
         console.log('✅ Order updated:', order.orderId, 'Status:', current_status);
+
+        // Send WhatsApp notification for important statuses
+        const importantStatuses = ['PICKED UP', 'IN TRANSIT', 'OUT FOR DELIVERY', 'DELIVERED'];
+        if (importantStatuses.includes(current_status)) {
+            await sendShipmentWhatsApp(order, current_status, courier_name, awb, etd);
+        }
 
         return res.status(200).json({
             success: true,
