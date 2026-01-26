@@ -98,9 +98,11 @@ const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
             }
         );
 
-        console.log("✅ WhatsApp message sent successfully:", {
+        console.log("✅ WhatsApp API Response:", {
             mobile: formattedMobile,
             templateId,
+            status: response.status,
+            data: JSON.stringify(response.data),
             messageId: response.data?.message_id || response.data?.id,
         });
 
