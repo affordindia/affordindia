@@ -149,11 +149,10 @@ export const sendOrderPlaced = async (
     mobile,
     customerName,
     orderId,
-    amount,
     deliveryDate
 ) => {
     const templateId = process.env.WHATSAPP_TEMPLATE_ORDER_PLACED;
-    const templateData = [customerName, orderId, `₹${amount}`, deliveryDate];
+    const templateData = [customerName, orderId, deliveryDate];
 
     return await sendWhatsAppMessage(mobile, templateId, templateData);
 };

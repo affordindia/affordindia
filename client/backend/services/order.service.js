@@ -347,7 +347,6 @@ export const placeOrder = async (
                     customerPhone,
                     customerName,
                     order.orderId,
-                    order.total,
                     deliveryDate
                 );
                 console.log(

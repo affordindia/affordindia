@@ -411,7 +411,6 @@ async function handlePaymentCaptured(payment) {
                     customerPhone,
                     customerName,
                     order.orderId,
-                    order.total,
                     deliveryDate
                 );
                 console.log(
