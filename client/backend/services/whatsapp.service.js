@@ -98,19 +98,21 @@ const sendWhatsAppMessage = async (mobile, templateId, templateData = []) => {
             }
         );
 
+        const messageId = response.data?.request_id || response.data?.message_id || response.data?.id;
+        
         console.log("✅ WhatsApp API Response:", {
             mobile: formattedMobile,
             templateId,
             status: response.status,
             data: JSON.stringify(response.data),
-            messageId: response.data?.message_id || response.data?.id,
+            requestId: messageId,
         });
 
         return {
             success: true,
             data: response.data,
             mobile: formattedMobile,
-            messageId: response.data?.message_id || response.data?.id,
+            messageId: messageId,
         };
     } catch (error) {
         console.error("❌ WhatsApp message failed:", {
