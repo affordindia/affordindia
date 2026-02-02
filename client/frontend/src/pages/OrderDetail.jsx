@@ -670,49 +670,169 @@ const OrderDetail = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-4">
-                        {/* User & Receiver Info */}
+
+                        {/* Order Items */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
-                                    <FaUser />
-                                    Contact Information
+                                    <FaBox />
+                                    Items Ordered ({order.items?.length || 0})
                                 </h2>
                             </div>
                             <div className="p-4">
-                                <div className="space-y-1 text-sm">
-                                    <div>
-                                        <span className="font-medium">
-                                            Your Name:
-                                        </span>{" "}
-                                        {order.userName || order.user?.name}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">
-                                            Your Phone:
-                                        </span>{" "}
-                                        {order.userPhone || order.user?.phone}
-                                    </div>
-                                    {order.receiverName && (
-                                        <div>
-                                            <span className="font-medium">
-                                                Receiver Name:
-                                            </span>{" "}
-                                            {order.receiverName}
-                                        </div>
-                                    )}
-                                    {order.receiverPhone && (
-                                        <div>
-                                            <span className="font-medium">
-                                                Receiver Phone:
-                                            </span>{" "}
-                                            {order.receiverPhone}
-                                        </div>
-                                    )}
+                                <div className="space-y-3">
+                                    {order.items?.map((item, index) => {
+                                        const hasDiscount =
+                                            item.product?.discount &&
+                                            item.product.discount > 0;
+                                        const discountedPrice = hasDiscount
+                                            ? Math.round(
+                                                  item.product.price *
+                                                      (1 -
+                                                          item.product
+                                                              .discount /
+                                                              100)
+                                              )
+                                            : item.product.price;
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                                            >
+                                                <Link
+                                                    to={`/products/id/${item.product?._id}`}
+                                                >
+                                                    <img
+                                                        src={
+                                                            item.product
+                                                                ?.images?.[0] ||
+                                                            "/placeholder.png"
+                                                        }
+                                                        alt={
+                                                            item.product
+                                                                ?.name ||
+                                                            "Product"
+                                                        }
+                                                        className="w-14 h-14 object-cover rounded border cursor-pointer hover:opacity-90 transition"
+                                                    />
+                                                </Link>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-medium text-[#404040] text-sm truncate">
+                                                        {item.product?.name ||
+                                                            "Product"}
+                                                    </h3>
+                                                    <div className="flex flex-wrap gap-2 mt-1">
+                                                        <p className="text-xs text-gray-600">
+                                                            Qty: {item.quantity}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-semibold text-[#404040] text-sm">
+                                                        {hasDiscount ? (
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="line-through text-gray-400 text-xs">
+                                                                    ₹
+                                                                    {item
+                                                                        .product
+                                                                        .price *
+                                                                        item.quantity}
+                                                                </span>
+                                                                <span className="font-bold">
+                                                                    ₹
+                                                                    {discountedPrice *
+                                                                        item.quantity}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                ₹
+                                                                {item.price *
+                                                                    item.quantity}
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Payment Information */}
+                         {/* Shiprocket Tracking Information */}
+                        {order.shiprocket?.awbCode && (
+                            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                                <div className="bg-[#EFEEE5] px-4 py-3 border-b">
+                                    <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
+                                        <FaTruck />
+                                        Shipment Tracking
+                                    </h2>
+                                </div>
+                                <div className="p-4">
+                                    <div className="bg-gray-50 p-3 rounded-lg space-y-3">
+                                        {/* Tracking Details */}
+                                        <div className="grid grid-cols-2 gap-3 text-xs">
+                                            <div>
+                                                <p className="text-gray-600 font-medium mb-1">AWB Number</p>
+                                                <p className="text-[#404040] font-semibold">{order.shiprocket.awbCode}</p>
+                                            </div>
+                                            {order.shiprocket.courierName && (
+                                                <div>
+                                                    <p className="text-gray-600 font-medium mb-1">Courier</p>
+                                                    <p className="text-[#404040] font-semibold">{order.shiprocket.courierName}</p>
+                                                </div>
+                                            )}
+                                            {order.shiprocket.status && (
+                                                <div>
+                                                    <p className="text-gray-600 font-medium mb-1">Status</p>
+                                                    <p className="text-[#404040] font-semibold">{order.shiprocket.status}</p>
+                                                </div>
+                                            )}
+                                            {order.shiprocket.etd && (
+                                                <div>
+                                                    <p className="text-gray-600 font-medium mb-1">Expected Delivery</p>
+                                                    <p className="text-[#404040] font-semibold">{new Date(order.shiprocket.etd).toLocaleDateString()}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Tracking Timeline */}
+                                        {order.shiprocket.scans && order.shiprocket.scans.length > 0 && (
+                                            <div className="mt-3 pt-3 border-t border-gray-300">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <p className="text-xs font-semibold text-[#404040]">Tracking History</p>
+                                                    {/* Track Button - Small size in tracking history */}
+                                                    <a
+                                                        href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 bg-[#B76E79] hover:bg-[#9d5c68] text-white text-[10px] font-medium px-2.5 py-1.5 rounded transition-colors"
+                                                    >
+                                                        <FaTruck className="text-[10px]" />
+                                                        Track Live
+                                                    </a>
+                                                </div>
+                                                <div className="space-y-2 max-h-48 overflow-y-auto">
+                                                    {order.shiprocket.scans.slice(0, 5).map((scan, index) => (
+                                                        <div key={index} className="flex items-start gap-2 text-xs">
+                                                            <div className="min-w-[6px] h-[6px] rounded-full bg-[#B76E79] mt-1.5"></div>
+                                                            <div className="flex-1">
+                                                                <p className="text-[#404040] font-medium">{scan.activity || scan.status}</p>
+                                                                <p className="text-gray-600">{scan.location}</p>
+                                                                <p className="text-gray-500 text-[10px]">{new Date(scan.date || scan.time).toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                           {/* Payment Information */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
@@ -913,95 +1033,53 @@ const OrderDetail = () => {
                             </div>
                         </div>
 
-                        {/* Order Items */}
+
+                        {/* User & Receiver Info */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#EFEEE5] px-4 py-3 border-b">
                                 <h2 className="font-semibold text-[#404040] flex items-center gap-2 text-sm">
-                                    <FaBox />
-                                    Items Ordered ({order.items?.length || 0})
+                                    <FaUser />
+                                    Contact Information
                                 </h2>
                             </div>
                             <div className="p-4">
-                                <div className="space-y-3">
-                                    {order.items?.map((item, index) => {
-                                        const hasDiscount =
-                                            item.product?.discount &&
-                                            item.product.discount > 0;
-                                        const discountedPrice = hasDiscount
-                                            ? Math.round(
-                                                  item.product.price *
-                                                      (1 -
-                                                          item.product
-                                                              .discount /
-                                                              100)
-                                              )
-                                            : item.product.price;
-                                        return (
-                                            <div
-                                                key={index}
-                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                                            >
-                                                <Link
-                                                    to={`/products/id/${item.product?._id}`}
-                                                >
-                                                    <img
-                                                        src={
-                                                            item.product
-                                                                ?.images?.[0] ||
-                                                            "/placeholder.png"
-                                                        }
-                                                        alt={
-                                                            item.product
-                                                                ?.name ||
-                                                            "Product"
-                                                        }
-                                                        className="w-14 h-14 object-cover rounded border cursor-pointer hover:opacity-90 transition"
-                                                    />
-                                                </Link>
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="font-medium text-[#404040] text-sm truncate">
-                                                        {item.product?.name ||
-                                                            "Product"}
-                                                    </h3>
-                                                    <div className="flex flex-wrap gap-2 mt-1">
-                                                        <p className="text-xs text-gray-600">
-                                                            Qty: {item.quantity}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="font-semibold text-[#404040] text-sm">
-                                                        {hasDiscount ? (
-                                                            <div className="flex flex-col items-center">
-                                                                <span className="line-through text-gray-400 text-xs">
-                                                                    ₹
-                                                                    {item
-                                                                        .product
-                                                                        .price *
-                                                                        item.quantity}
-                                                                </span>
-                                                                <span className="font-bold">
-                                                                    ₹
-                                                                    {discountedPrice *
-                                                                        item.quantity}
-                                                                </span>
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                ₹
-                                                                {item.price *
-                                                                    item.quantity}
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="space-y-1 text-sm">
+                                    <div>
+                                        <span className="font-medium">
+                                            Your Name:
+                                        </span>{" "}
+                                        {order.userName || order.user?.name}
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">
+                                            Your Phone:
+                                        </span>{" "}
+                                        {order.userPhone || order.user?.phone}
+                                    </div>
+                                    {order.receiverName && (
+                                        <div>
+                                            <span className="font-medium">
+                                                Receiver Name:
+                                            </span>{" "}
+                                            {order.receiverName}
+                                        </div>
+                                    )}
+                                    {order.receiverPhone && (
+                                        <div>
+                                            <span className="font-medium">
+                                                Receiver Phone:
+                                            </span>{" "}
+                                            {order.receiverPhone}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
+                     
+
+                        
+                        
                         {/* Shipping Address */}
                         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                             <div className="bg-[#EFEEE5] px-4 py-3 border-b">
@@ -1064,72 +1142,7 @@ const OrderDetail = () => {
                             </div>
                         </div>
 
-                        {/* Shiprocket Tracking Information */}
-                        {order.shiprocket?.awbCode && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2 text-sm">
-                                    <FaTruck />
-                                    Shipment Tracking
-                                </h3>
-                                <div className="space-y-3">
-                                    {/* Tracking Details */}
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div>
-                                            <p className="text-gray-600 font-medium">AWB Number</p>
-                                            <p className="text-blue-900 font-semibold">{order.shiprocket.awbCode}</p>
-                                        </div>
-                                        {order.shiprocket.courierName && (
-                                            <div>
-                                                <p className="text-gray-600 font-medium">Courier</p>
-                                                <p className="text-blue-900 font-semibold">{order.shiprocket.courierName}</p>
-                                            </div>
-                                        )}
-                                        {order.shiprocket.status && (
-                                            <div>
-                                                <p className="text-gray-600 font-medium">Status</p>
-                                                <p className="text-blue-900 font-semibold">{order.shiprocket.status}</p>
-                                            </div>
-                                        )}
-                                        {order.shiprocket.etd && (
-                                            <div>
-                                                <p className="text-gray-600 font-medium">Expected Delivery</p>
-                                                <p className="text-blue-900 font-semibold">{new Date(order.shiprocket.etd).toLocaleDateString()}</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Track Button */}
-                                    <a
-                                        href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-4 py-2 rounded-md transition-colors w-full justify-center"
-                                    >
-                                        <FaTruck />
-                                        Track Live Location
-                                    </a>
-
-                                    {/* Tracking Timeline */}
-                                    {order.shiprocket.scans && order.shiprocket.scans.length > 0 && (
-                                        <div className="mt-3 pt-3 border-t border-blue-200">
-                                            <p className="text-xs font-semibold text-blue-900 mb-2">Tracking History</p>
-                                            <div className="space-y-2 max-h-48 overflow-y-auto">
-                                                {order.shiprocket.scans.slice(0, 5).map((scan, index) => (
-                                                    <div key={index} className="flex items-start gap-2 text-xs">
-                                                        <div className="min-w-[6px] h-[6px] rounded-full bg-blue-600 mt-1.5"></div>
-                                                        <div className="flex-1">
-                                                            <p className="text-blue-900 font-medium">{scan.activity || scan.status}</p>
-                                                            <p className="text-gray-600">{scan.location}</p>
-                                                            <p className="text-gray-500 text-[10px]">{new Date(scan.date || scan.time).toLocaleString()}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                       
 
                         {/* Order Status Timeline */}
                         {order.status === "shipped" && !order.shiprocket?.awbCode && (
