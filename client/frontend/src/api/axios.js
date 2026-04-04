@@ -23,9 +23,9 @@ api.interceptors.response.use(
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
                 if (!refreshToken) {
-                    console.log(
-                        "No refresh token found - redirecting to login"
-                    );
+                    // console.log(
+                    //     "No refresh token found - redirecting to login"
+                    // );
                     throw new Error("No refresh token available");
                 }
 
@@ -47,7 +47,7 @@ api.interceptors.response.use(
                 return api(originalRequest);
             } catch (refreshError) {
                 // Refresh failed - clear tokens and redirect to login
-                console.log("Token refresh failed:", refreshError.message);
+                // console.log("Token refresh failed:", refreshError.message);
                 localStorage.removeItem("authToken");
                 localStorage.removeItem("refreshToken");
                 window.location.href = "/login";

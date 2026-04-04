@@ -20,14 +20,14 @@ const ReachUs = () => {
             textColor: "text-gray-700",
             borderColor: "border-[#b76e79]",
         },
-        {
-            name: "Facebook",
-            url: "https://facebook.com/affordindia",
-            icon: <FaFacebook className="w-6 h-6" />,
-            bgColor: "bg-white hover:bg-gray-50",
-            textColor: "text-gray-700",
-            borderColor: "border-[#b76e79]",
-        },
+        // {
+        //     name: "Facebook",
+        //     url: "https://facebook.com/affordindia",
+        //     icon: <FaFacebook className="w-6 h-6" />,
+        //     bgColor: "bg-white hover:bg-gray-50",
+        //     textColor: "text-gray-700",
+        //     borderColor: "border-[#b76e79]",
+        // },
         {
             name: "Instagram",
             url: "https://www.instagram.com/teamaffordindia/",

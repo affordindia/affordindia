@@ -15,7 +15,7 @@ const HighlightsSection = ({ product }) => {
                 <div className="flex-1 flex flex-col items-center justify-center p-3 bg-white/70 rounded-lg shadow-sm">
                     <GiRoundStar className="text-4xl mb-1" />
                     <div className="text-base font-semibold">
-                        Authentic 999 Silver
+                        Authentic Product
                     </div>
                     <div className="text-sm">Crafted with Purity</div>
                 </div>
@@ -31,27 +31,13 @@ const HighlightsSection = ({ product }) => {
                 <div className="flex-1 flex flex-col items-center justify-center p-3 bg-white/70 rounded-lg shadow-sm">
                     <FaTruck className="text-4xl mb-1" />
                     <div className="text-base font-semibold">Free Shipping</div>
-                    <div className="text-sm">On orders above ₹3999</div>
+                    <div className="text-sm">On every orders</div>
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center p-3 bg-white/70 rounded-lg shadow-sm">
-                    {isReturnable ? (
-                        <>
-                            <FaArrowRotateLeft className="text-4xl mb-1" />
-                            <div className="text-base font-semibold">
-                                Easy Returns
-                            </div>
-                            <div className="text-sm">10-day return policy</div>
-                        </>
-                    ) : (
-                        <>
-                            <FaBan className="text-4xl mb-1" />
-                            <div className="text-base font-semibold">
-                                No Returns
-                            </div>
-                            <div className="text-sm">Product policy</div>
-                        </>
-                    )}
+                    <FaArrowRotateLeft className="text-4xl mb-1" />
+                    <div className="text-base font-semibold">Easy Returns</div>
+                    <div className="text-sm">Hassle-free return policy</div>
                 </div>
             </div>
         </div>

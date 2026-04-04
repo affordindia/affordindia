@@ -2,7 +2,7 @@ import axios from "./axios";
 
 // Calculate shipping fee for given order amount
 export const calculateShipping = async (orderAmount) => {
-    console.log("API CALL: calculateShipping", orderAmount);
+    // console.log("API CALL: calculateShipping", orderAmount);
     try {
         const res = await axios.post("/shipping/calculate", { orderAmount });
         return res.data;
@@ -21,7 +21,7 @@ export const calculateShipping = async (orderAmount) => {
 
 // Get shipping configuration
 export const getShippingConfig = async () => {
-    console.log("API CALL: getShippingConfig");
+    // console.log("API CALL: getShippingConfig");
     try {
         const res = await axios.get("/shipping/config");
         return res.data;

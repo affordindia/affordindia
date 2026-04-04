@@ -98,20 +98,28 @@ const Orders = () => {
             const pagination = {
                 skip: (currentPage - 1) * ordersPerPage,
                 limit: ordersPerPage,
-                sort: { createdAt: -1 },
             };
 
-            console.log("Fetching orders with filters:", filters);
-            console.log("Fetching orders with pagination:", pagination);
+            // Add search filter
+            if (searchTerm) params.search = searchTerm;
 
-            const response = await getOrders(filters, pagination);
-            console.log("Orders API result:", response);
+            // Add applied filters
+            Object.keys(appliedFilters).forEach((key) => {
+                const value = appliedFilters[key];
+                if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                        params[key] = value;
+                    }
+                } else if (value !== "" && value !== false) {
+                    params[key] = value;
+                }
+            });
+
+            const response = await getOrders(params);
 
             if (response.success) {
                 setOrders(response.orders || []);
                 setTotalOrders(response.total || 0);
-                console.log("Orders loaded:", response.orders?.length || 0);
-                console.log("Total orders:", response.total || 0);
             } else {
                 console.error("Failed to fetch orders:", response.error);
                 setError(response.error || "Failed to fetch orders");
@@ -359,12 +367,12 @@ const Orders = () => {
                                             <input
                                                 type="checkbox"
                                                 checked={filters.status.includes(
-                                                    status
+                                                    status,
                                                 )}
                                                 onChange={() =>
                                                     handleMultiSelectChange(
                                                         "status",
-                                                        status
+                                                        status,
                                                     )
                                                 }
                                                 className="mr-2 text-admin-primary focus:ring-admin-primary border-admin-border"
@@ -391,12 +399,12 @@ const Orders = () => {
                                             <input
                                                 type="checkbox"
                                                 checked={filters.paymentStatus.includes(
-                                                    status
+                                                    status,
                                                 )}
                                                 onChange={() =>
                                                     handleMultiSelectChange(
                                                         "paymentStatus",
-                                                        status
+                                                        status,
                                                     )
                                                 }
                                                 className="mr-2 text-admin-primary focus:ring-admin-primary border-admin-border"
@@ -420,7 +428,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "startDate",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -437,7 +445,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "endDate",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -456,7 +464,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "minAmount",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -474,7 +482,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "maxAmount",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -491,7 +499,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "paymentMethod",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -515,7 +523,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "hasCoupon",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -541,7 +549,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "minItems",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -560,7 +568,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "maxItems",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -579,7 +587,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "customerName",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -598,7 +606,7 @@ const Orders = () => {
                                     onChange={(e) =>
                                         handleFilterChange(
                                             "customerEmail",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     className="w-full border border-admin-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-admin-primary focus:border-transparent"
@@ -693,15 +701,23 @@ const Orders = () => {
                                                 </div>
                                                 {order.shiprocket?.awbCode && (
                                                     <div className="text-sm text-blue-600 font-medium">
-                                                        AWB: {order.shiprocket.awbCode}
+                                                        AWB:{" "}
+                                                        {
+                                                            order.shiprocket
+                                                                .awbCode
+                                                        }
                                                     </div>
                                                 )}
-                                                {order.trackingNumber && !order.shiprocket?.awbCode && (
-                                                    <div className="text-sm text-admin-primary">
-                                                        Track:{" "}
-                                                        {order.trackingNumber}
-                                                    </div>
-                                                )}
+                                                {order.trackingNumber &&
+                                                    !order.shiprocket
+                                                        ?.awbCode && (
+                                                        <div className="text-sm text-admin-primary">
+                                                            Track:{" "}
+                                                            {
+                                                                order.trackingNumber
+                                                            }
+                                                        </div>
+                                                    )}
                                             </div>
                                         </td>
 
@@ -735,7 +751,7 @@ const Orders = () => {
                                                 {formatCurrency(
                                                     order.total ||
                                                         order.totalAmount ||
-                                                        0
+                                                        0,
                                                 )}
                                             </div>
                                         </td>
@@ -818,7 +834,7 @@ const Orders = () => {
                                     pageNumber = currentPage - 3 + i;
                                 }
                                 return pageNumber;
-                            }
+                            },
                         ).map((page) => (
                             <button
                                 key={page}

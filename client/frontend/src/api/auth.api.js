@@ -2,21 +2,21 @@ import api from "./axios";
 
 // Verify Firebase token and authenticate user
 export const verifyPhoneAuth = async (firebaseToken) => {
-    console.log("API CALL: verifyPhoneAuth");
+    // console.log("API CALL: verifyPhoneAuth");
     const res = await api.post("/auth/phone", { firebaseToken });
     return res.data;
 };
 
 // Refresh JWT token
 export const refreshToken = async (refreshToken) => {
-    console.log("API CALL: refreshToken");
+    // console.log("API CALL: refreshToken");
     const res = await api.post("/auth/refresh", { refreshToken });
     return res.data;
 };
 
 // Get current user info
 export const getCurrentUser = async () => {
-    console.log("API CALL: getCurrentUser");
+    // console.log("API CALL: getCurrentUser");
     const res = await api.get("/auth/me");
     return res.data;
 };

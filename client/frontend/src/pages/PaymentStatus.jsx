@@ -84,8 +84,6 @@ const PaymentStatus = () => {
                     return;
                 }
 
-                console.log("🔍 Checking order details for:", orderIdToCheck);
-
                 // First, get the order details to check payment method
                 const orderDetails = await getOrderById(orderIdToCheck);
 
@@ -96,17 +94,10 @@ const PaymentStatus = () => {
                     return;
                 }
 
-                console.log(
-                    "📋 Order payment method:",
-                    orderDetails.paymentMethod
-                );
-
                 // Handle based on payment method
                 if (orderDetails.paymentMethod === "COD") {
                     // For COD orders, just show the order status - no payment verification needed
-                    console.log(
-                        "💰 COD order detected - skipping payment verification"
-                    );
+
                     setOrderData({
                         success: true,
                         paymentStatus: "cod", // Special status for COD
@@ -118,9 +109,7 @@ const PaymentStatus = () => {
                     setStatus("cod");
                 } else {
                     // For online payments, verify payment status
-                    console.log(
-                        "💳 Online payment detected - verifying payment status"
-                    );
+
                     const result = await verifyPaymentStatus(orderIdToCheck);
 
                     if (result.success) {
