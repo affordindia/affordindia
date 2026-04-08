@@ -100,22 +100,7 @@ const Orders = () => {
                 limit: ordersPerPage,
             };
 
-            // Add search filter
-            if (searchTerm) params.search = searchTerm;
-
-            // Add applied filters
-            Object.keys(appliedFilters).forEach((key) => {
-                const value = appliedFilters[key];
-                if (Array.isArray(value)) {
-                    if (value.length > 0) {
-                        params[key] = value;
-                    }
-                } else if (value !== "" && value !== false) {
-                    params[key] = value;
-                }
-            });
-
-            const response = await getOrders(params);
+            const response = await getOrders(filters, pagination);
 
             if (response.success) {
                 setOrders(response.orders || []);
